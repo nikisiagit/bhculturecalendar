@@ -2,7 +2,6 @@ import { getVenues, Venue } from "@/lib/notion";
 import Link from "next/link";
 import Image from "next/image";
 
-export const revalidate = 60;
 
 // Group venues by first letter
 function groupVenuesByLetter(venues: Venue[]): Record<string, Venue[]> {
