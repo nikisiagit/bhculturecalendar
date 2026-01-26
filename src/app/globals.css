@@ -1275,15 +1275,11 @@ body {
 
 @media (max-width: 600px) {
   .rotating-graphic-container {
-    width: 200px;
-    height: 200px;
-    right: -60px;
-    top: 200px;
+    display: none;
   }
 
   .rotating-graphic {
-    width: 200px;
-    height: 200px;
+    display: none;
   }
 }
 
@@ -1291,6 +1287,7 @@ body {
   position: relative;
   overflow-x: hidden;
 }
+
 /* Live Event Banner */
 .nav-container {
   display: flex;
