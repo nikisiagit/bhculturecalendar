@@ -72,7 +72,7 @@ export default function Header({ events }: HeaderProps) {
                         <div className="live-event-banner">
                             <span className="live-indicator">● TODAY</span>
                             <span className="live-event-title">
-                                {todaysCount} event{todaysCount !== 1 ? 's' : ''} happening today
+                                {todaysCount} event{todaysCount !== 1 ? 's' : ''} happening
                             </span>
                         </div>
                     )}
