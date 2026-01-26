@@ -67,7 +67,6 @@ function EventCard({ event }: { event: Event }) {
                         </span>
                     ))}
                     {event.isFree && <span className="tag free">Free</span>}
-                    <span className="tag itinerary">+ itinerary</span>
                 </div>
 
                 <h2 className="event-title">
