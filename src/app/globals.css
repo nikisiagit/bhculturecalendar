@@ -1291,3 +1291,60 @@ body {
   position: relative;
   overflow-x: hidden;
 }
+/* Live Event Banner */
+.nav-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.live-event-banner {
+  font-size: 0.75rem;
+  background-color: var(--black);
+  color: var(--white);
+  padding: 4px 12px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.live-indicator {
+  color: #ff4444;
+  font-weight: 800;
+  font-size: 0.7rem;
+  letter-spacing: 0.5px;
+}
+
+.live-event-title {
+  font-weight: 700;
+}
+
+.live-event-venue {
+  opacity: 0.8;
+}
+
+/* Filter Checkboxes */
+.hidden-checkbox {
+  display: none;
+}
+
+.checkbox-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+}
+
+.checkbox-btn.active {
+  background-color: var(--accent);
+  border-color: var(--black);
+}
+
+@media (max-width: 600px) {
+  .nav-container {
+    align-items: center;
+  }
+}

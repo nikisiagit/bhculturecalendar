@@ -1,39 +1,15 @@
 import Link from "next/link";
 import Image from "next/image";
+import { getEvents } from "@/lib/notion";
+import Header from "@/components/Header";
 
-export default function AboutPage() {
+export default async function AboutPage() {
+    const events = await getEvents();
+
     return (
         <>
             {/* Header */}
-            <header className="header">
-                <div className="header-content">
-                    <Link href="/" className="logo-link">
-                        <Image
-                            src="/logo.png"
-                            alt="Culture Calendar"
-                            width={300}
-                            height={60}
-                            className="logo-image"
-                            priority
-                        />
-                    </Link>
-
-                    <nav className="nav">
-                        <Link href="/" className="nav-link">
-                            WHAT&apos;S ON
-                        </Link>
-                        <Link href="/venues" className="nav-link">
-                            VENUES
-                        </Link>
-                        <Link href="/about" className="nav-link active">
-                            ABOUT
-                        </Link>
-                        <Link href="/" className="nav-highlight">
-                            TODAY&apos;S EVENTS
-                        </Link>
-                    </nav>
-                </div>
-            </header>
+            <Header events={events} />
 
             {/* Main Content */}
             <main className="main about-page">

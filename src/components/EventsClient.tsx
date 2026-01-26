@@ -96,12 +96,51 @@ function EventCard({ event }: { event: Event }) {
 export default function EventsClient({ events, allCategories }: EventsClientProps) {
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [viewMode, setViewMode] = useState<"grid" | "calendar">("grid");
+    const [showToday, setShowToday] = useState(false);
+    const [showTomorrow, setShowTomorrow] = useState(false);
 
-    // Filter events based on selected category
+    // Filter events based on selected category and date
     const filteredEvents = useMemo(() => {
-        if (!selectedCategory) return events;
-        return events.filter((event) => event.category.includes(selectedCategory));
-    }, [events, selectedCategory]);
+        let filtered = events;
+
+        if (selectedCategory) {
+            filtered = filtered.filter((event) => event.category.includes(selectedCategory));
+        }
+
+        if (showToday || showTomorrow) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            const dayAfterTomorrow = new Date(tomorrow);
+            dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 1);
+
+            filtered = filtered.filter((event) => {
+                if (!event.date) return false;
+                const eventStart = new Date(event.date);
+                // Treat events without end date as single day events 
+                const eventEnd = event.endDate ? new Date(event.endDate) : new Date(eventStart);
+                // Set end of day for comparison
+                eventEnd.setHours(23, 59, 59, 999);
+
+                const overlapsToday = showToday && (
+                    (eventStart >= today && eventStart < tomorrow) || // Starts today
+                    (eventStart < today && eventEnd >= today) // Started before, ends today or later
+                );
+
+                const overlapsTomorrow = showTomorrow && (
+                    (eventStart >= tomorrow && eventStart < dayAfterTomorrow) || // Starts tomorrow
+                    (eventStart < tomorrow && eventEnd >= tomorrow) // Started before tomorrow, ends tomorrow or later
+                );
+
+                return overlapsToday || overlapsTomorrow;
+            });
+        }
+
+        return filtered;
+    }, [events, selectedCategory, showToday, showTomorrow]);
 
     return (
         <>
@@ -111,6 +150,10 @@ export default function EventsClient({ events, allCategories }: EventsClientProp
                 onCategoryChange={setSelectedCategory}
                 viewMode={viewMode}
                 onViewModeChange={setViewMode}
+                showToday={showToday}
+                onShowTodayChange={setShowToday}
+                showTomorrow={showTomorrow}
+                onShowTomorrowChange={setShowTomorrow}
             />
 
             {viewMode === "calendar" ? (

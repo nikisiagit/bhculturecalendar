@@ -1,6 +1,7 @@
-import { getVenues, Venue } from "@/lib/notion";
+import { getVenues, getEvents, Venue } from "@/lib/notion";
 import Link from "next/link";
 import Image from "next/image";
+import Header from "@/components/Header";
 
 
 // Group venues by first letter
@@ -19,7 +20,7 @@ function groupVenuesByLetter(venues: Venue[]): Record<string, Venue[]> {
 }
 
 export default async function VenuesPage() {
-    const venues = await getVenues();
+    const [venues, events] = await Promise.all([getVenues(), getEvents()]);
     const groupedVenues = groupVenuesByLetter(venues);
     const letters = Object.keys(groupedVenues).sort();
 
@@ -31,35 +32,7 @@ export default async function VenuesPage() {
     return (
         <>
             {/* Header */}
-            <header className="header">
-                <div className="header-content">
-                    <Link href="/" className="logo-link">
-                        <Image
-                            src="/logo.png"
-                            alt="Culture Calendar"
-                            width={300}
-                            height={60}
-                            className="logo-image"
-                            priority
-                        />
-                    </Link>
-
-                    <nav className="nav">
-                        <Link href="/" className="nav-link">
-                            WHAT&apos;S ON
-                        </Link>
-                        <Link href="/venues" className="nav-link active">
-                            VENUES
-                        </Link>
-                        <Link href="/about" className="nav-link">
-                            ABOUT
-                        </Link>
-                        <Link href="/" className="nav-highlight">
-                            TODAY&apos;S EVENTS
-                        </Link>
-                    </nav>
-                </div>
-            </header>
+            <Header events={events} />
 
             {/* Main Content */}
             <main className="main">

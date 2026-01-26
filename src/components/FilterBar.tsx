@@ -8,6 +8,10 @@ interface FilterBarProps {
     onCategoryChange: (category: string | null) => void;
     viewMode: "grid" | "calendar";
     onViewModeChange: (mode: "grid" | "calendar") => void;
+    showToday: boolean;
+    onShowTodayChange: (value: boolean) => void;
+    showTomorrow: boolean;
+    onShowTomorrowChange: (value: boolean) => void;
 }
 
 export default function FilterBar({
@@ -16,6 +20,10 @@ export default function FilterBar({
     onCategoryChange,
     viewMode,
     onViewModeChange,
+    showToday,
+    onShowTodayChange,
+    showTomorrow,
+    onShowTomorrowChange,
 }: FilterBarProps) {
     return (
         <div className="filter-bar">
@@ -37,6 +45,30 @@ export default function FilterBar({
                             {cat}
                         </button>
                     ))}
+                </div>
+            </div>
+
+            <div className="filter-section">
+                <span className="filter-label">Date:</span>
+                <div className="filter-buttons">
+                    <label className={`filter-btn checkbox-btn ${showToday ? "active" : ""}`}>
+                        <input
+                            type="checkbox"
+                            checked={showToday}
+                            onChange={(e) => onShowTodayChange(e.target.checked)}
+                            className="hidden-checkbox"
+                        />
+                        Today
+                    </label>
+                    <label className={`filter-btn checkbox-btn ${showTomorrow ? "active" : ""}`}>
+                        <input
+                            type="checkbox"
+                            checked={showTomorrow}
+                            onChange={(e) => onShowTomorrowChange(e.target.checked)}
+                            className="hidden-checkbox"
+                        />
+                        Tomorrow
+                    </label>
                 </div>
             </div>
 
