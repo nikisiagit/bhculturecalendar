@@ -93,10 +93,19 @@ export const getEvents = async (): Promise<Event[]> => {
                 isFree,
                 coverImage,
             };
+        }).filter(event => {
+            if (!event.date) return false;
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const eventDate = new Date(event.date);
+            // If there's an end date, use that for the check, otherwise use the start date
+            const relevantDate = event.endDate ? new Date(event.endDate) : eventDate;
+
+            return relevantDate >= today;
         }).sort((a, b) => {
             // Sort by date ascending (earliest first)
-            if (!a.date) return 1;
-            if (!b.date) return -1;
             return new Date(a.date).getTime() - new Date(b.date).getTime();
         });
     } catch (error) {
