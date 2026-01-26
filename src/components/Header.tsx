@@ -12,30 +12,33 @@ interface HeaderProps {
 
 export default function Header({ events }: HeaderProps) {
     const pathname = usePathname();
-    const [liveEvent, setLiveEvent] = useState<Event | null>(null);
+    const [todaysCount, setTodaysCount] = useState<number>(0);
 
     useEffect(() => {
-        const checkLiveEvents = () => {
-            const now = new Date();
-            const activeEvent = events.find(event => {
-                if (!event.date) return false;
-                const start = new Date(event.date);
-                // Assume 2 hour duration if no end date provided, or use end date
-                const end = event.endDate
-                    ? new Date(event.endDate)
-                    : new Date(start.getTime() + 2 * 60 * 60 * 1000);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-                // If it's a multi-day event (has endDate different day), check if we are within the range
-                // But for "LIVE NOW", usually implies specifically happening this moment.
-                // Simple logic: Start <= Now <= End
-                return now >= start && now <= end;
-            });
-            setLiveEvent(activeEvent || null);
-        };
+        // Define "Today" range
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
 
-        checkLiveEvents();
-        const interval = setInterval(checkLiveEvents, 60000); // Check every minute
-        return () => clearInterval(interval);
+        const count = events.filter(event => {
+            if (!event.date) return false;
+            const start = new Date(event.date);
+            // If there's an end date use it, else rely on start date for "happening today"
+            // For ongoing events (started before today, end after today), include them
+            // For single day events started today, include them
+            const end = event.endDate ? new Date(event.endDate) : new Date(start);
+            // Ensure end date covers the full day if time isn't strict? 
+            // Usually Notion dates have times. If start < today and end >= today...
+
+            // Logic: Is the event "active" at any point today?
+            // Meaning: start < tomorrow AND end >= today
+
+            return start < tomorrow && end >= today;
+        }).length;
+
+        setTodaysCount(count);
     }, [events]);
 
     return (
@@ -65,11 +68,12 @@ export default function Header({ events }: HeaderProps) {
                         </Link>
                     </nav>
 
-                    {liveEvent && (
+                    {todaysCount > 0 && (
                         <div className="live-event-banner">
-                            <span className="live-indicator">● LIVE NOW</span>
-                            <span className="live-event-title">{liveEvent.title}</span>
-                            <span className="live-event-venue">@ {liveEvent.venue[0]}</span>
+                            <span className="live-indicator">● TODAY</span>
+                            <span className="live-event-title">
+                                {todaysCount} event{todaysCount !== 1 ? 's' : ''} happening today
+                            </span>
                         </div>
                     )}
                 </div>
