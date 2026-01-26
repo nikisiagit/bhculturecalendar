@@ -38,6 +38,9 @@ export default async function Home() {
             <Link href="/about" className="nav-link">
               ABOUT
             </Link>
+            <Link href="/" className="nav-highlight">
+              TODAY&apos;S EVENTS
+            </Link>
           </nav>
         </div>
       </header>

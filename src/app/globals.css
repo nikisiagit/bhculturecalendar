@@ -1210,29 +1210,52 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
 /* Rotating Graphic */
 @keyframes rotate {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
 }
 
 .rotating-graphic-container {
-  position: fixed;
+  position: absolute;
   right: -120px;
-  bottom: -120px;
-  z-index: 50; /* Above regular content but below modal/header if needed */
+  top: 300px;
+  /* Positioned near Vision/Approach sections */
+  z-index: 50;
   opacity: 1;
   pointer-events: none;
 }
 
+.nav-highlight {
+  background-color: var(--black);
+  color: var(--accent);
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-weight: 800;
+  font-size: 0.8rem;
+  margin-left: 10px;
+  text-decoration: none;
+  font-family: var(--font-display);
+  transform: rotate(-2deg);
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.nav-highlight:hover {
+  transform: rotate(0deg) scale(1.05);
+  background-color: var(--dark-gray);
+}
+
 .rotating-graphic {
-  animation: rotate 30s linear infinite; /* Slower rotation for text */
-  width: 400px;
-  height: 400px;
+  animation: rotate 30s linear infinite;
+  width: 450px;
+  height: 450px;
   object-fit: contain;
 }
 
@@ -1241,9 +1264,9 @@ body {
     width: 300px;
     height: 300px;
     right: -90px;
-    bottom: -90px;
+    top: 250px;
   }
-  
+
   .rotating-graphic {
     width: 300px;
     height: 300px;
@@ -1255,9 +1278,9 @@ body {
     width: 200px;
     height: 200px;
     right: -60px;
-    bottom: -60px;
+    top: 200px;
   }
-  
+
   .rotating-graphic {
     width: 200px;
     height: 200px;
