@@ -105,7 +105,7 @@ export default async function VenuesPage() {
 
             {/* Footer */}
             <footer className="footer">
-                <p>© 2026 Culture Calendar. Made with ❤️ for the local community.</p>
+                <p>© 2026 Culture Calendar. Built by community, for community.</p>
             </footer>
         </>
     );
