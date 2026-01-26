@@ -1210,3 +1210,62 @@ body {
     grid-template-columns: 1fr;
   }
 }
+/* Rotating Graphic */
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rotating-graphic-container {
+  position: absolute;
+  right: -100px;
+  top: 100px;
+  z-index: -1;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.rotating-graphic {
+  animation: rotate 20s linear infinite;
+  width: 400px;
+  height: 400px;
+  object-fit: contain;
+}
+
+@media (max-width: 900px) {
+  .rotating-graphic-container {
+    width: 300px;
+    height: 300px;
+    right: -80px;
+    top: 50px;
+  }
+  
+  .rotating-graphic {
+    width: 300px;
+    height: 300px;
+  }
+}
+
+@media (max-width: 600px) {
+  .rotating-graphic-container {
+    width: 200px;
+    height: 200px;
+    right: -50px;
+    top: 20px;
+    opacity: 0.5;
+  }
+  
+  .rotating-graphic {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+.about-page {
+  position: relative;
+  overflow-x: hidden;
+}

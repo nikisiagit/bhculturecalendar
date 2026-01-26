@@ -34,6 +34,18 @@ export default function AboutPage() {
 
             {/* Main Content */}
             <main className="main about-page">
+                {/* Rotating Graphic */}
+                <div className="rotating-graphic-container">
+                    <Image
+                        src="/logo-graphic.png"
+                        alt="Arts Categories"
+                        width={400}
+                        height={400}
+                        className="rotating-graphic"
+                        priority
+                    />
+                </div>
+
                 {/* Hero Section */}
                 <div className="about-hero">
                     <Image
