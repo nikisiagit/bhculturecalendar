@@ -46,17 +46,6 @@ export default function AboutPage() {
                     />
                 </div>
 
-                {/* Hero Section */}
-                <div className="about-hero">
-                    <Image
-                        src="/logo-full.png"
-                        alt="Culture Calendar - art, comedy, dance, film, spoken word and theatre"
-                        width={500}
-                        height={120}
-                        className="logo-image-large"
-                    />
-                </div>
-
                 {/* Vision & Mission */}
                 <div className="vision-mission-grid">
                     <div className="vision-card">
