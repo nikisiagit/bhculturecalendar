@@ -1312,11 +1312,26 @@ body {
   text-decoration: none;
 }
 
+@keyframes live-pulse {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
 .live-indicator {
   color: #ff4444;
   font-weight: 800;
   font-size: 0.7rem;
   letter-spacing: 0.5px;
+  animation: live-pulse 2s infinite ease-in-out;
 }
 
 .live-event-title {
