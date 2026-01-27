@@ -1,8 +1,11 @@
 import { Client } from "@notionhq/client";
+import imageMapData from "@/data/image-map.json";
 
 const notion = new Client({
     auth: process.env.NOTION_API_KEY,
 });
+
+const imageMap = imageMapData as Record<string, string>;
 
 export interface Event {
     id: string;
@@ -77,7 +80,11 @@ export const getEvents = async (): Promise<Event[]> => {
                 if (page.cover.type === "external") {
                     coverImage = page.cover.external.url;
                 } else if (page.cover.type === "file") {
-                    coverImage = page.cover.file.url;
+                    if (imageMap[page.id]) {
+                        coverImage = imageMap[page.id];
+                    } else {
+                        coverImage = page.cover.file.url;
+                    }
                 }
             }
 
