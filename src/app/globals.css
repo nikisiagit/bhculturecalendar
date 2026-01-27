@@ -250,7 +250,7 @@ body {
 }
 
 .event-title a {
-  color: inherit;
+  color: var(--black);
   text-decoration: none;
 }
 
@@ -1169,7 +1169,7 @@ body {
 }
 
 .venue-name a {
-  color: inherit;
+  color: var(--black);
   text-decoration: none;
   display: inline-flex;
   align-items: center;
