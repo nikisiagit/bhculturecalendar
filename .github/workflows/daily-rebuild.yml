@@ -2,13 +2,23 @@ name: Daily Rebuild
 
 on:
   schedule:
-    # Run at 6:00 AM UTC every day
-    - cron: '0 6 * * *'
+    # Run at 9:30 AM UTC every day
+    - cron: '30 9 * * *'
   workflow_dispatch: # Allow manual trigger from GitHub UI
 
 jobs:
   rebuild:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - name: Trigger Cloudflare Deploy Hook
-        run: curl -X POST "${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}"
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Trigger Rebuild via Empty Commit
+        run: |
+          git config --global user.name 'Daily Refresh Bot'
+          git config --global user.email 'bot@noreply.github.com'
+          git commit --allow-empty -m "Daily content refresh"
+          git push
