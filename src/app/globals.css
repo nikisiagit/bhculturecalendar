@@ -272,6 +272,28 @@ body {
   margin-bottom: var(--spacing-sm);
 }
 
+.add-calendar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--spacing-sm);
+  padding: 6px 10px;
+  background-color: var(--white);
+  border: 1px solid var(--black);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--black);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-calendar-btn:hover {
+  background-color: var(--black);
+  color: var(--white);
+}
+
 /* Loading & Empty States */
 .loading,
 .empty-state,

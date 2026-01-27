@@ -42,6 +42,42 @@ function formatDateRange(start: string, end: string | null): string {
     return startStr;
 }
 
+function generateIcsData(event: Event): string {
+    const formatDate = (dateStr: string) => {
+        const date = new Date(dateStr);
+        return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    };
+
+    const start = formatDate(event.date);
+    let end;
+
+    if (event.endDate) {
+        end = formatDate(event.endDate);
+    } else {
+        const d = new Date(event.date);
+        d.setHours(d.getHours() + 1);
+        end = formatDate(d.toISOString());
+    }
+
+    const description = `Category: ${event.category.join(', ')}\\n\\n(Added via BH Culture Calendar)`;
+    const location = event.venue.join(', ') + (event.postcode.length ? ` ${event.postcode.join(', ')}` : '');
+
+    const icsContent = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'BEGIN:VEVENT',
+        `SUMMARY:${event.title}`,
+        `DTSTART:${start}`,
+        `DTEND:${end}`,
+        `DESCRIPTION:${description}`,
+        `LOCATION:${location}`,
+        'END:VEVENT',
+        'END:VCALENDAR'
+    ].join('\r\n');
+
+    return `data:text/calendar;charset=utf8,${encodeURIComponent(icsContent)}`;
+}
+
 // Event Card Component
 function EventCard({ event }: { event: Event }) {
     return (
@@ -87,6 +123,22 @@ function EventCard({ event }: { event: Event }) {
                         {event.postcode.length > 0 && ` (${event.postcode.join(", ")})`}
                     </p>
                 )}
+
+                <a
+                    href={generateIcsData(event)}
+                    download={`${event.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.ics`}
+                    className="add-calendar-btn"
+                >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                        <line x1="12" y1="14" x2="12" y2="18"></line>
+                        <line x1="10" y1="16" x2="14" y2="16"></line>
+                    </svg>
+                    Add to Calendar
+                </a>
             </div>
         </article>
     );
