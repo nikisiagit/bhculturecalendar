@@ -12,6 +12,7 @@ interface HeaderProps {
 
 export default function Header({ events }: HeaderProps) {
     const pathname = usePathname();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [todaysCount, setTodaysCount] = useState<number>(0);
 
     useEffect(() => {
@@ -25,16 +26,7 @@ export default function Header({ events }: HeaderProps) {
         const count = events.filter(event => {
             if (!event.date) return false;
             const start = new Date(event.date);
-            // If there's an end date use it, else rely on start date for "happening today"
-            // For ongoing events (started before today, end after today), include them
-            // For single day events started today, include them
             const end = event.endDate ? new Date(event.endDate) : new Date(start);
-            // Ensure end date covers the full day if time isn't strict? 
-            // Usually Notion dates have times. If start < today and end >= today...
-
-            // Logic: Is the event "active" at any point today?
-            // Meaning: start < tomorrow AND end >= today
-
             return start < tomorrow && end >= today;
         }).length;
 
@@ -44,7 +36,7 @@ export default function Header({ events }: HeaderProps) {
     return (
         <header className="header">
             <div className="header-content">
-                <Link href="/" className="logo-link">
+                <Link href="/" className="logo-link" onClick={() => setIsMenuOpen(false)}>
                     <Image
                         src="/logo.png"
                         alt="Culture Calendar"
@@ -55,15 +47,47 @@ export default function Header({ events }: HeaderProps) {
                     />
                 </Link>
 
-                <div className="nav-container">
+                <button
+                    className="mobile-menu-btn"
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+                    aria-expanded={isMenuOpen}
+                >
+                    {isMenuOpen ? (
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    ) : (
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    )}
+                </button>
+
+                <div className={`nav-container ${isMenuOpen ? 'is-open' : ''}`}>
                     <nav className="nav">
-                        <Link href="/" className={`nav-link ${pathname === "/" ? "active" : ""}`}>
+                        <Link
+                            href="/"
+                            className={`nav-link ${pathname === "/" ? "active" : ""}`}
+                            onClick={() => setIsMenuOpen(false)}
+                        >
                             WHAT&apos;S ON
                         </Link>
-                        <Link href="/venues" className={`nav-link ${pathname === "/venues" ? "active" : ""}`}>
+                        <Link
+                            href="/venues"
+                            className={`nav-link ${pathname === "/venues" ? "active" : ""}`}
+                            onClick={() => setIsMenuOpen(false)}
+                        >
                             VENUES
                         </Link>
-                        <Link href="/about" className={`nav-link ${pathname === "/about" ? "active" : ""}`}>
+                        <Link
+                            href="/about"
+                            className={`nav-link ${pathname === "/about" ? "active" : ""}`}
+                            onClick={() => setIsMenuOpen(false)}
+                        >
                             ABOUT
                         </Link>
                     </nav>
