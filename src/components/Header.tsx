@@ -19,7 +19,6 @@ export default function Header({ events }: HeaderProps) {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        // Define "Today" range
         const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
 
@@ -33,8 +32,36 @@ export default function Header({ events }: HeaderProps) {
         setTodaysCount(count);
     }, [events]);
 
+    const [isVisible, setIsVisible] = useState(true);
+
+    useEffect(() => {
+        let lastScrollY = window.scrollY;
+
+        const handleScroll = () => {
+            if (isMenuOpen) {
+                setIsVisible(true);
+                return;
+            }
+
+            const currentScrollY = window.scrollY;
+
+            // Hide if scrolling down and past 50px
+            // Show if scrolling up
+            if (currentScrollY > lastScrollY && currentScrollY > 50) {
+                setIsVisible(false);
+            } else {
+                setIsVisible(true);
+            }
+
+            lastScrollY = currentScrollY > 0 ? currentScrollY : 0;
+        };
+
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [isMenuOpen]);
+
     return (
-        <header className="header">
+        <header className={`header ${!isVisible ? 'header-hidden' : ''}`}>
             <div className="header-content">
                 <Link href="/" className="logo-link" onClick={() => setIsMenuOpen(false)}>
                     <Image

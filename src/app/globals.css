@@ -50,6 +50,7 @@ body {
   top: 0;
   z-index: 1000;
   border-bottom: 2px solid var(--black);
+  transition: transform 0.3s ease;
 }
 
 .header-content {
@@ -1396,5 +1397,10 @@ body {
     width: 100%;
     justify-content: center;
     margin-top: var(--spacing-md);
+  }
+
+  /* Hide header on scroll */
+  .header.header-hidden {
+    transform: translateY(-100%);
   }
 }
