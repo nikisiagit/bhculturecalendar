@@ -213,6 +213,7 @@ export default function EventsClient({ events, allCategories }: EventsClientProp
     const [viewMode, setViewMode] = useState<"grid" | "calendar">("grid");
     const [showToday, setShowToday] = useState(false);
     const [showTomorrow, setShowTomorrow] = useState(false);
+    const [showFreeOnly, setShowFreeOnly] = useState(false);
 
     // Filter events based on selected category and date
     const filteredEvents = useMemo(() => {
@@ -220,6 +221,10 @@ export default function EventsClient({ events, allCategories }: EventsClientProp
 
         if (selectedCategory) {
             filtered = filtered.filter((event) => event.category.includes(selectedCategory));
+        }
+
+        if (showFreeOnly) {
+            filtered = filtered.filter((event) => event.isFree);
         }
 
         if (showToday || showTomorrow) {
@@ -255,7 +260,7 @@ export default function EventsClient({ events, allCategories }: EventsClientProp
         }
 
         return filtered;
-    }, [events, selectedCategory, showToday, showTomorrow]);
+    }, [events, selectedCategory, showToday, showTomorrow, showFreeOnly]);
 
     return (
         <>
@@ -269,6 +274,8 @@ export default function EventsClient({ events, allCategories }: EventsClientProp
                 onShowTodayChange={setShowToday}
                 showTomorrow={showTomorrow}
                 onShowTomorrowChange={setShowTomorrow}
+                showFreeOnly={showFreeOnly}
+                onShowFreeOnlyChange={setShowFreeOnly}
             />
 
             {viewMode === "calendar" ? (

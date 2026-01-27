@@ -12,6 +12,8 @@ interface FilterBarProps {
     onShowTodayChange: (value: boolean) => void;
     showTomorrow: boolean;
     onShowTomorrowChange: (value: boolean) => void;
+    showFreeOnly: boolean;
+    onShowFreeOnlyChange: (value: boolean) => void;
 }
 
 export default function FilterBar({
@@ -24,6 +26,8 @@ export default function FilterBar({
     onShowTodayChange,
     showTomorrow,
     onShowTomorrowChange,
+    showFreeOnly,
+    onShowFreeOnlyChange,
 }: FilterBarProps) {
     return (
         <div className="filter-bar">
@@ -49,7 +53,7 @@ export default function FilterBar({
             </div>
 
             <div className="filter-section">
-                <span className="filter-label">Date:</span>
+                <span className="filter-label">Filters:</span>
                 <div className="filter-buttons">
                     <label className={`filter-btn checkbox-btn ${showToday ? "active" : ""}`}>
                         <input
@@ -68,6 +72,15 @@ export default function FilterBar({
                             className="hidden-checkbox"
                         />
                         Tomorrow
+                    </label>
+                    <label className={`filter-btn checkbox-btn ${showFreeOnly ? "active" : ""}`}>
+                        <input
+                            type="checkbox"
+                            checked={showFreeOnly}
+                            onChange={(e) => onShowFreeOnlyChange(e.target.checked)}
+                            className="hidden-checkbox"
+                        />
+                        Free
                     </label>
                 </div>
             </div>
