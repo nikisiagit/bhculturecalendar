@@ -83,7 +83,7 @@ export default async function AboutPage() {
                             </p>
                         </div>
                         <div className="audience-card">
-                            <h3>BICE DIPPERS</h3>
+                            <h3>TOE DIPPERS</h3>
                             <p>
                                 Less familiar with attending cultural events but attend only occasionally.
                                 Irregular users of the calendar, will dip in when needed.
