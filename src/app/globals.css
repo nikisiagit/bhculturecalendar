@@ -152,7 +152,7 @@ body {
   }
 
   .header-content {
-    flex-direction: column;
+    flex-direction: row;
     gap: var(--spacing-md);
   }
 
