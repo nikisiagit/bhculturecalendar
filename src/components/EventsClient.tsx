@@ -124,7 +124,7 @@ function EventCard({ event }: { event: Event }) {
     const [showCalendarOptions, setShowCalendarOptions] = useState(false);
 
     return (
-        <article className="event-card">
+        <article className={`event-card ${showCalendarOptions ? 'z-active' : ''}`}>
             <div className="event-image-wrapper">
                 {event.coverImage ? (
                     <img

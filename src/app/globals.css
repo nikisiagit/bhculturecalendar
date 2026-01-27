@@ -169,6 +169,11 @@ body {
   margin-bottom: var(--spacing-lg);
   background: var(--white);
   transition: transform 0.2s ease;
+  position: relative;
+}
+
+.event-card.z-active {
+  z-index: 50;
 }
 
 .event-card:hover {
