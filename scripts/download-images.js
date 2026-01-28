@@ -115,6 +115,7 @@ async function main() {
                 try {
                     await downloadImage(url, filepath);
                     imageMap[page.id] = publicPath;
+                    imageMap[page.id.replace(/-/g, '')] = publicPath; // Store dashless version too
                     process.stdout.write(".");
                 } catch (e) {
                     console.error(`\nFailed to download ${page.id}:`, e.message);
