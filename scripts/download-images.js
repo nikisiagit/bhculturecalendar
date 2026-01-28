@@ -2,8 +2,6 @@ const { Client } = require("@notionhq/client");
 const fs = require("fs");
 const path = require("path");
 const https = require("https");
-
-// Load environment variables
 require("dotenv").config();
 require("dotenv").config({ path: '.env.local' });
 
@@ -22,11 +20,11 @@ async function downloadImage(url, filepath) {
                 });
             } else {
                 file.close();
-                fs.unlink(filepath, () => { });
+                fs.unlink(filepath, () => {});
                 reject(new Error(`Server responded with ${response.statusCode}: ${response.statusMessage}`));
             }
         }).on('error', (err) => {
-            fs.unlink(filepath, () => { });
+            fs.unlink(filepath, () => {});
             reject(err);
         });
     });
@@ -35,7 +33,7 @@ async function downloadImage(url, filepath) {
 async function main() {
     console.log("Starting image sync...");
     const dbId = process.env.NOTION_DATABASE_ID;
-
+    
     if (!process.env.NOTION_API_KEY) {
         console.warn("Skipping image sync: NOTION_API_KEY is missing");
         return;
@@ -76,14 +74,28 @@ async function main() {
         const imageMap = {};
 
         for (const page of results) {
-            if (page.cover && page.cover.type === 'file') {
-                const url = page.cover.file.url;
+            let url = null;
+            if (page.cover) {
+                if (page.cover.type === 'file') {
+                    url = page.cover.file.url;
+                } else if (page.cover.type === 'external') {
+                    const extUrl = page.cover.external.url;
+                    // Download external images if they are from S3/Notion (likely expiring)
+                    if (extUrl.includes('amazonaws.com') || extUrl.includes('notion.so') || extUrl.includes('notion-static.com')) {
+                        url = extUrl;
+                    }
+                }
+            }
+
+            if (url) {
                 // Basic extension detection
                 let ext = 'jpg';
-                if (url.includes('.png')) ext = 'png';
-                else if (url.includes('.jpeg')) ext = 'jpeg';
-                else if (url.includes('.webp')) ext = 'webp';
-
+                const cleanUrl = url.split('?')[0];
+                if (cleanUrl.includes('.png')) ext = 'png';
+                else if (cleanUrl.includes('.jpeg')) ext = 'jpeg';
+                else if (cleanUrl.includes('.webp')) ext = 'webp';
+                else if (cleanUrl.includes('.gif')) ext = 'gif';
+                
                 const filename = `${page.id}.${ext}`;
                 const filepath = path.join(publicDir, filename);
                 const publicPath = `/images/events/${filename}`;

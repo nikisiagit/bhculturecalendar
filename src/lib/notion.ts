@@ -77,14 +77,12 @@ export const getEvents = async (): Promise<Event[]> => {
             // Cover image from page
             let coverImage: string | null = null;
             if (page.cover) {
-                if (page.cover.type === "external") {
+                if (imageMap[page.id]) {
+                    coverImage = imageMap[page.id];
+                } else if (page.cover.type === "external") {
                     coverImage = page.cover.external.url;
                 } else if (page.cover.type === "file") {
-                    if (imageMap[page.id]) {
-                        coverImage = imageMap[page.id];
-                    } else {
-                        coverImage = page.cover.file.url;
-                    }
+                    coverImage = page.cover.file.url;
                 }
             }
 
