@@ -72,9 +72,10 @@ async function main() {
 
     try {
         while (hasMore) {
-            const response = await notion.databases.query({
-                database_id: dbId,
+            const response = await notion.dataSources.query({
+                data_source_id: dbId,
                 start_cursor: cursor,
+                page_size: 100,
             });
             results.push(...response.results);
             hasMore = response.has_more;
