@@ -11,36 +11,48 @@ const notion = new Client({
 
 async function downloadImage(url, filepath) {
     return new Promise((resolve, reject) => {
-        const file = fs.createWriteStream(filepath);
-        https.get(url, (response) => {
-            if (response.statusCode === 200) {
-                response.pipe(file);
-                file.on('finish', () => {
-                    file.close(resolve);
-                });
-            } else {
-                file.close();
-                fs.unlink(filepath, () => {});
-                reject(new Error(`Server responded with ${response.statusCode}: ${response.statusMessage}`));
-            }
-        }).on('error', (err) => {
-            fs.unlink(filepath, () => {});
-            reject(err);
-        });
+        const get = (currentUrl) => {
+            https.get(currentUrl, (response) => {
+                // Handle redirects
+                if (response.statusCode === 301 || response.statusCode === 302) {
+                    if (response.headers.location) {
+                        get(response.headers.location);
+                        return;
+                    }
+                }
+
+                if (response.statusCode === 200) {
+                    const file = fs.createWriteStream(filepath);
+                    response.pipe(file);
+                    file.on('finish', () => {
+                        file.close(resolve);
+                    });
+                    file.on('error', (err) => {
+                        fs.unlink(filepath, () => { });
+                        reject(err);
+                    });
+                } else {
+                    response.resume(); // Consume response to free memory
+                    reject(new Error(`Server responded with ${response.statusCode}: ${response.statusMessage}`));
+                }
+            }).on('error', (err) => {
+                fs.unlink(filepath, () => { });
+                reject(err);
+            });
+        };
+        get(url);
     });
 }
 
 async function main() {
     console.log("Starting image sync...");
     const dbId = process.env.NOTION_DATABASE_ID;
-    
+
     if (!process.env.NOTION_API_KEY) {
-        console.warn("Skipping image sync: NOTION_API_KEY is missing");
-        return;
+        throw new Error("NOTION_API_KEY is missing. Cannot download images.");
     }
     if (!dbId) {
-        console.warn("Skipping image sync: NOTION_DATABASE_ID is missing");
-        return;
+        throw new Error("NOTION_DATABASE_ID is missing. Cannot download images.");
     }
 
     const publicDir = path.join(process.cwd(), 'public', 'images', 'events');
@@ -95,7 +107,7 @@ async function main() {
                 else if (cleanUrl.includes('.jpeg')) ext = 'jpeg';
                 else if (cleanUrl.includes('.webp')) ext = 'webp';
                 else if (cleanUrl.includes('.gif')) ext = 'gif';
-                
+
                 const filename = `${page.id}.${ext}`;
                 const filepath = path.join(publicDir, filename);
                 const publicPath = `/images/events/${filename}`;
