@@ -249,26 +249,30 @@ body {
 }
 
 /* Masonry Grid */
+/* Standard Grid Layout */
 .events-grid {
-  columns: 4;
-  column-gap: var(--spacing-lg);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-lg);
+  align-items: start;
+  /* Aligns items to top of row even if heights vary */
 }
 
 @media (max-width: 1200px) {
   .events-grid {
-    columns: 3;
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
 @media (max-width: 900px) {
   .events-grid {
-    columns: 2;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 600px) {
   .events-grid {
-    columns: 1;
+    grid-template-columns: 1fr;
   }
 
   .header-content {
@@ -285,8 +289,6 @@ body {
 
 /* Event Card */
 .event-card {
-  break-inside: avoid;
-  margin-bottom: var(--spacing-lg);
   background: var(--white);
   transition: transform 0.2s ease;
   position: relative;
