@@ -17,16 +17,12 @@ export default function Header({ events }: HeaderProps) {
 
     useEffect(() => {
         const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 1);
+        const todayString = today.toDateString();
 
         const count = events.filter(event => {
             if (!event.date) return false;
-            const start = new Date(event.date);
-            const end = event.endDate ? new Date(event.endDate) : new Date(start);
-            return start < tomorrow && end >= today;
+            const eventDate = new Date(event.date);
+            return eventDate.toDateString() === todayString;
         }).length;
 
         setTodaysCount(count);
