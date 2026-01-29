@@ -110,30 +110,33 @@ export const getEvents = async (): Promise<Event[]> => {
 
             return relevantDate >= today;
         }).sort((a, b) => {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const todayTime = today.getTime();
-
-            const getSortTime = (ev: Event) => {
-                const pStart = new Date(ev.date).getTime();
-                // If the event started in the past but ends in the future (or today), treat it as happening "today"
-                if (pStart < todayTime && ev.endDate) {
-                    const pEnd = new Date(ev.endDate).getTime();
-                    if (pEnd >= todayTime) {
-                        return todayTime;
-                    }
-                }
-                return pStart;
+            // Helper to determine if event is multi-day (range)
+            // User requested to prioritize specific dates over long ranges (exhibitions)
+            const isRange = (ev: Event) => {
+                if (!ev.endDate) return false;
+                const start = new Date(ev.date);
+                const end = new Date(ev.endDate);
+                return start.toDateString() !== end.toDateString();
             };
 
-            const timeA = getSortTime(a);
-            const timeB = getSortTime(b);
+            const rangeA = isRange(a);
+            const rangeB = isRange(b);
 
-            if (timeA !== timeB) {
-                return timeA - timeB;
+            // 1. Group by Range (Single Day first, Range last)
+            if (rangeA !== rangeB) {
+                return (rangeA ? 1 : 0) - (rangeB ? 1 : 0);
             }
 
-            // Secondary sort by title
+            // 2. Sort by Date Ascending
+            // Use original start date sorting since we are grouping by type
+            const dateA = new Date(a.date).getTime();
+            const dateB = new Date(b.date).getTime();
+
+            if (dateA !== dateB) {
+                return dateA - dateB;
+            }
+
+            // 3. Secondary sort by title
             return a.title.localeCompare(b.title);
         });
     } catch (error) {
