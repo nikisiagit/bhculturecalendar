@@ -115,7 +115,7 @@ export const getEvents = async (): Promise<Event[]> => {
         });
     } catch (error) {
         console.error("Error fetching Notion data:", error);
-        return [];
+        throw error; // Fail the build if data fetching errors
     }
 };
 
