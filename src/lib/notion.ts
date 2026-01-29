@@ -110,15 +110,30 @@ export const getEvents = async (): Promise<Event[]> => {
 
             return relevantDate >= today;
         }).sort((a, b) => {
-            // Sort by date ascending (earliest first)
-            const dateA = new Date(a.date).getTime();
-            const dateB = new Date(b.date).getTime();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const todayTime = today.getTime();
 
-            if (dateA !== dateB) {
-                return dateA - dateB;
+            const getSortTime = (ev: Event) => {
+                const pStart = new Date(ev.date).getTime();
+                // If the event started in the past but ends in the future (or today), treat it as happening "today"
+                if (pStart < todayTime && ev.endDate) {
+                    const pEnd = new Date(ev.endDate).getTime();
+                    if (pEnd >= todayTime) {
+                        return todayTime;
+                    }
+                }
+                return pStart;
+            };
+
+            const timeA = getSortTime(a);
+            const timeB = getSortTime(b);
+
+            if (timeA !== timeB) {
+                return timeA - timeB;
             }
 
-            // Secondary sort by title for consistent ordering of same-time events
+            // Secondary sort by title
             return a.title.localeCompare(b.title);
         });
     } catch (error) {
