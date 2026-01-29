@@ -72,12 +72,12 @@ body {
 }
 
 .header-tagline {
-  font-family: var(--font-display);
-  font-size: 1.1rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
   line-height: 1.1;
-  text-transform: uppercase;
   max-width: 320px;
   color: var(--black);
+  font-weight: 300;
 }
 
 .header-center {
@@ -106,7 +106,7 @@ body {
 }
 
 .logo-link:hover .brand-logo {
-  transform: rotate(180deg);
+  transform: scaleY(-1);
 }
 
 .menu-btn {
@@ -1552,53 +1552,7 @@ body {
   transform: translateY(-100%);
 }
 
-/* Dark Mode */
-.dark body {
-  background-color: var(--black);
-  color: var(--white);
-}
 
-.dark .header-main-bar {
-  background-color: var(--black);
-  border-bottom: 2px solid var(--white);
-}
-
-.dark .header-tagline {
-  color: var(--white);
-  /* Backlighting effect: Glow using text-shadow */
-  text-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent);
-}
-
-.dark .menu-btn,
-.dark .theme-btn {
-  color: var(--white);
-}
-
-.dark .nav-overlay {
-  background-color: var(--black);
-  border-bottom: 2px solid var(--white);
-}
-
-.dark .overlay-nav-link {
-  color: var(--white);
-}
-
-.dark .section-title {
-  color: var(--white);
-}
-
-.dark .event-card {
-  background-color: #222;
-  /* Slightly lighter than black */
-  color: var(--white);
-  border: 1px solid var(--white);
-}
-
-.dark .footer {
-  background-color: var(--black);
-  color: var(--white);
-  border-top: 2px solid var(--white);
-}
 
 /* Ensure mobile menu button is hidden on desktop if using old class, but we use .menu-btn now which is visible always as per request */
 /* Keeping media query for any other adjustments */
