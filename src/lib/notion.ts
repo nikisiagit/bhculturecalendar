@@ -111,7 +111,15 @@ export const getEvents = async (): Promise<Event[]> => {
             return relevantDate >= today;
         }).sort((a, b) => {
             // Sort by date ascending (earliest first)
-            return new Date(a.date).getTime() - new Date(b.date).getTime();
+            const dateA = new Date(a.date).getTime();
+            const dateB = new Date(b.date).getTime();
+
+            if (dateA !== dateB) {
+                return dateA - dateB;
+            }
+
+            // Secondary sort by title for consistent ordering of same-time events
+            return a.title.localeCompare(b.title);
         });
     } catch (error) {
         console.error("Error fetching Notion data:", error);
