@@ -1795,3 +1795,31 @@ body {
 .menu-btn[aria-expanded="true"] .line-bottom {
   transform: translateY(-6px) rotate(-45deg);
 }
+
+/* Live Dot Animation */
+.live-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background-color: #e53e3e;
+  border-radius: 50%;
+  animation: pulse-dot 1.5s ease-in-out infinite;
+  box-shadow: 0 0 0 0 rgba(229, 62, 62, 0.7);
+}
+
+@keyframes pulse-dot {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(229, 62, 62, 0.7);
+  }
+
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 6px rgba(229, 62, 62, 0);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(229, 62, 62, 0);
+  }
+}

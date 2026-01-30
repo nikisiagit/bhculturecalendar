@@ -13,20 +13,6 @@ interface HeaderProps {
 export default function Header({ events }: HeaderProps) {
     const pathname = usePathname();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [todaysCount, setTodaysCount] = useState<number>(0);
-
-    useEffect(() => {
-        const today = new Date();
-        const todayString = today.toDateString();
-
-        const count = events.filter(event => {
-            if (!event.date) return false;
-            const eventDate = new Date(event.date);
-            return eventDate.toDateString() === todayString;
-        }).length;
-
-        setTodaysCount(count);
-    }, [events]);
 
     const [isVisible, setIsVisible] = useState(true);
 
@@ -122,17 +108,6 @@ export default function Header({ events }: HeaderProps) {
                     </Link>
                 </nav>
             </div>
-
-            {todaysCount > 0 && (
-                <div className="today-banner-bar">
-                    <div className="today-banner-content">
-                        <span className="live-indicator">● TODAY</span>
-                        <span className="live-event-title">
-                            {todaysCount} event{todaysCount !== 1 ? 's' : ''} happening
-                        </span>
-                    </div>
-                </div>
-            )}
         </header>
     );
 }

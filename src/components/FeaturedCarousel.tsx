@@ -71,7 +71,8 @@ export default function FeaturedCarousel({ events }: { events: Event[] }) {
 
     return (
         <section className="featured-section">
-            <h2 className="section-title" style={{ fontSize: '1.5rem', marginBottom: '1rem', textTransform: 'uppercase' }}>
+            <h2 className="section-title" style={{ fontSize: '1.5rem', marginBottom: '1rem', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span className="live-dot"></span>
                 What&apos;s on today
             </h2>
 
