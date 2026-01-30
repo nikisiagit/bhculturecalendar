@@ -127,7 +127,7 @@ export default function FeaturedCarousel({ events }: { events: Event[] }) {
                             {filteredEvents.map((_, idx) => (
                                 <button
                                     key={idx}
-                                    className="progress-track"
+                                    className={`progress-track ${idx === currentIndex ? 'active' : ''}`}
                                     onClick={() => goToSlide(idx)}
                                     aria-label={`Go to slide ${idx + 1}`}
                                 >

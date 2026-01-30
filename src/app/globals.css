@@ -1723,10 +1723,20 @@ body {
   cursor: pointer;
   overflow: hidden;
   position: relative;
+  transition: flex 0.5s ease, background 0.2s, opacity 0.2s;
+  opacity: 0.6;
+}
+
+.progress-track.active {
+  flex: 3;
+  /* Active bar grows wider */
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.4);
 }
 
 .progress-track:hover {
   background: rgba(255, 255, 255, 0.5);
+  opacity: 1;
 }
 
 .progress-fill {
