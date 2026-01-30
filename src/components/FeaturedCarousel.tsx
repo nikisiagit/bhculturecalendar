@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Event } from "@/lib/notion";
 
 // Helper to check if event starts strictly today
-// Matches logic in Header.tsx
 function isEventToday(event: Event): boolean {
     if (!event.date) return false;
     const today = new Date();
@@ -15,38 +14,58 @@ function isEventToday(event: Event): boolean {
 export default function FeaturedCarousel({ events }: { events: Event[] }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
+    const [progress, setProgress] = useState(0);
+    const DURATION = 5000; // 5 seconds
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         const today = events.filter(isEventToday);
         setFilteredEvents(today);
     }, [events]);
 
+    // Auto-advance logic
     useEffect(() => {
         if (filteredEvents.length <= 1) return;
 
-        const timer = setInterval(() => {
-            setCurrentIndex((prev) => (prev + 1) % filteredEvents.length);
-        }, 5000);
+        const startTime = Date.now();
 
-        return () => clearInterval(timer);
-    }, [filteredEvents.length]);
+        // Reset progress on slide change
+        setProgress(0);
+
+        // Animation frame loop for smooth progress bar
+        let animationFrame: number;
+
+        const animate = () => {
+            const elapsed = Date.now() - startTime;
+            const pct = Math.min((elapsed / DURATION) * 100, 100);
+            setProgress(pct);
+
+            if (elapsed < DURATION) {
+                animationFrame = requestAnimationFrame(animate);
+            } else {
+                // Time's up, next slide
+                setCurrentIndex((prev) => (prev + 1) % filteredEvents.length);
+            }
+        };
+
+        animationFrame = requestAnimationFrame(animate);
+
+        return () => {
+            cancelAnimationFrame(animationFrame);
+        };
+    }, [currentIndex, filteredEvents.length]);
 
     if (filteredEvents.length === 0) return null;
 
-    const event = filteredEvents[currentIndex];
-
-    const nextSlide = (e: React.MouseEvent) => {
-        e.stopPropagation();
+    const nextSlide = () => {
         setCurrentIndex((prev) => (prev + 1) % filteredEvents.length);
     };
 
-    const prevSlide = (e: React.MouseEvent) => {
-        e.stopPropagation();
+    const prevSlide = () => {
         setCurrentIndex((prev) => (prev - 1 + filteredEvents.length) % filteredEvents.length);
     };
 
-    const goToSlide = (idx: number, e: React.MouseEvent) => {
-        e.stopPropagation();
+    const goToSlide = (idx: number) => {
         setCurrentIndex(idx);
     };
 
@@ -56,33 +75,44 @@ export default function FeaturedCarousel({ events }: { events: Event[] }) {
                 What&apos;s on today
             </h2>
 
-            <a
-                href={event.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="carousel-container"
-            >
-                <div className="carousel-slide">
-                    {event.coverImage ? (
-                        <img
-                            src={event.coverImage}
-                            alt={event.title}
-                            className="carousel-image"
-                        />
-                    ) : (
-                        <div className="carousel-placeholder" />
-                    )}
+            <div className="carousel-container">
+                {/* Slides Layer */}
+                {filteredEvents.map((event, index) => (
+                    <a
+                        key={event.id}
+                        href={event.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`carousel-slide-wrapper ${index === currentIndex ? 'active' : ''}`}
+                        style={{
+                            opacity: index === currentIndex ? 1 : 0,
+                            pointerEvents: index === currentIndex ? 'auto' : 'none',
+                            zIndex: index === currentIndex ? 1 : 0
+                        }}
+                    >
+                        <div className="carousel-slide">
+                            {event.coverImage ? (
+                                <img
+                                    src={event.coverImage}
+                                    alt={event.title}
+                                    className="carousel-image"
+                                />
+                            ) : (
+                                <div className="carousel-placeholder">{event.title[0]}</div>
+                            )}
 
-                    <div className="carousel-overlay">
-                        <h3 className="carousel-title">{event.title}</h3>
-                        <div className="carousel-meta">
-                            <span className="carousel-venue">{event.venue.join(', ')}</span>
-                            {/* Time could be added here if available in formatted string */}
+                            <div className="carousel-overlay">
+                                <h3 className="carousel-title">{event.title}</h3>
+                                <div className="carousel-meta">
+                                    <span className="carousel-venue">{event.venue.join(', ')}</span>
+                                </div>
+                                <span className="carousel-cta">Find out more</span>
+                            </div>
                         </div>
-                        <span className="carousel-cta">Find out more</span>
-                    </div>
-                </div>
+                    </a>
+                ))}
 
+                {/* Controls Layer (Outside the Link) */}
                 {filteredEvents.length > 1 && (
                     <>
                         <button className="carousel-nav prev" onClick={prevSlide} aria-label="Previous slide">
@@ -92,19 +122,28 @@ export default function FeaturedCarousel({ events }: { events: Event[] }) {
                             ›
                         </button>
 
-                        <div className="carousel-dots">
+                        {/* Netflix-style Progress Bars */}
+                        <div className="carousel-progress-container">
                             {filteredEvents.map((_, idx) => (
                                 <button
                                     key={idx}
-                                    className={`dot ${idx === currentIndex ? 'active' : ''}`}
-                                    onClick={(e) => goToSlide(idx, e)}
+                                    className="progress-track"
+                                    onClick={() => goToSlide(idx)}
                                     aria-label={`Go to slide ${idx + 1}`}
-                                />
+                                >
+                                    <div
+                                        className="progress-fill"
+                                        style={{
+                                            width: idx === currentIndex ? `${progress}%` : (idx < currentIndex ? '100%' : '0%'),
+                                            // Optional: make past bars full and future empty
+                                        }}
+                                    />
+                                </button>
                             ))}
                         </div>
                     </>
                 )}
-            </a>
+            </div>
         </section>
     );
 }
