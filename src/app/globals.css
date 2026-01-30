@@ -139,6 +139,11 @@ body {
   align-items: center;
   justify-content: center;
   transition: transform 0.2s ease;
+  overflow: visible;
+}
+
+.menu-btn svg {
+  overflow: visible;
 }
 
 .menu-btn:hover {
