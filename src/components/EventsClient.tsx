@@ -4,13 +4,13 @@ import { useState, useMemo } from "react";
 import { Event } from "@/lib/notion";
 import FilterBar from "./FilterBar";
 import CalendarView from "./CalendarView";
+import FeaturedCarousel from "./FeaturedCarousel";
 
 interface EventsClientProps {
     events: Event[];
     allCategories: string[];
 }
 
-// Format date range
 function formatDateRange(start: string, end: string | null): string {
     if (!start) return "Date TBC";
 
@@ -119,7 +119,6 @@ function generateOutlookUrl(event: Event): string {
     return `https://outlook.live.com/calendar/0/deeplink/compose?path=/calendar/action/compose&rru=addevent&startdt=${start}&enddt=${end}&subject=${title}&body=${body}&location=${location}`;
 }
 
-// Event Card Component
 function EventCard({ event }: { event: Event }) {
     const [showCalendarOptions, setShowCalendarOptions] = useState(false);
 
@@ -264,6 +263,7 @@ export default function EventsClient({ events, allCategories }: EventsClientProp
 
     return (
         <>
+            <FeaturedCarousel events={events} />
             <FilterBar
                 categories={allCategories}
                 selectedCategory={selectedCategory}

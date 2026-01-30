@@ -1556,8 +1556,169 @@ body {
 
 
 
-/* Ensure mobile menu button is hidden on desktop if using old class, but we use .menu-btn now which is visible always as per request */
-/* Keeping media query for any other adjustments */
-@media (max-width: 768px) {
-  /* No specific overrides needed here as main block handles it */
+/* Featured Carousel */
+.featured-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.carousel-container {
+  display: block;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  background-color: var(--black);
+}
+
+@media (min-width: 768px) {
+  .carousel-container {
+    aspect-ratio: 21 / 9;
+    max-height: 500px;
+  }
+}
+
+.carousel-slide {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.carousel-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+  opacity: 0.8;
+}
+
+.carousel-container:hover .carousel-image {
+  transform: scale(1.05);
+  opacity: 0.6;
+  /* Darken on hover to make text pop more? Or less? Convention: Zoom in. */
+}
+
+.carousel-placeholder {
+  width: 100%;
+  height: 100%;
+  background: var(--light-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+}
+
+.carousel-overlay {
+  position: absolute;
+  inset: 0;
+  /* Cinematic gradient overlay for text readability */
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.6) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+  text-align: center;
+  z-index: 1;
+}
+
+.carousel-title {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--accent);
+  /* Yellow */
+  text-transform: uppercase;
+  margin-bottom: var(--spacing-md);
+  /* Hard shadow for 'sticker' effect seen in screenshot */
+  text-shadow: 3px 3px 0px var(--black);
+  max-width: 900px;
+  width: 100%;
+}
+
+.carousel-venue {
+  font-family: var(--font-body);
+  color: var(--white);
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: var(--spacing-sm);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  background-color: var(--black);
+  padding: 4px 12px;
+  display: inline-block;
+  transform: rotate(-1deg);
+  /* Slight fun rotation */
+}
+
+.carousel-cta {
+  font-size: 0.8rem;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 700;
+  margin-top: var(--spacing-md);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.carousel-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  color: var(--white);
+  border: none;
+  font-size: 3rem;
+  padding: 0 1rem;
+  cursor: pointer;
+  z-index: 2;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.carousel-nav:hover {
+  opacity: 1;
+}
+
+.carousel-nav.prev {
+  left: 0;
+}
+
+.carousel-nav.next {
+  right: 0;
+}
+
+.carousel-dots {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  /* Bottom right as per screenshot? Or center? Screenshot showed dots bottom right? No, screenshot cropped. Standard is center. I'll stick to center or right if user prefers. I will use center. */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 2;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid var(--white);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s;
+}
+
+.dot.active {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+@media (min-width: 768px) {
+  .carousel-title {
+    font-size: 4rem;
+  }
 }
