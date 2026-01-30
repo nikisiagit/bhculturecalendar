@@ -12,6 +12,8 @@ interface FilterBarProps {
     onShowTodayChange: (value: boolean) => void;
     showTomorrow: boolean;
     onShowTomorrowChange: (value: boolean) => void;
+    showWeekend: boolean;
+    onShowWeekendChange: (value: boolean) => void;
     showFreeOnly: boolean;
     onShowFreeOnlyChange: (value: boolean) => void;
 }
@@ -26,6 +28,8 @@ export default function FilterBar({
     onShowTodayChange,
     showTomorrow,
     onShowTomorrowChange,
+    showWeekend,
+    onShowWeekendChange,
     showFreeOnly,
     onShowFreeOnlyChange,
 }: FilterBarProps) {
@@ -72,6 +76,15 @@ export default function FilterBar({
                             className="hidden-checkbox"
                         />
                         Tomorrow
+                    </label>
+                    <label className={`filter-btn checkbox-btn ${showWeekend ? "active" : ""}`}>
+                        <input
+                            type="checkbox"
+                            checked={showWeekend}
+                            onChange={(e) => onShowWeekendChange(e.target.checked)}
+                            className="hidden-checkbox"
+                        />
+                        This Weekend
                     </label>
                     <label className={`filter-btn checkbox-btn ${showFreeOnly ? "active" : ""}`}>
                         <input

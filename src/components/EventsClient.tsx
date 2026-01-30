@@ -212,6 +212,7 @@ export default function EventsClient({ events, allCategories }: EventsClientProp
     const [viewMode, setViewMode] = useState<"grid" | "calendar">("grid");
     const [showToday, setShowToday] = useState(false);
     const [showTomorrow, setShowTomorrow] = useState(false);
+    const [showWeekend, setShowWeekend] = useState(false);
     const [showFreeOnly, setShowFreeOnly] = useState(false);
 
     // Filter events based on selected category and date
@@ -226,7 +227,7 @@ export default function EventsClient({ events, allCategories }: EventsClientProp
             filtered = filtered.filter((event) => event.isFree);
         }
 
-        if (showToday || showTomorrow) {
+        if (showToday || showTomorrow || showWeekend) {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
@@ -235,6 +236,25 @@ export default function EventsClient({ events, allCategories }: EventsClientProp
 
             const dayAfterTomorrow = new Date(tomorrow);
             dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 1);
+
+            // Weekend Calculation
+            const currentDay = today.getDay(); // 0=Sun, 6=Sat
+            let weekendStart = new Date(today);
+            let weekendEnd = new Date(today);
+
+            if (currentDay === 0) {
+                // Today is Sunday. Weekend filter shows Today.
+                weekendStart = today;
+                weekendEnd.setHours(23, 59, 59, 999);
+            } else {
+                // Today is Mon-Sat. Find upcoming Saturday.
+                const daysToSat = 6 - currentDay;
+                weekendStart.setDate(today.getDate() + daysToSat);
+                weekendEnd = new Date(weekendStart);
+                weekendEnd.setDate(weekendStart.getDate() + 1); // Sunday
+                weekendEnd.setHours(23, 59, 59, 999);
+            }
+            weekendStart.setHours(0, 0, 0, 0);
 
             filtered = filtered.filter((event) => {
                 if (!event.date) return false;
@@ -254,12 +274,16 @@ export default function EventsClient({ events, allCategories }: EventsClientProp
                     (eventStart < tomorrow && eventEnd >= tomorrow) // Started before tomorrow, ends tomorrow or later
                 );
 
-                return overlapsToday || overlapsTomorrow;
+                const overlapsWeekend = showWeekend && (
+                    (eventStart < weekendEnd && eventEnd >= weekendStart)
+                );
+
+                return overlapsToday || overlapsTomorrow || overlapsWeekend;
             });
         }
 
         return filtered;
-    }, [events, selectedCategory, showToday, showTomorrow, showFreeOnly]);
+    }, [events, selectedCategory, showToday, showTomorrow, showWeekend, showFreeOnly]);
 
     return (
         <>
@@ -274,6 +298,8 @@ export default function EventsClient({ events, allCategories }: EventsClientProp
                 onShowTodayChange={setShowToday}
                 showTomorrow={showTomorrow}
                 onShowTomorrowChange={setShowTomorrow}
+                showWeekend={showWeekend}
+                onShowWeekendChange={setShowWeekend}
                 showFreeOnly={showFreeOnly}
                 onShowFreeOnlyChange={setShowFreeOnly}
             />
