@@ -34,7 +34,7 @@
 /* Custom Pixelated Cursor */
 html,
 body {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath fill='%23000' d='M4 4h4v4H4zM8 8h4v4H8zM12 12h4v4h-4zM16 16h4v4h-4zM8 4h4v4H8zM12 8h4v4h-4zM16 12h4v4h-4zM20 16h4v4h-4zM4 8h4v4H4zM4 12h4v4H4zM4 16h4v4H4zM4 20h4v4H4zM8 20h4v4H8zM12 20h4v4h-4zM16 20h4v4h-4z'/%3E%3Cpath fill='%23FFD700' d='M8 12h4v4H8zM8 16h4v4H8zM12 16h4v4h-4z'/%3E%3C/svg%3E") 4 4, auto;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath fill='%23000' stroke='%23fff' stroke-width='2' d='M6 2L6 34L14 26L22 38L28 34L20 22L32 22Z'/%3E%3C/svg%3E") 6 2, auto;
 }
 
 /* Pointer cursor for interactive elements */
@@ -47,7 +47,7 @@ input[type="button"],
 .view-btn,
 .carousel-nav,
 .progress-track {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath fill='%23000' d='M12 4h4v4h-4zM12 8h4v4h-4zM8 12h4v4H8zM12 12h4v4h-4zM16 12h4v4h-4zM4 16h4v4H4zM8 16h4v4H8zM12 16h4v4h-4zM16 16h4v4h-4zM20 16h4v4h-4zM12 20h4v4h-4zM12 24h4v4h-4z'/%3E%3Cpath fill='%23FFD700' d='M12 12h4v4h-4z'/%3E%3C/svg%3E") 12 4, pointer;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath fill='%23000' stroke='%23fff' stroke-width='2' d='M16 4L16 16L8 16L8 20L6 20L6 28L8 28L8 32L12 32L12 28L16 28L16 24L20 24L20 20L24 20L24 16L20 16L20 12L16 12Z'/%3E%3C/svg%3E") 16 4, pointer;
 }
 
 html {
@@ -1799,12 +1799,12 @@ body {
 /* Animated Burger Menu Icon */
 .menu-btn svg line {
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
-  transform-origin: 12px 12px;
-  /* Center of 24x24 viewBox */
+  transform-origin: center;
+  transform-box: fill-box;
 }
 
 .menu-btn[aria-expanded="true"] .line-top {
-  transform: rotate(45deg);
+  transform: translateY(250%) rotate(45deg);
 }
 
 .menu-btn[aria-expanded="true"] .line-middle {
@@ -1813,7 +1813,7 @@ body {
 }
 
 .menu-btn[aria-expanded="true"] .line-bottom {
-  transform: rotate(-45deg);
+  transform: translateY(-250%) rotate(-45deg);
 }
 
 /* Live Dot Animation */
