@@ -1750,3 +1750,22 @@ body {
     font-size: 4rem;
   }
 }
+
+/* Animated Burger Menu Icon */
+.menu-btn svg line {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+  transform-origin: center;
+}
+
+.menu-btn[aria-expanded="true"] .line-top {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.menu-btn[aria-expanded="true"] .line-middle {
+  opacity: 0;
+  transform: translateX(-5px);
+}
+
+.menu-btn[aria-expanded="true"] .line-bottom {
+  transform: translateY(-6px) rotate(-45deg);
+}
