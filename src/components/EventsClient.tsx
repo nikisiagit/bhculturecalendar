@@ -237,24 +237,24 @@ export default function EventsClient({ events, allCategories }: EventsClientProp
             const dayAfterTomorrow = new Date(tomorrow);
             dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 1);
 
-            // Weekend Calculation
+            // Weekend Calculation (Friday 5pm UTC - Sunday Midnight)
             const currentDay = today.getDay(); // 0=Sun, 6=Sat
             let weekendStart = new Date(today);
             let weekendEnd = new Date(today);
 
-            if (currentDay === 0) {
-                // Today is Sunday. Weekend filter shows Today.
-                weekendStart = today;
-                weekendEnd.setHours(23, 59, 59, 999);
-            } else {
-                // Today is Mon-Sat. Find upcoming Saturday.
-                const daysToSat = 6 - currentDay;
-                weekendStart.setDate(today.getDate() + daysToSat);
-                weekendEnd = new Date(weekendStart);
-                weekendEnd.setDate(weekendStart.getDate() + 1); // Sunday
-                weekendEnd.setHours(23, 59, 59, 999);
-            }
-            weekendStart.setHours(0, 0, 0, 0);
+            // Calculate offset to Friday of the current weekend block
+            // Sun(0) -> -2, Sat(6) -> -1, Fri(5) -> 0, Mon(1) -> +4
+            let offsetToFri = 0;
+            if (currentDay === 0) offsetToFri = -2;
+            else if (currentDay === 6) offsetToFri = -1;
+            else offsetToFri = 5 - currentDay;
+
+            weekendStart.setDate(today.getDate() + offsetToFri);
+            weekendStart.setUTCHours(17, 0, 0, 0); // Start Friday 17:00 UTC
+
+            weekendEnd = new Date(weekendStart);
+            weekendEnd.setDate(weekendStart.getDate() + 2); // Friday + 2 days = Sunday
+            weekendEnd.setHours(23, 59, 59, 999);
 
             filtered = filtered.filter((event) => {
                 if (!event.date) return false;

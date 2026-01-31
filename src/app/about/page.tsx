@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getEvents } from "@/lib/notion";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 export default async function AboutPage() {
     const events = await getEvents();
@@ -94,9 +95,8 @@ export default async function AboutPage() {
             </main>
 
             {/* Footer */}
-            <footer className="footer">
-                <p>© 2026 Culture Calendar. Built by community, for community.</p>
-            </footer>
+            {/* Footer */}
+            <Footer />
         </>
     );
 }
