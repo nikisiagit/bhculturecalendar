@@ -2,6 +2,7 @@ import { getVenues, getEvents, Venue } from "@/lib/notion";
 import Link from "next/link";
 import Image from "next/image";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 
 // Group venues by first letter
@@ -117,9 +118,8 @@ export default async function VenuesPage() {
             </main>
 
             {/* Footer */}
-            <footer className="footer">
-                <p>© 2026 Culture Calendar. Built by community, for community.</p>
-            </footer>
+            {/* Footer */}
+            <Footer />
         </>
     );
 }

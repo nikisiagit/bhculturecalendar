@@ -536,8 +536,36 @@ body {
   margin-top: var(--spacing-2xl);
 }
 
-.footer a {
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+
+.footer-links {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.footer-links a {
+  color: var(--white);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.footer-links a:hover {
+  text-decoration: none;
   color: var(--accent);
+}
+
+.separator {
+  color: #666;
+  margin: 0 4px;
 }
 
 /* Logo Link */
