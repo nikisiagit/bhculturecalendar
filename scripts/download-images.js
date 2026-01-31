@@ -49,8 +49,6 @@ async function main() {
     const dbId = process.env.NOTION_DATABASE_ID;
 
     if (!process.env.NOTION_API_KEY) {
-        console.log("DEBUG: Available Environment Variables:", Object.keys(process.env).join(", "));
-        console.log("DEBUG: NOTION_DATABASE_ID is present:", !!process.env.NOTION_DATABASE_ID);
         throw new Error("NOTION_API_KEY is missing. Cannot download images.");
     }
     if (!dbId) {
