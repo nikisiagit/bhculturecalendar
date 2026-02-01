@@ -66,28 +66,25 @@ export default async function AboutPage() {
                         <div className="audience-card">
                             <h3>CULTURE VULTURES</h3>
                             <p>
-                                Already attend cultural events and will likely use the calendar regularly.
+                                are culturally confident passionate supporters of arts and culture. Likely attend whatever’s on, whenever available
                             </p>
                         </div>
                         <div className="audience-card">
-                            <h3>CULTURAL CONSUMERS</h3>
+                            <h3>FAMILIAR FACES</h3>
                             <p>
-                                Familiar with attending cultural events but attend only occasionally.
-                                Irregular users of the calendar, will dip in when needed.
+                                are culturally confident supporters of the sector. More discerning when choosing events to attend, possibly due to limited time available
                             </p>
                         </div>
                         <div className="audience-card">
-                            <h3>SOCIALISERS</h3>
+                            <h3>SOCIAL BUTTERFLIES</h3>
                             <p>
-                                Less familiar with attending cultural events but enjoy socialising and will
-                                likely use the calendar regularly to find &apos;things to do&apos;.
+                                keep an eye out for things to do with friends and family. May or may not be familiar with cultural events but want a good experience
                             </p>
                         </div>
                         <div className="audience-card">
                             <h3>TOE DIPPERS</h3>
                             <p>
-                                Less familiar with attending cultural events but attend only occasionally.
-                                Irregular users of the calendar, will dip in when needed.
+                                are less culturally confident but want to test the water. May not have attended an event of the type before…..but willing to give things a go
                             </p>
                         </div>
                     </div>
