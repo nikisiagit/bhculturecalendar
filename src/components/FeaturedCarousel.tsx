@@ -30,11 +30,11 @@ export default function FeaturedCarousel({ events }: { events: Event[] }) {
         const xPct = (x / rect.width - 0.5) * 2;
         const yPct = (y / rect.height - 0.5) * 2;
 
-        // Max rotation: 2.5 degrees (Subtle)
-        const rotateX = -yPct * 2.5;
-        const rotateY = xPct * 2.5;
+        // Max rotation: 1.0 degree (Micro-interaction)
+        const rotateX = -yPct * 1.0;
+        const rotateY = xPct * 1.0;
 
-        containerRef.current.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+        containerRef.current.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.01, 1.01, 1.01)`;
     };
 
     const handleMouseLeave = () => {
