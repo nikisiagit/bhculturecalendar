@@ -17,26 +17,30 @@ export default function FeaturedCarousel({ events }: { events: Event[] }) {
     const [progress, setProgress] = useState(0);
     const DURATION = 5000; // 5 seconds
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
-    const [offsetY, setOffsetY] = useState(0);
+    const containerRef = useRef<HTMLDivElement>(null);
 
-    // Parallax Effect
-    useEffect(() => {
-        let ticking = false;
-        const handleScroll = () => {
-            if (!ticking) {
-                window.requestAnimationFrame(() => {
-                    setOffsetY(window.scrollY * 0.4);
-                    ticking = false;
-                });
-                ticking = true;
-            }
-        };
-        window.addEventListener("scroll", handleScroll);
-        // Initial calc
-        handleScroll();
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!containerRef.current) return;
 
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
+        const rect = containerRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // Calculate percentage from center (-1 to 1)
+        const xPct = (x / rect.width - 0.5) * 2;
+        const yPct = (y / rect.height - 0.5) * 2;
+
+        // Max rotation: 5 degrees
+        const rotateX = -yPct * 5;
+        const rotateY = xPct * 5;
+
+        containerRef.current.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+    };
+
+    const handleMouseLeave = () => {
+        if (!containerRef.current) return;
+        containerRef.current.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+    };
 
     useEffect(() => {
         const today = events.filter(isEventToday);
@@ -96,7 +100,13 @@ export default function FeaturedCarousel({ events }: { events: Event[] }) {
                 What&apos;s on today
             </h2>
 
-            <div className="carousel-container">
+            <div
+                className="carousel-container"
+                ref={containerRef}
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+                style={{ transition: 'transform 0.1s ease-out', willChange: 'transform' }}
+            >
                 {/* Slides Layer */}
                 {filteredEvents.map((event, index) => (
                     <a
@@ -111,29 +121,16 @@ export default function FeaturedCarousel({ events }: { events: Event[] }) {
                             zIndex: index === currentIndex ? 1 : 0
                         }}
                     >
-                        <div className="carousel-slide" style={{ overflow: 'hidden' }}>
-                            <div
-                                className="parallax-wrapper"
-                                style={{
-                                    height: '120%',
-                                    width: '100%',
-                                    position: 'absolute',
-                                    top: '-10%',
-                                    left: 0,
-                                    transform: `translate3d(0, ${offsetY}px, 0)`,
-                                    willChange: 'transform'
-                                }}
-                            >
-                                {event.coverImage ? (
-                                    <img
-                                        src={event.coverImage}
-                                        alt={event.title}
-                                        className="carousel-image"
-                                    />
-                                ) : (
-                                    <div className="carousel-placeholder">{event.title[0]}</div>
-                                )}
-                            </div>
+                        <div className="carousel-slide">
+                            {event.coverImage ? (
+                                <img
+                                    src={event.coverImage}
+                                    alt={event.title}
+                                    className="carousel-image"
+                                />
+                            ) : (
+                                <div className="carousel-placeholder">{event.title[0]}</div>
+                            )}
 
                             <div className="carousel-overlay">
                                 <h3 className="carousel-title">{event.title}</h3>
