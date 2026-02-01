@@ -17,6 +17,30 @@ export default function FeaturedCarousel({ events }: { events: Event[] }) {
     const [progress, setProgress] = useState(0);
     const DURATION = 5000; // 5 seconds
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!containerRef.current) return;
+
+        const rect = containerRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // Calculate percentage from center (-1 to 1)
+        const xPct = (x / rect.width - 0.5) * 2;
+        const yPct = (y / rect.height - 0.5) * 2;
+
+        // Max rotation: 1.0 degree (Micro-interaction)
+        const rotateX = -yPct * 1.0;
+        const rotateY = xPct * 1.0;
+
+        containerRef.current.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.01, 1.01, 1.01)`;
+    };
+
+    const handleMouseLeave = () => {
+        if (!containerRef.current) return;
+        containerRef.current.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+    };
 
     useEffect(() => {
         const today = events.filter(isEventToday);
@@ -76,7 +100,13 @@ export default function FeaturedCarousel({ events }: { events: Event[] }) {
                 What&apos;s on today
             </h2>
 
-            <div className="carousel-container">
+            <div
+                className="carousel-container"
+                ref={containerRef}
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+                style={{ transition: 'transform 0.1s ease-out', willChange: 'transform' }}
+            >
                 {/* Slides Layer */}
                 {filteredEvents.map((event, index) => (
                     <a
