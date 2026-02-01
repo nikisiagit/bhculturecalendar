@@ -14,6 +14,7 @@ export default async function AboutPage() {
 
             {/* Main Content */}
             <main className="main about-page">
+                <h1 className="visually-hidden">About BH Culture Calendar</h1>
                 {/* Rotating Graphic */}
                 <div className="rotating-graphic-container">
                     <Image

@@ -287,6 +287,45 @@ export default function EventsClient({ events, allCategories }: EventsClientProp
 
     return (
         <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "ItemList",
+                        "itemListElement": events.map((event, index) => ({
+                            "@type": "ListItem",
+                            "position": index + 1,
+                            "item": {
+                                "@type": "Event",
+                                "name": event.title,
+                                "startDate": event.date,
+                                "endDate": event.endDate,
+                                "eventStatus": "https://schema.org/EventScheduled",
+                                "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+                                "location": {
+                                    "@type": "Place",
+                                    "name": event.venue.join(', ') || "TBC",
+                                    "address": {
+                                        "@type": "PostalAddress",
+                                        "addressRegion": "BH Postcode Area",
+                                        "addressCountry": "UK"
+                                    }
+                                },
+                                "image": [event.coverImage || "https://bhculturecalendar.co.uk/logo.png"],
+                                "description": `Category: ${event.category.join(', ')}.`,
+                                "offers": {
+                                    "@type": "Offer",
+                                    "url": event.link,
+                                    "price": event.isFree ? "0" : undefined,
+                                    "priceCurrency": "GBP",
+                                    "availability": "https://schema.org/InStock"
+                                }
+                            }
+                        }))
+                    })
+                }}
+            />
             <FeaturedCarousel events={events} />
             <FilterBar
                 categories={allCategories}
