@@ -17,6 +17,26 @@ export default function FeaturedCarousel({ events }: { events: Event[] }) {
     const [progress, setProgress] = useState(0);
     const DURATION = 5000; // 5 seconds
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
+    const [offsetY, setOffsetY] = useState(0);
+
+    // Parallax Effect
+    useEffect(() => {
+        let ticking = false;
+        const handleScroll = () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    setOffsetY(window.scrollY * 0.4);
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        };
+        window.addEventListener("scroll", handleScroll);
+        // Initial calc
+        handleScroll();
+
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
 
     useEffect(() => {
         const today = events.filter(isEventToday);
@@ -91,16 +111,29 @@ export default function FeaturedCarousel({ events }: { events: Event[] }) {
                             zIndex: index === currentIndex ? 1 : 0
                         }}
                     >
-                        <div className="carousel-slide">
-                            {event.coverImage ? (
-                                <img
-                                    src={event.coverImage}
-                                    alt={event.title}
-                                    className="carousel-image"
-                                />
-                            ) : (
-                                <div className="carousel-placeholder">{event.title[0]}</div>
-                            )}
+                        <div className="carousel-slide" style={{ overflow: 'hidden' }}>
+                            <div
+                                className="parallax-wrapper"
+                                style={{
+                                    height: '120%',
+                                    width: '100%',
+                                    position: 'absolute',
+                                    top: '-10%',
+                                    left: 0,
+                                    transform: `translate3d(0, ${offsetY}px, 0)`,
+                                    willChange: 'transform'
+                                }}
+                            >
+                                {event.coverImage ? (
+                                    <img
+                                        src={event.coverImage}
+                                        alt={event.title}
+                                        className="carousel-image"
+                                    />
+                                ) : (
+                                    <div className="carousel-placeholder">{event.title[0]}</div>
+                                )}
+                            </div>
 
                             <div className="carousel-overlay">
                                 <h3 className="carousel-title">{event.title}</h3>
