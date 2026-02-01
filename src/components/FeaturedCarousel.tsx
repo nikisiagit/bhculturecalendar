@@ -30,9 +30,9 @@ export default function FeaturedCarousel({ events }: { events: Event[] }) {
         const xPct = (x / rect.width - 0.5) * 2;
         const yPct = (y / rect.height - 0.5) * 2;
 
-        // Max rotation: 5 degrees
-        const rotateX = -yPct * 5;
-        const rotateY = xPct * 5;
+        // Max rotation: 2.5 degrees (Subtle)
+        const rotateX = -yPct * 2.5;
+        const rotateY = xPct * 2.5;
 
         containerRef.current.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
     };
