@@ -23,6 +23,9 @@ export const metadata: Metadata = {
     template: "%s | BH Culture Calendar"
   },
   description: "The ultimate guide to culture in the BH postcode area. Find art exhibitions, comedy, dance, festivals, film, spoken word, and theatre events in Bournemouth, Christchurch, and Poole.",
+  alternates: {
+    canonical: './',
+  },
   keywords: ["bournemouth events", "poole culture", "christchurch whats on", "theatre bh", "art exhibitions bournemouth", "comedy poole", "festivals dorset"],
   openGraph: {
     title: "BH Culture Calendar",
