@@ -54,16 +54,31 @@ export default function Header({ events }: HeaderProps) {
                 </div>
 
                 <div className="header-center">
-                    <Link href="/" className="logo-link" onClick={() => setIsMenuOpen(false)}>
-                        <Image
-                            src="/logo.png"
-                            alt="Culture Calendar"
-                            width={160}
-                            height={160}
-                            className="logo-image brand-logo"
-                            priority
-                        />
-                    </Link>
+                    {pathname === '/' ? (
+                        <h1 style={{ margin: 0, lineHeight: 0, display: 'inline-block' }}>
+                            <Link href="/" className="logo-link" onClick={() => setIsMenuOpen(false)}>
+                                <Image
+                                    src="/logo.png"
+                                    alt="BH Culture Calendar"
+                                    width={160}
+                                    height={160}
+                                    className="logo-image brand-logo"
+                                    priority
+                                />
+                            </Link>
+                        </h1>
+                    ) : (
+                        <Link href="/" className="logo-link" onClick={() => setIsMenuOpen(false)}>
+                            <Image
+                                src="/logo.png"
+                                alt="BH Culture Calendar"
+                                width={160}
+                                height={160}
+                                className="logo-image brand-logo"
+                                priority
+                            />
+                        </Link>
+                    )}
                 </div>
 
                 <div className="header-right">
