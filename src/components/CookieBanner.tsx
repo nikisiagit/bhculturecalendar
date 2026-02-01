@@ -13,7 +13,7 @@ export default function CookieBanner() {
         // This ensures the tag is detected but respects privacy
         if (typeof window !== 'undefined') {
             window.dataLayer = window.dataLayer || [];
-            function gtag() { window.dataLayer.push(arguments); }
+            function gtag(...args: any[]) { window.dataLayer.push(arguments); }
 
             // Default to denied
             gtag('consent', 'default', {
