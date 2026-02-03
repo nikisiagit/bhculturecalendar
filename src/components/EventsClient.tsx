@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Event } from "@/lib/notion";
 import FilterBar from "./FilterBar";
 import CalendarView from "./CalendarView";
@@ -207,13 +208,30 @@ function EventCard({ event }: { event: Event }) {
     );
 }
 
-export default function EventsClient({ events, allCategories }: EventsClientProps) {
-    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+function EventsClientContent({ events, allCategories }: EventsClientProps) {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
+    // Read state from URL or fallback to null/false
+    const selectedCategory = searchParams.get("category");
+    const showToday = searchParams.get("today") === "true";
+    const showTomorrow = searchParams.get("tomorrow") === "true";
+    const showWeekend = searchParams.get("weekend") === "true";
+    const showFreeOnly = searchParams.get("free") === "true";
+
+    // View mode can stay local state as it is preference, not content filtering
     const [viewMode, setViewMode] = useState<"grid" | "calendar">("grid");
-    const [showToday, setShowToday] = useState(false);
-    const [showTomorrow, setShowTomorrow] = useState(false);
-    const [showWeekend, setShowWeekend] = useState(false);
-    const [showFreeOnly, setShowFreeOnly] = useState(false);
+
+    // Helper to update URL
+    const updateFilter = (key: string, value: string | null) => {
+        const params = new URLSearchParams(searchParams.toString());
+        if (value === null || value === "false") {
+            params.delete(key);
+        } else {
+            params.set(key, value);
+        }
+        router.push(`?${params.toString()}`, { scroll: false });
+    };
 
     // Filter events based on selected category and date
     const filteredEvents = useMemo(() => {
@@ -330,17 +348,17 @@ export default function EventsClient({ events, allCategories }: EventsClientProp
             <FilterBar
                 categories={allCategories}
                 selectedCategory={selectedCategory}
-                onCategoryChange={setSelectedCategory}
+                onCategoryChange={(cat) => updateFilter("category", cat)}
                 viewMode={viewMode}
                 onViewModeChange={setViewMode}
                 showToday={showToday}
-                onShowTodayChange={setShowToday}
+                onShowTodayChange={(val) => updateFilter("today", String(val))}
                 showTomorrow={showTomorrow}
-                onShowTomorrowChange={setShowTomorrow}
+                onShowTomorrowChange={(val) => updateFilter("tomorrow", String(val))}
                 showWeekend={showWeekend}
-                onShowWeekendChange={setShowWeekend}
+                onShowWeekendChange={(val) => updateFilter("weekend", String(val))}
                 showFreeOnly={showFreeOnly}
-                onShowFreeOnlyChange={setShowFreeOnly}
+                onShowFreeOnlyChange={(val) => updateFilter("free", String(val))}
             />
 
             {viewMode === "calendar" ? (
@@ -366,5 +384,13 @@ export default function EventsClient({ events, allCategories }: EventsClientProp
                 </>
             )}
         </>
+    );
+}
+
+export default function EventsClient(props: EventsClientProps) {
+    return (
+        <Suspense fallback={<div className="loading-spinner">Loading events...</div>}>
+            <EventsClientContent {...props} />
+        </Suspense>
     );
 }
