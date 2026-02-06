@@ -15,10 +15,13 @@ export default function ScrollToTop() {
             // Avoid division by zero
             if (docHeight === 0) return;
 
-            // Percentage of content scrolled (based on bottom of viewport)
-            const scrollPercentage = (scrollTop + winHeight) / docHeight;
+            // Percentage of content scrolled (0 to 1)
+            const scrollableHeight = docHeight - winHeight;
+            if (scrollableHeight <= 0) return;
 
-            if (scrollPercentage > 0.2) {
+            const scrollPercentage = scrollTop / scrollableHeight;
+
+            if (scrollPercentage > 0.05) {
                 setIsVisible(true);
             } else {
                 setIsVisible(false);
