@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 interface FilterBarProps {
     categories: string[];
@@ -37,19 +37,44 @@ export default function FilterBar({
     searchQuery,
     onSearchChange,
 }: FilterBarProps) {
+    const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    const toggleSearch = () => {
+        setIsSearchExpanded(true);
+        setTimeout(() => inputRef.current?.focus(), 50);
+    };
+
     return (
         <div className="filter-bar">
             {/* Search Section */}
-            <div className="filter-section">
-                <span className="filter-label">Search:</span>
-                <input
-                    type="text"
-                    className="filter-input"
-                    placeholder="Search by event name"
-                    value={searchQuery}
-                    onChange={(e) => onSearchChange(e.target.value)}
-                    aria-label="Search events by title"
-                />
+            <div className={`filter-section search-section ${isSearchExpanded || searchQuery ? 'expanded' : ''}`}>
+                <span className="filter-label search-label">Search:</span>
+
+                <button
+                    className="search-toggle-btn"
+                    onClick={toggleSearch}
+                    aria-label="Open search"
+                    type="button"
+                >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+
+                <div className="search-input-wrapper">
+                    <input
+                        ref={inputRef}
+                        type="text"
+                        className="filter-input"
+                        placeholder="Search by event name"
+                        value={searchQuery}
+                        onChange={(e) => onSearchChange(e.target.value)}
+                        onBlur={() => { if (!searchQuery) setIsSearchExpanded(false); }}
+                        aria-label="Search events by title"
+                    />
+                </div>
             </div>
 
             <div className="filter-section">
