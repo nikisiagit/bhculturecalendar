@@ -18,7 +18,7 @@ export default function ScrollToTop() {
             // Percentage of content scrolled (based on bottom of viewport)
             const scrollPercentage = (scrollTop + winHeight) / docHeight;
 
-            if (scrollPercentage > 0.5) {
+            if (scrollPercentage > 0.2) {
                 setIsVisible(true);
             } else {
                 setIsVisible(false);
