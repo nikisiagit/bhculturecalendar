@@ -45,7 +45,7 @@ export default function FilterBar({
                 <input
                     type="text"
                     className="filter-input"
-                    placeholder="Event title..."
+                    placeholder="Search by event name"
                     value={searchQuery}
                     onChange={(e) => onSearchChange(e.target.value)}
                     aria-label="Search events by title"

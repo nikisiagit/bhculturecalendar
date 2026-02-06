@@ -21,7 +21,7 @@ export default function ScrollToTop() {
 
             const scrollPercentage = scrollTop / scrollableHeight;
 
-            if (scrollPercentage > 0.05) {
+            if (scrollPercentage > 0.02) {
                 setIsVisible(true);
             } else {
                 setIsVisible(false);
