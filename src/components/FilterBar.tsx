@@ -16,6 +16,8 @@ interface FilterBarProps {
     onShowWeekendChange: (value: boolean) => void;
     showFreeOnly: boolean;
     onShowFreeOnlyChange: (value: boolean) => void;
+    searchQuery: string;
+    onSearchChange: (value: string) => void;
 }
 
 export default function FilterBar({
@@ -32,9 +34,24 @@ export default function FilterBar({
     onShowWeekendChange,
     showFreeOnly,
     onShowFreeOnlyChange,
+    searchQuery,
+    onSearchChange,
 }: FilterBarProps) {
     return (
         <div className="filter-bar">
+            {/* Search Section */}
+            <div className="filter-section">
+                <span className="filter-label">Search:</span>
+                <input
+                    type="text"
+                    className="filter-input"
+                    placeholder="Event title..."
+                    value={searchQuery}
+                    onChange={(e) => onSearchChange(e.target.value)}
+                    aria-label="Search events by title"
+                />
+            </div>
+
             <div className="filter-section">
                 <span className="filter-label">Filter by:</span>
                 <div className="filter-buttons">

@@ -218,6 +218,7 @@ function EventsClientContent({ events, allCategories }: EventsClientProps) {
     const showTomorrow = searchParams.get("tomorrow") === "true";
     const showWeekend = searchParams.get("weekend") === "true";
     const showFreeOnly = searchParams.get("free") === "true";
+    const searchQuery = searchParams.get("search") || "";
 
     // View mode can stay local state as it is preference, not content filtering
     const [viewMode, setViewMode] = useState<"grid" | "calendar">("grid");
@@ -239,6 +240,13 @@ function EventsClientContent({ events, allCategories }: EventsClientProps) {
 
         if (selectedCategory) {
             filtered = filtered.filter((event) => event.category.includes(selectedCategory));
+        }
+
+        if (searchQuery) {
+            const lowerQ = searchQuery.toLowerCase();
+            filtered = filtered.filter((event) =>
+                event.title.toLowerCase().includes(lowerQ)
+            );
         }
 
         if (showFreeOnly) {
@@ -301,7 +309,7 @@ function EventsClientContent({ events, allCategories }: EventsClientProps) {
         }
 
         return filtered;
-    }, [events, selectedCategory, showToday, showTomorrow, showWeekend, showFreeOnly]);
+    }, [events, selectedCategory, showToday, showTomorrow, showWeekend, showFreeOnly, searchQuery]);
 
     return (
         <>
@@ -359,6 +367,8 @@ function EventsClientContent({ events, allCategories }: EventsClientProps) {
                 onShowWeekendChange={(val) => updateFilter("weekend", String(val))}
                 showFreeOnly={showFreeOnly}
                 onShowFreeOnlyChange={(val) => updateFilter("free", String(val))}
+                searchQuery={searchQuery}
+                onSearchChange={(val) => updateFilter("search", val)}
             />
 
             {viewMode === "calendar" ? (
