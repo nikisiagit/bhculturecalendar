@@ -12,7 +12,7 @@ export default function Footer() {
                         Suggest an idea
                     </a>
                     <span className="separator">|</span>
-                    <a href="mailto:bhculturecalendar@gmail.co.uk">Contact Us</a>
+                    <a href="mailto:bhculturecalendar@gmail.com">Contact Us</a>
                 </div>
             </div>
         </footer>
