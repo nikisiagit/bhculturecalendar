@@ -5,7 +5,7 @@ export default function Footer() {
                 <p>© 2026 BH Culture Calendar. Built by community, for community.</p>
                 <div className="footer-links">
                     <a
-                        href="https://sprout-4sz.pages.dev/space/bhculturecalendar-co-uk"
+                        href="https://sprout-4sz.pages.dev/space/bhculturecalendar"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
