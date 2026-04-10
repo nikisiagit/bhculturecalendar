@@ -108,8 +108,8 @@ export default function Header({ events }: HeaderProps) {
             <div className={`nav-overlay ${isMenuOpen ? 'open' : ''}`}>
                 <nav className="overlay-nav">
                     <Link
-                        href="/"
-                        className={`overlay-nav-link ${pathname === "/" ? "active" : ""}`}
+                        href="/whats-on"
+                        className={`overlay-nav-link ${pathname === "/" || pathname === "/whats-on" ? "active" : ""}`}
                         onClick={() => setIsMenuOpen(false)}
                     >
                         WHAT&apos;S ON
