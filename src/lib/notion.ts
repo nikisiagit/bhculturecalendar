@@ -52,7 +52,7 @@ export const getEvents = async (): Promise<Event[]> => {
             const props = page.properties;
 
             // Event Name (title)
-            const title = props["Event Name"]?.title?.[0]?.plain_text || "Untitled Event";
+            const title = props["Event Name"]?.title?.map((t: any) => t.plain_text).join("") || "Untitled Event";
 
             // Date(s) and time
             const dateObj = props["Date(s) and time"]?.date;
@@ -181,8 +181,8 @@ export const getVenues = async (): Promise<Venue[]> => {
             const props = page.properties;
 
             // Venue name (title)
-            const name = props["Venue/Event/Site "]?.title?.[0]?.plain_text ||
-                props["Venue/Event/Site"]?.title?.[0]?.plain_text ||
+            const name = props["Venue/Event/Site "]?.title?.map((t: any) => t.plain_text).join("") ||
+                props["Venue/Event/Site"]?.title?.map((t: any) => t.plain_text).join("") ||
                 "Untitled Venue";
 
             // Categories (multi_select)
