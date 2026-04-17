@@ -128,6 +128,20 @@ export default function Header({ events }: HeaderProps) {
                     >
                         ABOUT
                     </Link>
+                    <Link
+                        href="#footer"
+                        className="overlay-nav-link"
+                        onClick={(e) => {
+                            setIsMenuOpen(false);
+                            const footer = document.getElementById("footer");
+                            if (footer) {
+                                e.preventDefault();
+                                footer.scrollIntoView({ behavior: "smooth" });
+                            }
+                        }}
+                    >
+                        CONTACT US
+                    </Link>
                 </nav>
             </div>
         </header>

@@ -1,6 +1,6 @@
 export default function Footer() {
     return (
-        <footer className="footer">
+        <footer className="footer" id="footer">
             <div className="footer-content">
                 <p>© 2026 BH Culture Calendar. Built by community, for community.</p>
                 <div className="footer-links">
