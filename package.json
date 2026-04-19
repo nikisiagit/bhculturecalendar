@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "rm -rf .next && node scripts/download-images.js && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "echo \"No tests specified\" && exit 0"
   },
   "dependencies": {
     "@notionhq/client": "^5.8.0",

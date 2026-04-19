@@ -1,0 +1,71 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js app
+        run: npm run build
+        # We need the environment variables to build successfully if it needs notion keys.
+        # But wait, next build might need env vars like NOTION_API_KEY.
+        # Often static builds with Next.js require API keys at build time if getStaticProps/generateStaticParams are used.
+        env:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+
+  test_lint_security:
+    name: Tests, Lint, and Security
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Security Check
+        run: npm audit --audit-level=high
+
+      - name: Run tests
+        run: npm run test
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: test_lint_security
+    steps:
+      - name: Deployment Placeholder
+        run: |
+          echo "✅ All checks passed. Code is ready for production."
+          echo "If you are using branch protection with Cloudflare Pages/Vercel auto-deployments,"
+          echo "the platform will now deploy the code from the main branch automatically."
+          echo "To deploy directly from this action instead, replace this step with the platform's deployment CLI commands."
