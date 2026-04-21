@@ -78,6 +78,12 @@ async function main() {
                 data_source_id: dbId,
                 start_cursor: cursor,
                 page_size: 100,
+                sorts: [
+                    {
+                        property: "Date(s) and time",
+                        direction: "descending"
+                    }
+                ]
             });
             results.push(...response.results);
             hasMore = response.has_more;

@@ -39,6 +39,12 @@ export const getEvents = async (): Promise<Event[]> => {
                 data_source_id: dataSourceId,
                 page_size: 100,
                 start_cursor: startCursor,
+                sorts: [
+                    {
+                        property: "Date(s) and time",
+                        direction: "descending"
+                    }
+                ]
             });
 
             allResults = allResults.concat(response.results);
