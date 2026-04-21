@@ -58,6 +58,10 @@ export const getEvents = async (): Promise<Event[]> => {
             const dateObj = props["Date(s) and time"]?.date;
             const date = dateObj?.start || "";
             const endDate = dateObj?.end || null;
+            
+            if (title.includes("Trash to Treasure") || title.includes("Mother") || title.includes("Hawk")) {
+                console.log(`DEBUG MAP: "${title}" | dateObj:`, JSON.stringify(dateObj), `| date: '${date}' | endDate: '${endDate}'`);
+            }
 
             // Venue (multi_select)
             const venue = props["Venue"]?.multi_select?.map((v: any) => v.name) || [];
@@ -99,7 +103,12 @@ export const getEvents = async (): Promise<Event[]> => {
                 coverImage,
             };
         }).filter(event => {
-            if (!event.date) return false;
+            if (!event.date) {
+                if (event.title.includes("Trash to Treasure") || event.title.includes("Mother") || event.title.includes("Hawk") || event.title.includes("Art")) {
+                    console.log(`DEBUG FILTER (NO DATE): "${event.title}" was dropped because event.date is empty!`);
+                }
+                return false;
+            }
 
             const today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -107,8 +116,13 @@ export const getEvents = async (): Promise<Event[]> => {
             const eventDate = new Date(event.date);
             // If there's an end date, use that for the check, otherwise use the start date
             const relevantDate = event.endDate ? new Date(event.endDate) : eventDate;
+            const isFuture = relevantDate >= today;
+            
+            if (event.title.includes("Trash to Treasure") || event.title.includes("Mother") || event.title.includes("Hawk") || event.title.includes("Art")) {
+                console.log(`DEBUG FILTER (DATE CHECK): "${event.title}" | relevantDate: ${relevantDate.toISOString()} | today: ${today.toISOString()} | isFuture: ${isFuture}`);
+            }
 
-            return relevantDate >= today;
+            return isFuture;
         }).sort((a, b) => {
             // Helper to determine if event is multi-day (range)
             // User requested to prioritize specific dates over long ranges (exhibitions)
