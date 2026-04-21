@@ -276,7 +276,7 @@ function EventsClientContent({ events, allCategories }: EventsClientProps) {
             else offsetToFri = 5 - currentDay;
 
             weekendStart.setDate(today.getDate() + offsetToFri);
-            weekendStart.setUTCHours(17, 0, 0, 0); // Start Friday 17:00 UTC
+            weekendStart.setHours(0, 0, 0, 0); // Start Friday midnight local time
 
             weekendEnd = new Date(weekendStart);
             weekendEnd.setDate(weekendStart.getDate() + 2); // Friday + 2 days = Sunday
