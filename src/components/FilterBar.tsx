@@ -2,6 +2,7 @@
 
 interface FilterBarProps {
     categories: string[];
+    categoryCounts: Record<string, number>;
     selectedCategory: string | null;
     onCategoryChange: (category: string | null) => void;
     selectedLocation: string | null;
@@ -22,6 +23,7 @@ interface FilterBarProps {
 
 export default function FilterBar({
     categories,
+    categoryCounts,
     selectedCategory,
     onCategoryChange,
     selectedLocation,
@@ -71,7 +73,7 @@ export default function FilterBar({
                             className={`filter-btn ${selectedCategory === cat ? "active" : ""}`}
                             onClick={() => onCategoryChange(cat)}
                         >
-                            {cat}
+                            {cat} <span style={{ opacity: 0.6, fontSize: "0.85em", marginLeft: "4px" }}>({categoryCounts[cat] || 0})</span>
                         </button>
                     ))}
                 </div>
