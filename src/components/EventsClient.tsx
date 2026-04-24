@@ -6,13 +6,14 @@ import { Event } from "@/lib/notion";
 import FilterBar from "./FilterBar";
 import CalendarView from "./CalendarView";
 import FeaturedCarousel from "./FeaturedCarousel";
+import MapView from "./MapView";
 
 interface EventsClientProps {
     events: Event[];
     allCategories: string[];
 }
 
-function getLocalityFromPostcode(postcodes: string[]): string {
+export function getLocalityFromPostcode(postcodes: string[]): string {
     if (!postcodes || postcodes.length === 0) return "Dorset";
     
     // Check the first postcode in the array
@@ -243,7 +244,7 @@ function EventsClientContent({ events, allCategories }: EventsClientProps) {
     const searchQuery = searchParams.get("search") || "";
 
     // View mode can stay local state as it is preference, not content filtering
-    const [viewMode, setViewMode] = useState<"grid" | "calendar">("grid");
+    const [viewMode, setViewMode] = useState<"grid" | "calendar" | "map">("grid");
 
     // Helper to update URL
     const updateFilter = (key: string, value: string | null) => {
@@ -394,7 +395,9 @@ function EventsClientContent({ events, allCategories }: EventsClientProps) {
                 onSearchChange={(val) => updateFilter("search", val)}
             />
 
-            {viewMode === "calendar" ? (
+            {viewMode === "map" ? (
+                <MapView events={filteredEvents} />
+            ) : viewMode === "calendar" ? (
                 <CalendarView events={filteredEvents} />
             ) : (
                 <>

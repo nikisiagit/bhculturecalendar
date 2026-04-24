@@ -1933,3 +1933,68 @@ body {
     width: 100%;
   }
 }
+
+/* Map View Styles */
+.map-view-container {
+  padding: var(--spacing-md) 0;
+}
+
+.map-view-title {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  margin-bottom: var(--spacing-xs);
+  color: var(--black);
+}
+
+.map-view-subtitle {
+  color: var(--medium-gray);
+  margin-bottom: var(--spacing-xl);
+  font-size: 1.1rem;
+}
+
+.map-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.map-region-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-xl);
+  border: 2px solid var(--black);
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-height: 120px;
+}
+
+.map-region-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 6px 6px 0px var(--black);
+  text-decoration: none;
+}
+
+.map-region-name {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  margin-bottom: var(--spacing-xs);
+}
+
+.map-region-count {
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: 1.1rem;
+}
+
+.map-region-arrow {
+  opacity: 0.5;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.map-region-card:hover .map-region-arrow {
+  transform: translateX(4px);
+  opacity: 1;
+}
