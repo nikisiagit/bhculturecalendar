@@ -105,12 +105,9 @@ export default async function LocationWhatsOnPage({
 
       {/* Main Content */}
       <main className="main">
-        <section className="location-intro" style={{ padding: "3rem 1rem 1rem", textAlign: "center", maxWidth: "800px", margin: "0 auto" }}>
-          <h1 style={{ fontSize: "var(--font-size-xxl)", marginBottom: "1rem", fontFamily: "var(--font-display)" }}>What's On in {town}</h1>
-          <p style={{ fontSize: "var(--font-size-md)", color: "var(--color-text-light)", lineHeight: "1.6" }}>
-            Looking for what's on in {town} today? Browse our curated calendar of the best theatre shows, art exhibitions, comedy gigs, and live events happening right now.
-          </p>
-        </section>
+        <h1 style={{ position: "absolute", width: "1px", height: "1px", padding: "0", margin: "-1px", overflow: "hidden", clip: "rect(0, 0, 0, 0)", whiteSpace: "nowrap", border: "0" }}>
+          What's On in {town}
+        </h1>
 
         <EventsClient events={events} allCategories={allCategories} />
       </main>
