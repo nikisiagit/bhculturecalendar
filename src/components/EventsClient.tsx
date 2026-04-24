@@ -249,6 +249,19 @@ function EventsClientContent({ events, allCategories }: EventsClientProps) {
         router.push(`?${params.toString()}`, { scroll: false });
     };
 
+    const categoryCounts = useMemo(() => {
+        const counts: Record<string, number> = {};
+        allCategories.forEach(cat => counts[cat] = 0);
+        events.forEach(event => {
+            event.category.forEach(cat => {
+                if (counts[cat] !== undefined) {
+                    counts[cat]++;
+                }
+            });
+        });
+        return counts;
+    }, [events, allCategories]);
+
     // Filter events based on selected category and date
     const filteredEvents = useMemo(() => {
         let filtered = events;
@@ -371,6 +384,7 @@ function EventsClientContent({ events, allCategories }: EventsClientProps) {
             <FeaturedCarousel events={events} />
             <FilterBar
                 categories={allCategories}
+                categoryCounts={categoryCounts}
                 selectedCategory={selectedCategory}
                 onCategoryChange={(cat) => updateFilter("category", cat)}
                 selectedLocation={selectedLocation}
