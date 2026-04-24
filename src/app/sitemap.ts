@@ -5,7 +5,7 @@ export const dynamic = "force-static";
 const VALID_LOCATIONS = [
   "bournemouth", "christchurch", "poole",
   "swanage", "wareham", "wimborne",
-  "ferndown", "ringwood", "new-milton", "verwood"
+  "ferndown", "ringwood", "new-milton", "verwood", "dorset"
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
