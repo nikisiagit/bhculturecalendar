@@ -2,8 +2,21 @@ import { MetadataRoute } from 'next';
 
 export const dynamic = "force-static";
 
+const VALID_LOCATIONS = [
+  "bournemouth", "christchurch", "poole",
+  "swanage", "wareham", "wimborne",
+  "ferndown", "ringwood", "new-milton", "verwood"
+];
+
 export default function sitemap(): MetadataRoute.Sitemap {
     const baseUrl = 'https://bhculturecalendar.co.uk';
+
+    const locationRoutes = VALID_LOCATIONS.map((location) => ({
+        url: `${baseUrl}/whats-on/${location}`,
+        lastModified: new Date(),
+        changeFrequency: 'daily' as const,
+        priority: 0.8,
+    }));
 
     return [
         {
@@ -30,5 +43,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
             changeFrequency: 'daily',
             priority: 0.9,
         },
+        ...locationRoutes,
     ];
 }
