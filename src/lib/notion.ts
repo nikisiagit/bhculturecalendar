@@ -20,8 +20,15 @@ export interface Event {
     coverImage: string | null;
 }
 
+let cachedEvents: Event[] | null = null;
+let eventsFetchPromise: Promise<Event[]> | null = null;
+
 export const getEvents = async (): Promise<Event[]> => {
-    const dataSourceId = process.env.NOTION_DATABASE_ID;
+    if (cachedEvents) return cachedEvents;
+    if (eventsFetchPromise) return eventsFetchPromise;
+
+    eventsFetchPromise = (async () => {
+        const dataSourceId = process.env.NOTION_DATABASE_ID;
 
     if (!dataSourceId) {
         console.warn("NOTION_DATABASE_ID is not defined.");
@@ -54,7 +61,7 @@ export const getEvents = async (): Promise<Event[]> => {
 
         console.log(`Fetched ${allResults.length} events from Notion`);
 
-        return allResults.map((page: any) => {
+        const finalEvents = allResults.map((page: any) => {
             const props = page.properties;
 
             // Event Name (title)
@@ -64,10 +71,6 @@ export const getEvents = async (): Promise<Event[]> => {
             const dateObj = props["Date(s) and time"]?.date;
             const date = dateObj?.start || "";
             const endDate = dateObj?.end || null;
-            
-            if (title.includes("Trash to Treasure") || title.includes("Mother") || title.includes("Hawk")) {
-                console.log(`DEBUG MAP: "${title}" | dateObj:`, JSON.stringify(dateObj), `| date: '${date}' | endDate: '${endDate}'`);
-            }
 
             // Venue (multi_select)
             const venue = props["Venue"]?.multi_select?.map((v: any) => v.name) || [];
@@ -110,9 +113,6 @@ export const getEvents = async (): Promise<Event[]> => {
             };
         }).filter(event => {
             if (!event.date) {
-                if (event.title.includes("Trash to Treasure") || event.title.includes("Mother") || event.title.includes("Hawk") || event.title.includes("Art")) {
-                    console.log(`DEBUG FILTER (NO DATE): "${event.title}" was dropped because event.date is empty!`);
-                }
                 return false;
             }
 
@@ -123,10 +123,6 @@ export const getEvents = async (): Promise<Event[]> => {
             // If there's an end date, use that for the check, otherwise use the start date
             const relevantDate = event.endDate ? new Date(event.endDate) : eventDate;
             const isFuture = relevantDate >= today;
-            
-            if (event.title.includes("Trash to Treasure") || event.title.includes("Mother") || event.title.includes("Hawk") || event.title.includes("Art")) {
-                console.log(`DEBUG FILTER (DATE CHECK): "${event.title}" | relevantDate: ${relevantDate.toISOString()} | today: ${today.toISOString()} | isFuture: ${isFuture}`);
-            }
 
             return isFuture;
         }).sort((a, b) => {
@@ -159,10 +155,17 @@ export const getEvents = async (): Promise<Event[]> => {
             // 3. Secondary sort by title
             return a.title.localeCompare(b.title);
         });
+
+        cachedEvents = finalEvents;
+        return finalEvents;
     } catch (error) {
         console.error("Error fetching Notion data:", error);
+        eventsFetchPromise = null;
         throw error; // Fail the build if data fetching errors
     }
+    })();
+
+    return eventsFetchPromise;
 };
 
 // Venues
@@ -176,7 +179,14 @@ export interface Venue {
 // Venues data source ID
 const VENUES_DATA_SOURCE_ID = "299f9c42-88ed-8197-8cf5-000b01220c73";
 
+let cachedVenues: Venue[] | null = null;
+let venuesFetchPromise: Promise<Venue[]> | null = null;
+
 export const getVenues = async (): Promise<Venue[]> => {
+    if (cachedVenues) return cachedVenues;
+    if (venuesFetchPromise) return venuesFetchPromise;
+
+    venuesFetchPromise = (async () => {
     try {
         let allResults: any[] = [];
         let hasMore = true;
@@ -197,7 +207,7 @@ export const getVenues = async (): Promise<Venue[]> => {
 
         console.log(`Fetched ${allResults.length} venues from Notion`);
 
-        return allResults.map((page: any) => {
+        const finalVenues = allResults.map((page: any) => {
             const props = page.properties;
 
             // Venue name (title)
@@ -218,8 +228,15 @@ export const getVenues = async (): Promise<Venue[]> => {
                 link,
             };
         }).sort((a, b) => a.name.localeCompare(b.name));
+        
+        cachedVenues = finalVenues;
+        return finalVenues;
     } catch (error) {
         console.error("Error fetching venues:", error);
+        venuesFetchPromise = null;
         return [];
     }
+    })();
+
+    return venuesFetchPromise;
 };
