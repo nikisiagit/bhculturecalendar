@@ -45,7 +45,7 @@ export default function FilterBar({
         <div className="filter-bar">
             {/* Search Section */}
             <div className="filter-section search-section">
-                <span className="filter-label search-label">Search:</span>
+                <span className="filter-label search-label">SEARCH:</span>
                 <div className="search-input-wrapper">
                     <input
                         type="text"
@@ -59,7 +59,7 @@ export default function FilterBar({
             </div>
 
             <div className="filter-section">
-                <span className="filter-label">Filter by:</span>
+                <span className="filter-label">WHAT:</span>
                 <div className="filter-buttons">
                     <button
                         className={`filter-btn ${selectedCategory === null ? "active" : ""}`}
@@ -80,7 +80,7 @@ export default function FilterBar({
             </div>
 
             <div className="filter-section">
-                <span className="filter-label">Location:</span>
+                <span className="filter-label">WHERE:</span>
                 <select 
                     className="filter-btn select-filter" 
                     value={selectedLocation || ""} 
@@ -103,7 +103,7 @@ export default function FilterBar({
             </div>
 
             <div className="filter-section">
-                <span className="filter-label">Filters:</span>
+                <span className="filter-label">WHEN:</span>
                 <div className="filter-buttons">
                     <label className={`filter-btn checkbox-btn ${showToday ? "active" : ""}`}>
                         <input
@@ -132,6 +132,12 @@ export default function FilterBar({
                         />
                         This Weekend
                     </label>
+                </div>
+            </div>
+
+            <div className="filter-section">
+                <span className="filter-label">COST:</span>
+                <div className="filter-buttons">
                     <label className={`filter-btn checkbox-btn ${showFreeOnly ? "active" : ""}`}>
                         <input
                             type="checkbox"
