@@ -1,5 +1,5 @@
 import { getEvents } from "@/lib/notion";
-import EventsClient from "@/components/EventsClient";
+import EventsClient, { getLocalityFromPostcode } from "@/components/EventsClient";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -9,7 +9,7 @@ import { notFound } from "next/navigation";
 const VALID_LOCATIONS = [
   "bournemouth", "christchurch", "poole",
   "swanage", "wareham", "wimborne",
-  "ferndown", "ringwood", "new-milton", "verwood"
+  "ferndown", "ringwood", "new-milton", "verwood", "dorset"
 ];
 
 function capitalize(s: string) {
@@ -79,31 +79,14 @@ export default async function LocationWhatsOnPage({
   
   // Filter events based on location
   const events = allEvents.filter(event => {
-    // Broad match for empty postcodes
-    if (!event.postcode || event.postcode.length === 0) {
-      // Check if venue matches
-      if (event.venue.some(v => v.toLowerCase().includes(lowerLocation))) return true;
-      // If we really have no data, we could include it, but let's be strict for location pages
-      // so the AI sees purely relevant things. We'll include it if venue matches or if it's completely generic.
-      return event.venue.length === 0;
-    }
+    const locality = getLocalityFromPostcode(event.postcode).toLowerCase();
+    const normalizedLocality = locality.replace(/\s+/g, '-');
 
-    const prefixMatch = event.postcode[0].match(/^BH(\d+)/i);
-    if (prefixMatch) {
-      const num = parseInt(prefixMatch[1], 10);
-      if (lowerLocation === "bournemouth" && num >= 1 && num <= 11) return true;
-      if (lowerLocation === "poole" && num >= 12 && num <= 18) return true;
-      if (lowerLocation === "swanage" && num === 19) return true;
-      if (lowerLocation === "wareham" && num === 20) return true;
-      if (lowerLocation === "wimborne" && num === 21) return true;
-      if (lowerLocation === "ferndown" && num === 22) return true;
-      if (lowerLocation === "christchurch" && num === 23) return true;
-      if (lowerLocation === "ringwood" && num === 24) return true;
-      if (lowerLocation === "new-milton" && num === 25) return true;
-      if (lowerLocation === "verwood" && num === 31) return true;
-    }
+    if (normalizedLocality === lowerLocation) return true;
 
-    const venueMatch = event.venue.some(v => v.toLowerCase().includes(lowerLocation));
+    // Check if venue matches (e.g. if venue has 'new milton' and lowerLocation is 'new-milton')
+    const searchString = lowerLocation.replace(/-/g, ' ');
+    const venueMatch = event.venue.some(v => v.toLowerCase().includes(searchString));
     if (venueMatch) return true;
 
     return false;

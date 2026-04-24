@@ -4,8 +4,10 @@ interface FilterBarProps {
     categories: string[];
     selectedCategory: string | null;
     onCategoryChange: (category: string | null) => void;
-    viewMode: "grid" | "calendar" | "map";
-    onViewModeChange: (mode: "grid" | "calendar" | "map") => void;
+    selectedLocation: string | null;
+    onLocationChange: (location: string | null) => void;
+    viewMode: "grid" | "calendar";
+    onViewModeChange: (mode: "grid" | "calendar") => void;
     showToday: boolean;
     onShowTodayChange: (value: boolean) => void;
     showTomorrow: boolean;
@@ -22,6 +24,8 @@ export default function FilterBar({
     categories,
     selectedCategory,
     onCategoryChange,
+    selectedLocation,
+    onLocationChange,
     viewMode,
     onViewModeChange,
     showToday,
@@ -71,6 +75,29 @@ export default function FilterBar({
                         </button>
                     ))}
                 </div>
+            </div>
+
+            <div className="filter-section">
+                <span className="filter-label">Location:</span>
+                <select 
+                    className="filter-btn select-filter" 
+                    value={selectedLocation || ""} 
+                    onChange={(e) => onLocationChange(e.target.value || null)}
+                    style={{ width: "100%", cursor: "pointer" }}
+                >
+                    <option value="">All Locations</option>
+                    <option value="bournemouth">Bournemouth</option>
+                    <option value="poole">Poole</option>
+                    <option value="christchurch">Christchurch</option>
+                    <option value="swanage">Swanage</option>
+                    <option value="wareham">Wareham</option>
+                    <option value="wimborne">Wimborne</option>
+                    <option value="ferndown">Ferndown</option>
+                    <option value="ringwood">Ringwood</option>
+                    <option value="new-milton">New Milton</option>
+                    <option value="verwood">Verwood</option>
+                    <option value="dorset">Dorset (Other)</option>
+                </select>
             </div>
 
             <div className="filter-section">
@@ -135,15 +162,6 @@ export default function FilterBar({
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM7 11h5v5H7v-5z" />
-                    </svg>
-                </button>
-                <button
-                    className={`view-btn ${viewMode === "map" ? "active" : ""}`}
-                    onClick={() => onViewModeChange("map")}
-                    aria-label="Map view"
-                >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/>
                     </svg>
                 </button>
             </div>

@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useMemo, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Event } from "@/lib/notion";
 import FilterBar from "./FilterBar";
 import CalendarView from "./CalendarView";
 import FeaturedCarousel from "./FeaturedCarousel";
-import MapView from "./MapView";
+
 
 interface EventsClientProps {
     events: Event[];
@@ -243,8 +243,21 @@ function EventsClientContent({ events, allCategories }: EventsClientProps) {
     const showFreeOnly = searchParams.get("free") === "true";
     const searchQuery = searchParams.get("search") || "";
 
+    const pathname = usePathname();
+
+    let selectedLocation = null;
+    if (pathname.startsWith('/whats-on/') && pathname !== '/whats-on/') {
+        selectedLocation = pathname.replace('/whats-on/', '');
+    }
+
     // View mode can stay local state as it is preference, not content filtering
-    const [viewMode, setViewMode] = useState<"grid" | "calendar" | "map">("grid");
+    const [viewMode, setViewMode] = useState<"grid" | "calendar">("grid");
+
+    const handleLocationChange = (location: string | null) => {
+        const params = new URLSearchParams(searchParams.toString());
+        const newPath = location ? `/whats-on/${location}` : '/whats-on';
+        router.push(`${newPath}?${params.toString()}`, { scroll: false });
+    };
 
     // Helper to update URL
     const updateFilter = (key: string, value: string | null) => {
@@ -381,6 +394,8 @@ function EventsClientContent({ events, allCategories }: EventsClientProps) {
                 categories={allCategories}
                 selectedCategory={selectedCategory}
                 onCategoryChange={(cat) => updateFilter("category", cat)}
+                selectedLocation={selectedLocation}
+                onLocationChange={handleLocationChange}
                 viewMode={viewMode}
                 onViewModeChange={setViewMode}
                 showToday={showToday}
@@ -395,9 +410,7 @@ function EventsClientContent({ events, allCategories }: EventsClientProps) {
                 onSearchChange={(val) => updateFilter("search", val)}
             />
 
-            {viewMode === "map" ? (
-                <MapView events={filteredEvents} />
-            ) : viewMode === "calendar" ? (
+            {viewMode === "calendar" ? (
                 <CalendarView events={filteredEvents} />
             ) : (
                 <>
