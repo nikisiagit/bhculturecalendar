@@ -1,5 +1,6 @@
 import { getEvents } from "@/lib/notion";
-import EventsClient, { getLocalityFromPostcode } from "@/components/EventsClient";
+import EventsClient from "@/components/EventsClient";
+import { getLocalityFromPostcode } from "@/lib/location";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
