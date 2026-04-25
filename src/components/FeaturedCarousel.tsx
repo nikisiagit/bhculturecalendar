@@ -14,6 +14,7 @@ function isEventToday(event: Event): boolean {
 export default function FeaturedCarousel({ events }: { events: Event[] }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
+    const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
     const [progress, setProgress] = useState(0);
     const DURATION = 5000; // 5 seconds
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -122,11 +123,12 @@ export default function FeaturedCarousel({ events }: { events: Event[] }) {
                         }}
                     >
                         <div className="carousel-slide">
-                            {event.coverImage ? (
+                            {event.coverImage && !failedImages.has(event.id) ? (
                                 <img
                                     src={event.coverImage}
                                     alt={event.title}
                                     className="carousel-image"
+                                    onError={() => setFailedImages(prev => new Set(prev).add(event.id))}
                                 />
                             ) : (
                                 <div className="carousel-placeholder">{event.title[0]}</div>

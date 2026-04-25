@@ -124,16 +124,18 @@ function generateOutlookUrl(event: Event): string {
 
 function EventCard({ event }: { event: Event }) {
     const [showCalendarOptions, setShowCalendarOptions] = useState(false);
+    const [imageError, setImageError] = useState(false);
 
     return (
         <article className={`event-card ${showCalendarOptions ? 'z-active' : ''}`}>
             <div className="event-image-wrapper">
-                {event.coverImage ? (
+                {event.coverImage && !imageError ? (
                     <img
                         src={event.coverImage}
                         alt={event.title}
                         className="event-image"
                         loading="lazy"
+                        onError={() => setImageError(true)}
                     />
                 ) : (
                     <div className="event-image-placeholder">🎭</div>
