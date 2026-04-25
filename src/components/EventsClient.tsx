@@ -240,12 +240,6 @@ function EventsClientContent({ events, allCategories }: EventsClientProps) {
         router.push(`${newPath}?${params.toString()}`, { scroll: false });
     };
 
-    const handleLocationChange = (location: string | null) => {
-        const params = new URLSearchParams(searchParams.toString());
-        const newPath = location ? `/whats-on/${location}` : '/whats-on';
-        router.push(`${newPath}?${params.toString()}`, { scroll: false });
-    };
-
     // Helper to update URL
     const updateFilter = (key: string, value: string | null) => {
         const params = new URLSearchParams(searchParams.toString());
