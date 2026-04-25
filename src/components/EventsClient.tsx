@@ -232,7 +232,13 @@ function EventsClientContent({ events, allCategories }: EventsClientProps) {
     }
 
     // View mode can stay local state as it is preference, not content filtering
-    const [viewMode, setViewMode] = useState<"grid" | "calendar">("grid");
+    const [viewMode, setViewMode] = useState<"grid" | "calendar">("calendar");
+
+    const handleLocationChange = (location: string | null) => {
+        const params = new URLSearchParams(searchParams.toString());
+        const newPath = location ? `/whats-on/${location}` : '/whats-on';
+        router.push(`${newPath}?${params.toString()}`, { scroll: false });
+    };
 
     const handleLocationChange = (location: string | null) => {
         const params = new URLSearchParams(searchParams.toString());
