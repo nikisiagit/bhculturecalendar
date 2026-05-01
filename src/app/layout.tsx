@@ -75,7 +75,7 @@ export default function RootLayout({
         `}
       </Script>
       <body className={`${archivo.variable} ${archivoBlack.variable}`}>
-        <noscript dangerouslySetInnerHTML={{ __html: \`<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-53JXHLF6" height="0" width="0" style="display:none;visibility:hidden"></iframe>\`}} />
+        <noscript dangerouslySetInnerHTML={{ __html: `<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-53JXHLF6" height="0" width="0" style="display:none;visibility:hidden"></iframe>`}} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
