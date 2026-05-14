@@ -13,6 +13,14 @@ export default function Footer() {
                     </a>
                     <span className="separator">|</span>
                     <a href="mailto:bhculturecalendar@gmail.com">Contact Us</a>
+                    <span className="separator">|</span>
+                    <a
+                        href="https://forms.gle/pZGHpZDQjVZVCNT38"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Join the team
+                    </a>
                 </div>
             </div>
         </footer>
