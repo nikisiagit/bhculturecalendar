@@ -82,7 +82,21 @@ export const getEvents = async (): Promise<Event[]> => {
             const postcode = props["Postcode area"]?.multi_select?.map((p: any) => p.name) || [];
 
             // Link
-            const link = props["Link"]?.url || "";
+            let link = props["Link"]?.url || "";
+            if (link) {
+                try {
+                    const urlObj = new URL(link);
+                    if (!urlObj.searchParams.has('utm_source')) {
+                        urlObj.searchParams.set('utm_source', 'bhculturecalendar');
+                    }
+                    if (!urlObj.searchParams.has('utm_medium')) {
+                        urlObj.searchParams.set('utm_medium', 'referral');
+                    }
+                    link = urlObj.toString();
+                } catch (e) {
+                    // Ignore invalid URLs
+                }
+            }
 
             // Free (checkbox)
             const isFree = props["Free"]?.checkbox || false;
@@ -219,7 +233,21 @@ export const getVenues = async (): Promise<Venue[]> => {
             const categories = props["Category/ies"]?.multi_select?.map((c: any) => c.name) || [];
 
             // Link
-            const link = props["Link"]?.url || "";
+            let link = props["Link"]?.url || "";
+            if (link) {
+                try {
+                    const urlObj = new URL(link);
+                    if (!urlObj.searchParams.has('utm_source')) {
+                        urlObj.searchParams.set('utm_source', 'bhculturecalendar');
+                    }
+                    if (!urlObj.searchParams.has('utm_medium')) {
+                        urlObj.searchParams.set('utm_medium', 'referral');
+                    }
+                    link = urlObj.toString();
+                } catch (e) {
+                    // Ignore invalid URLs
+                }
+            }
 
             return {
                 id: page.id,
