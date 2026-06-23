@@ -9,26 +9,10 @@ export default function CookieBanner() {
     const GA_MEASUREMENT_ID = 'G-JCWTLQ4F23';
 
     useEffect(() => {
-        // Initialize GA Consent Mode defaults immediately
-        // This ensures the tag is detected but respects privacy
         if (typeof window !== 'undefined') {
-            window.dataLayer = window.dataLayer || [];
-            function gtag(...args: any[]) { window.dataLayer.push(arguments); }
-
-            // Default to denied
-            gtag('consent', 'default', {
-                'analytics_storage': 'denied',
-                'ad_storage': 'denied'
-            });
-
-            // Check if previously granted
             const storedConsent = localStorage.getItem("cookie_consent");
             if (storedConsent === "granted") {
                 setConsentGranted(true);
-                gtag('consent', 'update', {
-                    'analytics_storage': 'granted',
-                    'ad_storage': 'granted'
-                });
             } else if (!storedConsent) {
                 setShowBanner(true);
             }
@@ -36,18 +20,9 @@ export default function CookieBanner() {
     }, []);
 
     const acceptCookie = () => {
-        setConsentGranted(true); // Triggers Clarity load
+        setConsentGranted(true); // Triggers GA and Clarity load
         setShowBanner(false);
         localStorage.setItem("cookie_consent", "granted");
-
-        // Update GA Consent
-        if (typeof window !== 'undefined') {
-            const gtag = (window as any).gtag || function () { (window as any).dataLayer.push(arguments); };
-            gtag('consent', 'update', {
-                'analytics_storage': 'granted',
-                'ad_storage': 'granted'
-            });
-        }
     };
 
     const declineCookie = () => {
@@ -58,19 +33,23 @@ export default function CookieBanner() {
 
     return (
         <>
-            {/* Google Analytics - Always loaded but with Consent Mode (Privacy Safe) */}
-            <Script
-                src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-                strategy="afterInteractive"
-            />
-            <Script id="google-analytics" strategy="afterInteractive">
-                {`
-                    window.dataLayer = window.dataLayer || [];
-                    function gtag(){dataLayer.push(arguments);}
-                    gtag('js', new Date());
-                    gtag('config', '${GA_MEASUREMENT_ID}');
-                `}
-            </Script>
+            {/* Google Analytics - Only load if consent is EXPLICITLY granted */}
+            {consentGranted && (
+                <>
+                    <Script
+                        src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+                        strategy="afterInteractive"
+                    />
+                    <Script id="google-analytics" strategy="afterInteractive">
+                        {`
+                            window.dataLayer = window.dataLayer || [];
+                            function gtag(){dataLayer.push(arguments);}
+                            gtag('js', new Date());
+                            gtag('config', '${GA_MEASUREMENT_ID}');
+                        `}
+                    </Script>
+                </>
+            )}
 
             {/* Microsoft Clarity - Only load if consent is EXPLICITLY granted */}
             {consentGranted && (
