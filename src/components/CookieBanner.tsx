@@ -44,6 +44,22 @@ export default function CookieBanner() {
                         {`
                             window.dataLayer = window.dataLayer || [];
                             function gtag(){dataLayer.push(arguments);}
+
+                            // Audit Consent Mode v2: Explicitly pass all four parameters
+                            gtag('consent', 'default', {
+                                'analytics_storage': 'denied',
+                                'ad_storage': 'denied',
+                                'ad_user_data': 'denied',
+                                'ad_personalization': 'denied'
+                            });
+                            
+                            gtag('consent', 'update', {
+                                'analytics_storage': 'granted',
+                                'ad_storage': 'granted',
+                                'ad_user_data': 'granted',
+                                'ad_personalization': 'granted'
+                            });
+
                             gtag('js', new Date());
                             gtag('config', '${GA_MEASUREMENT_ID}');
                         `}
