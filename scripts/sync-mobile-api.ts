@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import path from "path";
 
-dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
+dotenv.config({ path: path.resolve(process.cwd(), ".env.local"), quiet: true });
 
 async function main() {
     const { getEvents } = await import("../src/lib/notion");
@@ -20,12 +20,17 @@ async function main() {
 
     for (let index = 0; index < mobileEvents.length; index += batchSize) {
         const batch = mobileEvents.slice(index, index + batchSize);
+        const headers: Record<string, string> = {
+            "content-type": "application/json",
+            "x-sync-secret": syncSecret,
+        };
+        if (process.env.MOBILE_API_HOST) {
+            headers.host = process.env.MOBILE_API_HOST;
+        }
+
         const response = await fetch(`${apiUrl.replace(/\/$/, "")}/admin/sync-events`, {
             method: "POST",
-            headers: {
-                "content-type": "application/json",
-                "x-sync-secret": syncSecret,
-            },
+            headers,
             body: JSON.stringify({ events: batch }),
         });
 

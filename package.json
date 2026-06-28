@@ -7,7 +7,8 @@
     "build": "rm -rf .next && node scripts/download-images.js && next build",
     "start": "next start",
     "lint": "eslint",
-    "sync:mobile": "tsx scripts/sync-mobile-api.ts"
+    "sync:mobile": "tsx scripts/sync-mobile-api.ts",
+    "export:mobile": "tsx scripts/export-mobile-events.ts"
   },
   "dependencies": {
     "@notionhq/client": "^5.8.0",

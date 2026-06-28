@@ -63,7 +63,7 @@ export const getEvents = async (): Promise<Event[]> => {
             startCursor = response.next_cursor;
         }
 
-        console.log(`Fetched ${allResults.length} events from Notion`);
+        console.error(`Fetched ${allResults.length} events from Notion`);
 
         const finalEvents = allResults.map((page: any) => {
             const props = page.properties;
@@ -223,7 +223,7 @@ export const getVenues = async (): Promise<Venue[]> => {
             startCursor = response.next_cursor;
         }
 
-        console.log(`Fetched ${allResults.length} venues from Notion`);
+        console.error(`Fetched ${allResults.length} venues from Notion`);
 
         const finalVenues = allResults.map((page: any) => {
             const props = page.properties;
