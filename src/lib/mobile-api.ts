@@ -45,7 +45,7 @@ export function toMobileEvent(event: Event): MobileEventDTO {
         isFree: event.isFree,
         coverImage: event.coverImage,
         link: event.link || null,
-        slug: slugify(event.title, event.venue[0] || location, event.id.slice(0, 8)),
+        slug: event.id.replace(/-/g, ""),
     };
 }
 

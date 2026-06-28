@@ -1,9 +1,13 @@
 import { Client } from "@notionhq/client";
 import imageMapData from "@/data/image-map.json";
 
-const notion = new Client({
-    auth: process.env.NOTION_API_KEY,
-});
+function getNotionClient(): Client {
+    const auth = process.env.NOTION_API_KEY;
+    if (!auth) {
+        throw new Error("NOTION_API_KEY is not defined.");
+    }
+    return new Client({ auth });
+}
 
 const imageMap = imageMapData as Record<string, string>;
 
@@ -42,7 +46,7 @@ export const getEvents = async (): Promise<Event[]> => {
 
         // Paginate through all results
         while (hasMore) {
-            const response: any = await notion.dataSources.query({
+            const response: any = await getNotionClient().dataSources.query({
                 data_source_id: dataSourceId,
                 page_size: 100,
                 start_cursor: startCursor,
@@ -208,7 +212,7 @@ export const getVenues = async (): Promise<Venue[]> => {
 
         // Paginate through all results
         while (hasMore) {
-            const response: any = await notion.dataSources.query({
+            const response: any = await getNotionClient().dataSources.query({
                 data_source_id: VENUES_DATA_SOURCE_ID,
                 page_size: 100,
                 start_cursor: startCursor,

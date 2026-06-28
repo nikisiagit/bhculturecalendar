@@ -1,11 +1,11 @@
 import dotenv from "dotenv";
 import path from "path";
-import { getEvents } from "../src/lib/notion";
-import { toMobileEvents } from "../src/lib/mobile-api";
 
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 
 async function main() {
+    const { getEvents } = await import("../src/lib/notion");
+    const { toMobileEvents } = await import("../src/lib/mobile-api");
     const apiUrl = process.env.MOBILE_API_URL;
     const syncSecret = process.env.MOBILE_SYNC_SECRET;
 
@@ -14,25 +14,33 @@ async function main() {
     }
 
     const events = await getEvents();
-    const payload = { events: toMobileEvents(events) };
+    const mobileEvents = toMobileEvents(events);
+    const batchSize = 100;
+    let totalInserted = 0;
 
-    const response = await fetch(`${apiUrl.replace(/\/$/, "")}/admin/sync-events`, {
-        method: "POST",
-        headers: {
-            "content-type": "application/json",
-            "x-sync-secret": syncSecret,
-        },
-        body: JSON.stringify(payload),
-    });
+    for (let index = 0; index < mobileEvents.length; index += batchSize) {
+        const batch = mobileEvents.slice(index, index + batchSize);
+        const response = await fetch(`${apiUrl.replace(/\/$/, "")}/admin/sync-events`, {
+            method: "POST",
+            headers: {
+                "content-type": "application/json",
+                "x-sync-secret": syncSecret,
+            },
+            body: JSON.stringify({ events: batch }),
+        });
 
-    const body = await response.text();
-    if (!response.ok) {
-        throw new Error(`Sync failed (${response.status}): ${body}`);
+        const body = await response.text();
+        if (!response.ok) {
+            throw new Error(`Sync failed (${response.status}) at batch ${index / batchSize + 1}: ${body}`);
+        }
+
+        const result = JSON.parse(body) as { inserted?: string[] };
+        totalInserted += result.inserted?.length ?? 0;
+        console.log(`Batch ${index / batchSize + 1}: synced ${batch.length} events`);
     }
 
-    const result = JSON.parse(body) as { inserted?: string[] };
     console.log(
-        `Synced ${payload.events.length} events to mobile API. New events: ${result.inserted?.length ?? 0}`,
+        `Synced ${mobileEvents.length} events to mobile API. New events: ${totalInserted}`,
     );
 }
 
