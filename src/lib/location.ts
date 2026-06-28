@@ -1,3 +1,10 @@
+import areaCoordinates from "@/data/area-coordinates.json";
+
+type Coordinates = { latitude: number; longitude: number };
+
+const COORDINATES = areaCoordinates as Record<string, Coordinates>;
+const DEFAULT_COORDINATES = COORDINATES.dorset;
+
 export function getLocalityFromPostcode(postcodes: string[]): string {
     if (!postcodes || postcodes.length === 0) return "Dorset";
     
@@ -18,4 +25,12 @@ export function getLocalityFromPostcode(postcodes: string[]): string {
     if (num === 31) return "Verwood";
     
     return "Dorset";
+}
+
+export function getLocationSlugFromPostcode(postcodes: string[]): string {
+    return getLocalityFromPostcode(postcodes).toLowerCase().replace(/\s+/g, "-");
+}
+
+export function getCoordinatesForLocation(locationSlug: string): Coordinates {
+    return COORDINATES[locationSlug] ?? DEFAULT_COORDINATES;
 }

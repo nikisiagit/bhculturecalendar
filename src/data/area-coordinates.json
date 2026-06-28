@@ -1,0 +1,13 @@
+{
+  "bournemouth": { "latitude": 50.7192, "longitude": -1.8808 },
+  "christchurch": { "latitude": 50.7357, "longitude": -1.7786 },
+  "poole": { "latitude": 50.7150, "longitude": -1.9872 },
+  "swanage": { "latitude": 50.6083, "longitude": -1.9598 },
+  "wareham": { "latitude": 50.6871, "longitude": -2.1099 },
+  "wimborne": { "latitude": 50.7998, "longitude": -1.9879 },
+  "ferndown": { "latitude": 50.8028, "longitude": -1.8936 },
+  "ringwood": { "latitude": 50.8460, "longitude": -1.7938 },
+  "new-milton": { "latitude": 50.7560, "longitude": -1.6578 },
+  "verwood": { "latitude": 50.8817, "longitude": -1.8785 },
+  "dorset": { "latitude": 50.7500, "longitude": -2.0000 }
+}
