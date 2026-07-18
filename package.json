@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "rm -rf .next && node scripts/download-images.js && next build",
+    "build": "rm -rf .next && next build",
     "start": "next start",
     "lint": "eslint",
     "sync:mobile": "tsx scripts/sync-mobile-api.ts",

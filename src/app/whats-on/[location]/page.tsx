@@ -1,4 +1,4 @@
-import { getEvents } from "@/lib/notion";
+import { fetchEvents } from "@/lib/api-events";
 import EventsClient from "@/components/EventsClient";
 import { getLocalityFromPostcode } from "@/lib/location";
 import Header from "@/components/Header";
@@ -26,30 +26,36 @@ export async function generateMetadata(
   { params }: { params: Promise<{ location: string }> }
 ): Promise<Metadata> {
   const { location } = await params;
+  
   if (!VALID_LOCATIONS.includes(location.toLowerCase())) {
     return {};
   }
   
   const town = getTownName(location.toLowerCase());
+  
+  let titlePrefix = "What's On";
+  let descPrefix = "Find out what's on";
+  let timeContext = "today";
+  let canonicalUrl = `https://bhculturecalendar.co.uk/whats-on/${location.toLowerCase()}`;
 
   return {
-    title: `What's On ${town} | 2026 Art, Theatre & Comedy Events`,
-    description: `Find out what's on in ${town}. Discover the best local events, theatre shows, art exhibitions, and comedy gigs today.`,
+    title: `${titlePrefix} ${town} | 2026 Events & Culture`,
+    description: `${descPrefix} in ${town} ${timeContext}. Discover the best local events, theatre shows, art exhibitions, and comedy gigs.`,
     alternates: {
-      canonical: `https://bhculturecalendar.co.uk/whats-on/${location.toLowerCase()}`,
+      canonical: canonicalUrl,
     },
     keywords: [
       `what's on ${town}`,
-      `whats on ${town} today`,
-      `whats on ${town} this weekend`,
+      `whats on ${town} ${timeContext}`,
       `events in ${town}`,
       `${town} events`,
       `things to do in ${town}`,
+      `${town} shows`
     ],
     openGraph: {
-      title: `What's On in ${town} | BH Culture Calendar`,
-      description: `Discover what's on in ${town} today and this weekend. Plan your visit with the best art, comedy, theatre, and gigs.`,
-      url: `https://bhculturecalendar.co.uk/whats-on/${location.toLowerCase()}`,
+      title: `${titlePrefix} in ${town} | BH Culture Calendar`,
+      description: `${descPrefix} in ${town} ${timeContext}. Plan your visit with the best art, comedy, theatre, and gigs.`,
+      url: canonicalUrl,
       siteName: 'BH Culture Calendar',
       locale: 'en_GB',
       type: 'website',
@@ -64,9 +70,9 @@ export function generateStaticParams() {
 }
 
 export default async function LocationWhatsOnPage({ 
-  params 
+  params,
 }: { 
-  params: Promise<{ location: string }> 
+  params: Promise<{ location: string }>;
 }) {
   const { location } = await params;
   const lowerLocation = location.toLowerCase();
@@ -75,8 +81,11 @@ export default async function LocationWhatsOnPage({
     notFound();
   }
 
+  const categoryStr = '';
+  const monthStr = '';
+
   const town = getTownName(lowerLocation);
-  const allEvents = await getEvents();
+  const allEvents = await fetchEvents();
   
   // Filter events based on location
   const events = allEvents.filter(event => {

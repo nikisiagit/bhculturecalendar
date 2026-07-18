@@ -338,7 +338,25 @@ function EventsClientContent({ events, allCategories }: EventsClientProps) {
             });
         }
 
-        return filtered;
+        // Sort the filtered events so that events starting today or later appear before ongoing past events
+        const todayForSort = new Date();
+        todayForSort.setHours(0, 0, 0, 0);
+
+        const sortedFiltered = [...filtered].sort((a, b) => {
+            const aStart = new Date(a.date);
+            const bStart = new Date(b.date);
+            
+            const aIsOngoing = aStart < todayForSort && a.endDate && new Date(a.endDate) >= todayForSort;
+            const bIsOngoing = bStart < todayForSort && b.endDate && new Date(b.endDate) >= todayForSort;
+
+            if (aIsOngoing && !bIsOngoing) return 1; // b comes first
+            if (!aIsOngoing && bIsOngoing) return -1; // a comes first
+            
+            // Otherwise sort by start date ascending
+            return aStart.getTime() - bStart.getTime();
+        });
+
+        return sortedFiltered;
     }, [events, selectedCategory, showToday, showTomorrow, showWeekend, showFreeOnly, searchQuery]);
 
     return (
