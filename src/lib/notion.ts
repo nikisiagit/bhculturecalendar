@@ -1,6 +1,7 @@
 import { Client } from "@notionhq/client";
 import imageMapData from "@/data/image-map.json";
 import { Event, Venue } from "./types";
+export type { Event, Venue };
 
 const notion = new Client({
     auth: process.env.NOTION_API_KEY,
