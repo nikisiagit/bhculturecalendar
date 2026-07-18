@@ -50,5 +50,13 @@ export async function fetchVenues(): Promise<Venue[]> {
     const res = await fetch(url, { next: { revalidate: 60 } });
     if (!res.ok) throw new Error(`API /venues ${res.status}`);
     const data = await res.json();
-    return data.venues as Venue[];
+
+    // API venues have shape { name, location, latitude, longitude, eventCount }
+    // Map to the UI Venue type { id, name, categories, link }
+    return (data.venues ?? []).map((v: any, i: number) => ({
+        id: v.name.toLowerCase().replace(/\s+/g, "-") + "-" + i,
+        name: v.name,
+        categories: [] as string[],
+        link: "",
+    }));
 }
