@@ -23,10 +23,9 @@ function getTownName(locationSlug: string): string {
 }
 
 export async function generateMetadata(
-  { params, searchParams }: { params: Promise<{ location: string }>; searchParams: Promise<{ [key: string]: string | string[] | undefined }> }
+  { params }: { params: Promise<{ location: string }> }
 ): Promise<Metadata> {
   const { location } = await params;
-  const searchParamsObj = await searchParams;
   
   if (!VALID_LOCATIONS.includes(location.toLowerCase())) {
     return {};
@@ -34,31 +33,10 @@ export async function generateMetadata(
   
   const town = getTownName(location.toLowerCase());
   
-  const categoryStr = typeof searchParamsObj.category === 'string' ? searchParamsObj.category : '';
-  const monthStr = typeof searchParamsObj.month === 'string' ? searchParamsObj.month : '';
-  
-  let titlePrefix = categoryStr ? `${capitalize(categoryStr)} Events` : "What's On";
-  let descPrefix = categoryStr ? `Find the best ${categoryStr} events and shows` : "Find out what's on";
-  
-  if (categoryStr && (categoryStr.toLowerCase() === 'theatre' || categoryStr.toLowerCase() === 'comedy')) {
-      titlePrefix = `${capitalize(categoryStr)} Shows & Events`;
-  } else if (categoryStr && categoryStr.toLowerCase() === 'art') {
-      titlePrefix = `Art Exhibitions & Artist Showcases`;
-  }
-  
+  let titlePrefix = "What's On";
+  let descPrefix = "Find out what's on";
   let timeContext = "today";
-  if (monthStr) {
-      // Basic formatting if month is provided like 2026-06
-      timeContext = `in ${monthStr}`;
-  }
-  
   let canonicalUrl = `https://bhculturecalendar.co.uk/whats-on/${location.toLowerCase()}`;
-  if (categoryStr || monthStr) {
-      const params = new URLSearchParams();
-      if (categoryStr) params.set('category', categoryStr);
-      if (monthStr) params.set('month', monthStr);
-      canonicalUrl += `?${params.toString()}`;
-  }
 
   return {
     title: `${titlePrefix} ${town} | 2026 Events & Culture`,
@@ -69,8 +47,8 @@ export async function generateMetadata(
     keywords: [
       `what's on ${town}`,
       `whats on ${town} ${timeContext}`,
-      `${categoryStr || 'events'} in ${town}`,
-      `${town} ${categoryStr || 'events'}`,
+      `events in ${town}`,
+      `${town} events`,
       `things to do in ${town}`,
       `${town} shows`
     ],
@@ -93,21 +71,18 @@ export function generateStaticParams() {
 
 export default async function LocationWhatsOnPage({ 
   params,
-  searchParams 
 }: { 
   params: Promise<{ location: string }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const { location } = await params;
-  const searchParamsObj = await searchParams;
   const lowerLocation = location.toLowerCase();
 
   if (!VALID_LOCATIONS.includes(lowerLocation)) {
     notFound();
   }
 
-  const categoryStr = typeof searchParamsObj.category === 'string' ? searchParamsObj.category : '';
-  const monthStr = typeof searchParamsObj.month === 'string' ? searchParamsObj.month : '';
+  const categoryStr = '';
+  const monthStr = '';
 
   const town = getTownName(lowerLocation);
   const allEvents = await fetchEvents();
@@ -140,7 +115,7 @@ export default async function LocationWhatsOnPage({
       {/* Main Content */}
       <main className="main">
         <h1 style={{ position: "absolute", width: "1px", height: "1px", padding: "0", margin: "-1px", overflow: "hidden", clip: "rect(0, 0, 0, 0)", whiteSpace: "nowrap", border: "0" }}>
-          {categoryStr ? `${capitalize(categoryStr)} Events and Shows` : "What's On"} in {town} {monthStr ? `in ${monthStr}` : ""}
+          What's On in {town}
         </h1>
 
         <EventsClient events={events} allCategories={allCategories} />

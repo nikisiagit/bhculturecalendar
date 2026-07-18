@@ -14,7 +14,7 @@ export async function fetchEvents(searchParams?: URLSearchParams): Promise<Event
         searchParams.forEach((v, k) => url.searchParams.set(k, v));
     }
     
-    const res = await fetch(url, { next: { revalidate: 60 } });
+    const res = await fetch(url);
     if (!res.ok) throw new Error(`API /events ${res.status}`);
     const data = await res.json();
     
@@ -35,7 +35,7 @@ export async function fetchTodayEvents(): Promise<Event[]> {
     }
 
     const url = new URL("/events/today", API);
-    const res = await fetch(url, { next: { revalidate: 60 } });
+    const res = await fetch(url);
     if (!res.ok) throw new Error(`API /events/today ${res.status}`);
     const data = await res.json();
     return data.events as Event[];
@@ -47,7 +47,7 @@ export async function fetchVenues(): Promise<Venue[]> {
     }
 
     const url = new URL("/venues", API);
-    const res = await fetch(url, { next: { revalidate: 60 } });
+    const res = await fetch(url);
     if (!res.ok) throw new Error(`API /venues ${res.status}`);
     const data = await res.json();
 
