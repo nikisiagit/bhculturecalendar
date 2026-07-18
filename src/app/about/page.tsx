@@ -1,11 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getEvents } from "@/lib/notion";
+import { fetchEvents } from "@/lib/api-events";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 export default async function AboutPage() {
-    const events = await getEvents();
+    const events = await fetchEvents();
 
     return (
         <>

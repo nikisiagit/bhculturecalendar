@@ -1,4 +1,4 @@
-import { getEvents } from "@/lib/notion";
+import { fetchEvents } from "@/lib/api-events";
 import EventsClient from "@/components/EventsClient";
 import { getLocalityFromPostcode } from "@/lib/location";
 import Header from "@/components/Header";
@@ -23,33 +23,61 @@ function getTownName(locationSlug: string): string {
 }
 
 export async function generateMetadata(
-  { params }: { params: Promise<{ location: string }> }
+  { params, searchParams }: { params: Promise<{ location: string }>; searchParams: Promise<{ [key: string]: string | string[] | undefined }> }
 ): Promise<Metadata> {
   const { location } = await params;
+  const searchParamsObj = await searchParams;
+  
   if (!VALID_LOCATIONS.includes(location.toLowerCase())) {
     return {};
   }
   
   const town = getTownName(location.toLowerCase());
+  
+  const categoryStr = typeof searchParamsObj.category === 'string' ? searchParamsObj.category : '';
+  const monthStr = typeof searchParamsObj.month === 'string' ? searchParamsObj.month : '';
+  
+  let titlePrefix = categoryStr ? `${capitalize(categoryStr)} Events` : "What's On";
+  let descPrefix = categoryStr ? `Find the best ${categoryStr} events and shows` : "Find out what's on";
+  
+  if (categoryStr && (categoryStr.toLowerCase() === 'theatre' || categoryStr.toLowerCase() === 'comedy')) {
+      titlePrefix = `${capitalize(categoryStr)} Shows & Events`;
+  } else if (categoryStr && categoryStr.toLowerCase() === 'art') {
+      titlePrefix = `Art Exhibitions & Artist Showcases`;
+  }
+  
+  let timeContext = "today";
+  if (monthStr) {
+      // Basic formatting if month is provided like 2026-06
+      timeContext = `in ${monthStr}`;
+  }
+  
+  let canonicalUrl = `https://bhculturecalendar.co.uk/whats-on/${location.toLowerCase()}`;
+  if (categoryStr || monthStr) {
+      const params = new URLSearchParams();
+      if (categoryStr) params.set('category', categoryStr);
+      if (monthStr) params.set('month', monthStr);
+      canonicalUrl += `?${params.toString()}`;
+  }
 
   return {
-    title: `What's On ${town} | 2026 Art, Theatre & Comedy Events`,
-    description: `Find out what's on in ${town}. Discover the best local events, theatre shows, art exhibitions, and comedy gigs today.`,
+    title: `${titlePrefix} ${town} | 2026 Events & Culture`,
+    description: `${descPrefix} in ${town} ${timeContext}. Discover the best local events, theatre shows, art exhibitions, and comedy gigs.`,
     alternates: {
-      canonical: `https://bhculturecalendar.co.uk/whats-on/${location.toLowerCase()}`,
+      canonical: canonicalUrl,
     },
     keywords: [
       `what's on ${town}`,
-      `whats on ${town} today`,
-      `whats on ${town} this weekend`,
-      `events in ${town}`,
-      `${town} events`,
+      `whats on ${town} ${timeContext}`,
+      `${categoryStr || 'events'} in ${town}`,
+      `${town} ${categoryStr || 'events'}`,
       `things to do in ${town}`,
+      `${town} shows`
     ],
     openGraph: {
-      title: `What's On in ${town} | BH Culture Calendar`,
-      description: `Discover what's on in ${town} today and this weekend. Plan your visit with the best art, comedy, theatre, and gigs.`,
-      url: `https://bhculturecalendar.co.uk/whats-on/${location.toLowerCase()}`,
+      title: `${titlePrefix} in ${town} | BH Culture Calendar`,
+      description: `${descPrefix} in ${town} ${timeContext}. Plan your visit with the best art, comedy, theatre, and gigs.`,
+      url: canonicalUrl,
       siteName: 'BH Culture Calendar',
       locale: 'en_GB',
       type: 'website',
@@ -64,19 +92,25 @@ export function generateStaticParams() {
 }
 
 export default async function LocationWhatsOnPage({ 
-  params 
+  params,
+  searchParams 
 }: { 
-  params: Promise<{ location: string }> 
+  params: Promise<{ location: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const { location } = await params;
+  const searchParamsObj = await searchParams;
   const lowerLocation = location.toLowerCase();
 
   if (!VALID_LOCATIONS.includes(lowerLocation)) {
     notFound();
   }
 
+  const categoryStr = typeof searchParamsObj.category === 'string' ? searchParamsObj.category : '';
+  const monthStr = typeof searchParamsObj.month === 'string' ? searchParamsObj.month : '';
+
   const town = getTownName(lowerLocation);
-  const allEvents = await getEvents();
+  const allEvents = await fetchEvents();
   
   // Filter events based on location
   const events = allEvents.filter(event => {
@@ -106,7 +140,7 @@ export default async function LocationWhatsOnPage({
       {/* Main Content */}
       <main className="main">
         <h1 style={{ position: "absolute", width: "1px", height: "1px", padding: "0", margin: "-1px", overflow: "hidden", clip: "rect(0, 0, 0, 0)", whiteSpace: "nowrap", border: "0" }}>
-          What's On in {town}
+          {categoryStr ? `${capitalize(categoryStr)} Events and Shows` : "What's On"} in {town} {monthStr ? `in ${monthStr}` : ""}
         </h1>
 
         <EventsClient events={events} allCategories={allCategories} />

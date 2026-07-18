@@ -1,4 +1,5 @@
-import { getVenues, getEvents, Venue } from "@/lib/notion";
+import { fetchVenues, fetchEvents } from "@/lib/api-events";
+import { Venue } from "@/lib/types";
 import Link from "next/link";
 import Image from "next/image";
 import Header from "@/components/Header";
@@ -21,7 +22,7 @@ function groupVenuesByLetter(venues: Venue[]): Record<string, Venue[]> {
 }
 
 export default async function VenuesPage() {
-    const [venues, events] = await Promise.all([getVenues(), getEvents()]);
+    const [venues, events] = await Promise.all([fetchVenues(), fetchEvents()]);
     const groupedVenues = groupVenuesByLetter(venues);
     const letters = Object.keys(groupedVenues).sort();
 

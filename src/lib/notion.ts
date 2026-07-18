@@ -1,24 +1,12 @@
 import { Client } from "@notionhq/client";
 import imageMapData from "@/data/image-map.json";
+import { Event, Venue } from "./types";
 
 const notion = new Client({
     auth: process.env.NOTION_API_KEY,
 });
 
 const imageMap = imageMapData as Record<string, string>;
-
-export interface Event {
-    id: string;
-    title: string;
-    date: string;
-    endDate: string | null;
-    venue: string[];
-    category: string[];
-    postcode: string[];
-    link: string;
-    isFree: boolean;
-    coverImage: string | null;
-}
 
 let cachedEvents: Event[] | null = null;
 let eventsFetchPromise: Promise<Event[]> | null = null;
@@ -181,14 +169,6 @@ export const getEvents = async (): Promise<Event[]> => {
 
     return eventsFetchPromise;
 };
-
-// Venues
-export interface Venue {
-    id: string;
-    name: string;
-    categories: string[];
-    link: string;
-}
 
 // Venues data source ID
 const VENUES_DATA_SOURCE_ID = "299f9c42-88ed-8197-8cf5-000b01220c73";
