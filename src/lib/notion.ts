@@ -3,9 +3,13 @@ import imageMapData from "@/data/image-map.json";
 import { Event, Venue } from "./types";
 export type { Event, Venue };
 
-const notion = new Client({
-    auth: process.env.NOTION_API_KEY,
-});
+function getNotionClient(): Client {
+    const auth = process.env.NOTION_API_KEY;
+    if (!auth) {
+        throw new Error("NOTION_API_KEY is not defined.");
+    }
+    return new Client({ auth });
+}
 
 const imageMap = imageMapData as Record<string, string>;
 
@@ -31,7 +35,7 @@ export const getEvents = async (): Promise<Event[]> => {
 
         // Paginate through all results
         while (hasMore) {
-            const response: any = await notion.dataSources.query({
+            const response: any = await getNotionClient().dataSources.query({
                 data_source_id: dataSourceId,
                 page_size: 100,
                 start_cursor: startCursor,
@@ -48,7 +52,7 @@ export const getEvents = async (): Promise<Event[]> => {
             startCursor = response.next_cursor;
         }
 
-        console.log(`Fetched ${allResults.length} events from Notion`);
+        console.error(`Fetched ${allResults.length} events from Notion`);
 
         const finalEvents = allResults.map((page: any) => {
             const props = page.properties;
@@ -189,7 +193,7 @@ export const getVenues = async (): Promise<Venue[]> => {
 
         // Paginate through all results
         while (hasMore) {
-            const response: any = await notion.dataSources.query({
+            const response: any = await getNotionClient().dataSources.query({
                 data_source_id: VENUES_DATA_SOURCE_ID,
                 page_size: 100,
                 start_cursor: startCursor,
@@ -200,7 +204,7 @@ export const getVenues = async (): Promise<Venue[]> => {
             startCursor = response.next_cursor;
         }
 
-        console.log(`Fetched ${allResults.length} venues from Notion`);
+        console.error(`Fetched ${allResults.length} venues from Notion`);
 
         const finalVenues = allResults.map((page: any) => {
             const props = page.properties;

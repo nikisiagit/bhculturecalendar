@@ -1,90 +1,98 @@
-import { getEvents } from '../src/lib/notion';
-import { toMobileEvents } from '../src/lib/mobile-api';
-import dotenv from 'dotenv';
-import fs from 'fs';
-import path from 'path';
+import dotenv from "dotenv";
+import path from "path";
 
-// 1. Load env from .env.local
-const envPath = path.resolve(process.cwd(), '.env.local');
-if (fs.existsSync(envPath)) {
-    dotenv.config({ path: envPath });
-} else {
-    dotenv.config();
+dotenv.config({ path: path.resolve(process.cwd(), ".env.local"), quiet: true });
+
+function requireEnv(...keys: string[]): Record<string, string> {
+    const missing = keys.filter((key) => !process.env[key]?.trim());
+    if (missing.length) {
+        throw new Error(
+            `Missing required environment variables: ${missing.join(", ")}. ` +
+                "Set them in GitHub Actions secrets or website/.env.local for local runs.",
+        );
+    }
+
+    return Object.fromEntries(keys.map((key) => [key, process.env[key]!.trim()]));
 }
 
-const API_URL = process.env.MOBILE_API_URL || 'https://api.bhculturecalendar.co.uk';
-const SYNC_SECRET = process.env.MOBILE_SYNC_SECRET || process.env.SYNC_SECRET;
-const NOTION_API_KEY = process.env.NOTION_API_KEY;
-const NOTION_DATABASE_ID = process.env.NOTION_DATABASE_ID;
+async function main() {
+    const env = requireEnv(
+        "NOTION_API_KEY",
+        "NOTION_DATABASE_ID",
+        "MOBILE_SYNC_SECRET",
+    );
+    const { getEvents } = await import("../src/lib/notion");
+    const { toMobileEvents } = await import("../src/lib/mobile-api");
+    const apiUrl = (process.env.MOBILE_API_URL || "https://api.bhculturecalendar.co.uk").trim();
+    const syncSecret = env.MOBILE_SYNC_SECRET;
 
-async function sync() {
-    // Validate Environment
-    if (!SYNC_SECRET) throw new Error("Missing MOBILE_SYNC_SECRET in .env.local");
-    if (!NOTION_API_KEY) throw new Error("Missing NOTION_API_KEY in .env.local");
-    if (!NOTION_DATABASE_ID) throw new Error("Missing NOTION_DATABASE_ID in .env.local");
+    const events = await getEvents();
+    const mobileEvents = toMobileEvents(events);
+    const allIds = mobileEvents.map((event) => event.id);
+    const batchSize = 100;
+    let totalInserted = 0;
+    const headers: Record<string, string> = {
+        "content-type": "application/json",
+        "x-sync-secret": syncSecret,
+    };
+    if (process.env.MOBILE_API_HOST) {
+        headers.host = process.env.MOBILE_API_HOST;
+    }
 
-    console.log("Fetching events from Notion...");
-    // 2. Fetch events from Notion
-    const notionEvents = await getEvents();
-    console.log(`Fetched ${notionEvents.length} events from Notion.`);
-    
-    // 3. Map via toMobileEvents()
-    const mobileEvents = toMobileEvents(notionEvents);
-    console.log(`Mapped ${mobileEvents.length} events for mobile API.`);
-    
-    // 4. Batch POST {MOBILE_API_URL}/admin/sync-events with x-sync-secret + JSON events
-    const BATCH_SIZE = 50;
-    let insertedTotal = 0;
-    
-    for (let i = 0; i < mobileEvents.length; i += BATCH_SIZE) {
-        const batch = mobileEvents.slice(i, i + BATCH_SIZE);
-        console.log(`Sending batch ${Math.floor(i/BATCH_SIZE) + 1} (${batch.length} events)...`);
-        
-        const response = await fetch(`${API_URL}/admin/sync-events`, {
+    const syncUrl = `${apiUrl.replace(/\/$/, "")}/admin/sync-events`;
+
+    for (let index = 0; index < mobileEvents.length; index += batchSize) {
+        const batch = mobileEvents.slice(index, index + batchSize);
+        const response = await fetch(syncUrl, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "x-sync-secret": SYNC_SECRET
-            },
-            body: JSON.stringify({
-                events: batch
-            })
+            headers,
+            body: JSON.stringify({ events: batch }),
         });
 
+        const body = await response.text();
         if (!response.ok) {
-            const err = await response.text();
-            throw new Error(`Batch sync failed with status ${response.status}: ${err}`);
+            if (body.includes("Just a moment") || body.includes("cf-chl")) {
+                throw new Error(
+                    `Sync failed (${response.status}) at batch ${index / batchSize + 1}: ` +
+                        "Cloudflare bot protection blocked this request (challenge page). " +
+                        "Add a WAF skip rule for POST /admin/sync-events, or set MOBILE_API_URL " +
+                        "to your *.workers.dev URL for CI.",
+                );
+            }
+            throw new Error(
+                `Sync failed (${response.status}) at batch ${index / batchSize + 1}: ${body.slice(0, 500)}`,
+            );
         }
-        
-        const data = await response.json();
-        insertedTotal += data.inserted?.length || 0;
+
+        const result = JSON.parse(body) as { inserted?: string[] };
+        totalInserted += result.inserted?.length ?? 0;
+        console.log(`Batch ${index / batchSize + 1}: synced ${batch.length} events`);
     }
-    
-    // 5. Finalize with empty batch + finalize: true + allIds to prune stale rows
-    console.log("Sending finalize request...");
-    const finalizeResponse = await fetch(`${API_URL}/admin/sync-events`, {
+
+    const finalizeResponse = await fetch(syncUrl, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "x-sync-secret": SYNC_SECRET
-        },
-        body: JSON.stringify({
-            events: [],
-            finalize: true,
-            allIds: mobileEvents.map(e => e.id)
-        })
+        headers,
+        body: JSON.stringify({ events: [], finalize: true, allIds }),
     });
-
+    const finalizeBody = await finalizeResponse.text();
     if (!finalizeResponse.ok) {
-        const err = await finalizeResponse.text();
-        throw new Error(`Finalize failed with status ${finalizeResponse.status}: ${err}`);
+        if (finalizeBody.includes("Just a moment") || finalizeBody.includes("cf-chl")) {
+            throw new Error(
+                `Finalize failed (${finalizeResponse.status}): Cloudflare bot protection blocked this request.`,
+            );
+        }
+        throw new Error(`Finalize failed (${finalizeResponse.status}): ${finalizeBody.slice(0, 500)}`);
     }
 
-    const finalData = await finalizeResponse.json();
-    console.log(`Synced ${insertedTotal} events successfully. Pruned ${finalData.pruned || 0} stale rows.`);
+    const finalizeResult = JSON.parse(finalizeBody) as { pruned?: number };
+    console.log(`Finalized sync. Pruned ${finalizeResult.pruned ?? 0} stale events.`);
+
+    console.log(
+        `Synced ${mobileEvents.length} events to mobile API. New events: ${totalInserted}`,
+    );
 }
 
-sync().catch(err => {
-    console.error("Sync error:", err.message);
+main().catch((error) => {
+    console.error(error);
     process.exit(1);
 });

@@ -1,7 +1,7 @@
-import { Event } from './types';
-import { getCoordinatesForVenue, getLocalityFromPostcode } from './location';
+import type { Event } from "@/lib/notion";
+import { getCoordinatesForLocation, getLocationSlugFromPostcode } from "@/lib/location";
 
-export interface MobileEvent {
+export interface MobileEventDTO {
     id: string;
     title: string;
     date: string;
@@ -9,42 +9,46 @@ export interface MobileEvent {
     category: string[];
     venue: string[];
     postcode: string[];
-    location: string | null;
-    latitude: number | null;
-    longitude: number | null;
+    location: string;
+    latitude: number;
+    longitude: number;
     isFree: boolean;
     coverImage: string | null;
     link: string | null;
-    slug: string | null;
+    slug: string;
 }
 
-export function toMobileEvents(events: Event[]): MobileEvent[] {
-    return events.map(event => {
-        // Generate a basic URL slug
-        const slug = event.title
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/(^-|-$)+/g, '') || event.id;
-            
-        // Determine location and coordinates
-        const locationStr = getLocalityFromPostcode(event.postcode).toLowerCase();
-        const coords = getCoordinatesForVenue(event.venue, event.postcode);
-        
-        return {
-            id: event.id,
-            title: event.title,
-            date: event.date,
-            endDate: event.endDate,
-            category: event.category,
-            venue: event.venue,
-            postcode: event.postcode,
-            location: locationStr,
-            latitude: coords ? coords.latitude : null,
-            longitude: coords ? coords.longitude : null,
-            isFree: event.isFree,
-            coverImage: event.coverImage,
-            link: event.link,
-            slug: slug
-        };
-    });
+function slugify(...parts: string[]): string {
+    return parts
+        .join("-")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 80);
+}
+
+export function toMobileEvent(event: Event): MobileEventDTO {
+    const location = getLocationSlugFromPostcode(event.postcode);
+    const coordinates = getCoordinatesForLocation(location);
+
+    return {
+        id: event.id,
+        title: event.title,
+        date: event.date,
+        endDate: event.endDate,
+        category: event.category,
+        venue: event.venue,
+        postcode: event.postcode,
+        location,
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
+        isFree: event.isFree,
+        coverImage: event.coverImage,
+        link: event.link || null,
+        slug: event.id.replace(/-/g, ""),
+    };
+}
+
+export function toMobileEvents(events: Event[]): MobileEventDTO[] {
+    return events.map(toMobileEvent);
 }

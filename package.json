@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "sync-mobile-api": "tsx scripts/sync-mobile-api.ts",
-    "sync:mobile": "npm run sync-mobile-api",
+    "sync:mobile": "tsx scripts/sync-mobile-api.ts",
+    "export:mobile": "tsx scripts/export-mobile-events.ts",
     "verify:content": "tsx scripts/verify-content.ts",
     "verify:api": "tsx scripts/verify-content.ts --api-only",
     "sync:verify": "npm run sync-mobile-api && npm run verify:content"
