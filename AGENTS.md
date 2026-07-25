@@ -54,9 +54,9 @@ Mobile API + database   ←── single runtime source of truth
 1. **One runtime source of truth:** the Mobile API database — not Notion, not a second site-only DB.
 2. **Notion is write-path only for the sync job.** Site builds and the iOS app must not call Notion in production.
 3. **Website is static** (`output: 'export'`). Event data is snapshotted at build time from the API.
-4. **Content updates ≤ once per day.** Prefer one pipeline: **sync → redeploy site**. Do not add independent empty-commit “daily rebuild” bots.
-5. **Cheapest secure path wins.** No SSR/ISR required for content freshness at this cadence.
-6. **Secrets stay off clients.** No Notion keys or sync secrets in the browser, iOS app, or public env.
+4. **Near real-time target (~1 minute):** Notion → Content Sync (webhook `repository_dispatch` or 5‑min cron) → API. Site polls API every ~45s in the browser; app reads API live. See [`docs/near-realtime.md`](docs/near-realtime.md).
+5. **Static HTML is a snapshot for SEO/first paint.** Do not rely on Pages rebuild alone for “within a minute.”
+6. **Secrets stay off clients.** No Notion keys or sync secrets in the browser, iOS app, or public env. Public API GETs only.
 
 ### What is in sync when?
 
@@ -157,13 +157,13 @@ Flow:
 Workflow **Content Sync** (`.github/workflows/content-sync.yml`):
 
 1. `npm run sync-mobile-api` — Notion → API  
-2. `npm run verify:content` — **must pass** or job fails (no site deploy)  
-3. Cloudflare Pages Deploy Hook — only after green verify  
+2. `npm run verify:content` — **must pass** or job fails  
+3. Cloudflare Pages Deploy Hook — SEO shell (optional if secret missing; users still get live client data)
 
-Create the hook: **Workers & Pages** → Pages project → **Settings** → **Deploy hooks**.  
-Secret: `CLOUDFLARE_DEPLOY_HOOK` (never commit). Optional: `SITE_URL` for origin smoke check.
+**Triggers:** `repository_dispatch` (`notion-update` / `content-sync`), `workflow_dispatch`, cron every **5 minutes** (backup).
 
-`verify:content` fails the pipeline if events are missing in the API, stale rows remain, or title/date/isFree diverge from Notion — protecting both the **app** (live API) and the **site** (next static build from the same API).
+Site live path: `useLiveEvents` + `client-api.ts` → `GET /events` every 45s.  
+Full near-realtime setup: [`docs/near-realtime.md`](docs/near-realtime.md).
 
 ---
 
