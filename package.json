@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "eslint",
     "sync-mobile-api": "tsx scripts/sync-mobile-api.ts",
-    "sync:mobile": "npm run sync-mobile-api"
+    "sync:mobile": "npm run sync-mobile-api",
+    "verify:content": "tsx scripts/verify-content.ts",
+    "verify:api": "tsx scripts/verify-content.ts --api-only",
+    "sync:verify": "npm run sync-mobile-api && npm run verify:content"
   },
   "dependencies": {
     "@notionhq/client": "^5.8.0",

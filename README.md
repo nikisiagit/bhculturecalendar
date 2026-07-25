@@ -9,8 +9,14 @@ Project architecture (website, content sync, Mobile API, iOS boundary) is docume
 | [AGENTS.md](./AGENTS.md) | Primary agent/project rules |
 | [CLAUDE.md](./CLAUDE.md) | Pointer for Claude Code–style tools → AGENTS.md |
 | [docs/specs/content-sync-architecture.md](./docs/specs/content-sync-architecture.md) | Full content-sync architecture spec |
+| [docs/setup-and-verification.md](./docs/setup-and-verification.md) | Setup walkthrough + automated verify steps |
 
-Local secrets go in `.env.local` (not committed). CI secrets go in GitHub Actions / host dashboards.
+Local secrets go in `.env.local` (not committed). CI secrets go in GitHub Actions / Cloudflare dashboards.
+
+```bash
+npm run sync:verify   # sync Notion → API, then fail if DB/API ≠ Notion
+npm run verify:api    # public API health only
+```
 
 ## Getting Started
 

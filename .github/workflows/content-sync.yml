@@ -1,5 +1,5 @@
-# Content Sync: Notion → Mobile API, then rebuild Cloudflare Pages.
-# See AGENTS.md and docs/specs/content-sync-architecture.md
+# Content Sync: Notion → Mobile API, verify parity, then rebuild Cloudflare Pages.
+# See AGENTS.md and docs/setup-and-verification.md
 #
 # Required GitHub secrets:
 #   NOTION_API_KEY
@@ -7,7 +7,8 @@
 #   MOBILE_SYNC_SECRET
 #   CLOUDFLARE_PAGES_DEPLOY_HOOK_URL
 # Optional:
-#   MOBILE_API_URL (defaults to https://api.bhculturecalendar.co.uk)
+#   MOBILE_API_URL   (defaults in scripts to production API)
+#   SITE_URL         (e.g. https://bhculturecalendar.co.uk — origin smoke check)
 
 name: Content Sync
 
@@ -22,7 +23,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  sync-and-deploy:
+  sync-verify-deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -46,9 +47,16 @@ jobs:
           NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
           MOBILE_SYNC_SECRET: ${{ secrets.MOBILE_SYNC_SECRET }}
-          # Optional secret; script defaults to production API if unset/empty
           MOBILE_API_URL: ${{ secrets.MOBILE_API_URL }}
         run: npm run sync-mobile-api
+
+      - name: Verify API + Notion parity (app & site data path)
+        env:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+          MOBILE_API_URL: ${{ secrets.MOBILE_API_URL }}
+          SITE_URL: ${{ secrets.SITE_URL }}
+        run: npm run verify:content
 
       - name: Redeploy Cloudflare Pages
         env:

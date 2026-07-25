@@ -97,6 +97,11 @@ docs/specs/            # Architecture and change specs
 | `npm run dev` | Local Next dev server |
 | `npm run build` | Static export production build |
 | `npm run sync-mobile-api` / `sync:mobile` | Run Notion → API sync |
+| `npm run verify:content` | Automated checks: API health + Notion ↔ API parity (fails CI if DB stale/wrong) |
+| `npm run verify:api` | Public API health only (app/site read path) |
+| `npm run sync:verify` | Sync then full verify |
+
+Full walkthrough: [`docs/setup-and-verification.md`](docs/setup-and-verification.md)
 
 ---
 
@@ -149,24 +154,16 @@ Flow:
 
 ### CI target
 
-One workflow (see spec): **Content Sync** = run sync → on success fire a **Cloudflare Pages Deploy Hook**.
+Workflow **Content Sync** (`.github/workflows/content-sync.yml`):
 
-Create the hook in Cloudflare dashboard:
+1. `npm run sync-mobile-api` — Notion → API  
+2. `npm run verify:content` — **must pass** or job fails (no site deploy)  
+3. Cloudflare Pages Deploy Hook — only after green verify  
 
-**Workers & Pages** → your Pages project → **Settings** → **Deploy hooks** → create hook (e.g. “After content sync”).
+Create the hook: **Workers & Pages** → Pages project → **Settings** → **Deploy hooks**.  
+Secret: `CLOUDFLARE_PAGES_DEPLOY_HOOK_URL` (never commit). Optional: `SITE_URL` for origin smoke check.
 
-Store the hook URL only in GitHub Actions secret `CLOUDFLARE_PAGES_DEPLOY_HOOK_URL` (or `SITE_DEPLOY_HOOK_URL`). Never commit it.
-
-```yaml
-# After successful npm run sync-mobile-api:
-- name: Redeploy Cloudflare Pages
-  run: curl -fsS -X POST "${{ secrets.CLOUDFLARE_PAGES_DEPLOY_HOOK_URL }}"
-```
-
-Remove when implementing:
-
-- `daily-rebuild.yml`
-- `rebuild.yml`
+`verify:content` fails the pipeline if events are missing in the API, stale rows remain, or title/date/isFree diverge from Notion — protecting both the **app** (live API) and the **site** (next static build from the same API).
 
 ---
 
@@ -249,11 +246,12 @@ Update this section when work lands.
 |------|--------|
 | `api-events.ts` API path | Present (`EVENTS_SOURCE` default `api`) |
 | Sync script | Present (`scripts/sync-mobile-api.ts`) |
-| Single Content Sync GHA | Present (`.github/workflows/content-sync.yml`) |
-| Deploy hook after sync | Wired in workflow (set `CLOUDFLARE_PAGES_DEPLOY_HOOK_URL` secret) |
-| Remove empty-commit rebuild workflows | Done (removed `daily-rebuild.yml`, `rebuild.yml`) |
-| Production site guaranteed Notion-free | Confirm Pages build env on Cloudflare |
-| AGENTS.md + architecture spec | Done |
+| Verify script (Notion ↔ API) | Present (`scripts/verify-content.ts`) |
+| Single Content Sync GHA | Present — sync → verify → Deploy Hook |
+| Deploy hook after sync | Wired (set `CLOUDFLARE_PAGES_DEPLOY_HOOK_URL`) |
+| Empty-commit rebuild workflows | Removed |
+| Setup walkthrough | [`docs/setup-and-verification.md`](docs/setup-and-verification.md) |
+| Production site Notion-free | Confirm Pages env on Cloudflare |
 
 ---
 
