@@ -19,12 +19,11 @@ async function main() {
     const env = requireEnv(
         "NOTION_API_KEY",
         "NOTION_DATABASE_ID",
-        "MOBILE_API_URL",
         "MOBILE_SYNC_SECRET",
     );
     const { getEvents } = await import("../src/lib/notion");
     const { toMobileEvents } = await import("../src/lib/mobile-api");
-    const apiUrl = env.MOBILE_API_URL;
+    const apiUrl = (process.env.MOBILE_API_URL || "https://api.bhculturecalendar.co.uk").trim();
     const syncSecret = env.MOBILE_SYNC_SECRET;
 
     const events = await getEvents();

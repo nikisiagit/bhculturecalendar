@@ -7,8 +7,12 @@
     "build": "rm -rf .next && next build",
     "start": "next start",
     "lint": "eslint",
+    "sync-mobile-api": "tsx scripts/sync-mobile-api.ts",
     "sync:mobile": "tsx scripts/sync-mobile-api.ts",
-    "export:mobile": "tsx scripts/export-mobile-events.ts"
+    "export:mobile": "tsx scripts/export-mobile-events.ts",
+    "verify:content": "tsx scripts/verify-content.ts",
+    "verify:api": "tsx scripts/verify-content.ts --api-only",
+    "sync:verify": "npm run sync-mobile-api && npm run verify:content"
   },
   "dependencies": {
     "@notionhq/client": "^5.8.0",
@@ -25,7 +29,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.4",
-    "tsx": "^4.20.3",
+    "tsx": "^4.23.1",
     "typescript": "^5"
   }
 }
