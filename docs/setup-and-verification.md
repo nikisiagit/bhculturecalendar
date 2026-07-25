@@ -43,7 +43,7 @@ Repo → **Settings → Secrets and variables → Actions**:
 | `NOTION_API_KEY` | Yes | Sync + verify |
 | `NOTION_DATABASE_ID` | Yes | Sync + verify |
 | `MOBILE_SYNC_SECRET` | Yes | Write to API |
-| `CLOUDFLARE_PAGES_DEPLOY_HOOK_URL` | Yes | Redeploy site after green verify |
+| `CLOUDFLARE_DEPLOY_HOOK` | Yes | Redeploy site after green verify |
 | `MOBILE_API_URL` | No | Override API base |
 | `SITE_URL` | No | `https://your-domain` for origin check |
 
@@ -55,7 +55,7 @@ Repo → **Settings → Secrets and variables → Actions**:
    - `EVENTS_SOURCE` = `api`
    - `MOBILE_API_URL` = `https://api.bhculturecalendar.co.uk`
 4. **Do not** put Notion or sync secrets on Pages.
-5. **Settings → Deploy hooks** → create hook (e.g. `after-content-sync`) → copy URL into GitHub secret `CLOUDFLARE_PAGES_DEPLOY_HOOK_URL`.
+5. **Settings → Deploy hooks** → create hook (e.g. `after-content-sync`) → copy URL into GitHub secret `CLOUDFLARE_DEPLOY_HOOK`.
 
 ### A4. Cloudflare API Worker
 

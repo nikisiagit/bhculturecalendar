@@ -222,7 +222,7 @@ jobs:
         run: npm run sync-mobile-api
       - name: Redeploy Cloudflare Pages
         # Pages Deploy Hook — no git noise; URL is a secret
-        run: curl -fsS -X POST "${{ secrets.CLOUDFLARE_PAGES_DEPLOY_HOOK_URL }}"
+        run: curl -fsS -X POST "${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}"
 ```
 
 **Create the Deploy Hook (Cloudflare dashboard):**  
@@ -237,7 +237,7 @@ Docs: [Cloudflare Pages Deploy Hooks](https://developers.cloudflare.com/pages/co
 | `NOTION_API_KEY` | Notion read |
 | `NOTION_DATABASE_ID` | Notion data source |
 | `MOBILE_SYNC_SECRET` | Admin write to API Worker |
-| `CLOUDFLARE_PAGES_DEPLOY_HOOK_URL` | Trigger Pages rebuild after sync |
+| `CLOUDFLARE_DEPLOY_HOOK` | Trigger Pages rebuild after sync |
 
 **Variables (optional):** `MOBILE_API_URL` for non-prod targets.
 
@@ -308,7 +308,7 @@ Suggested iOS env:
 | `MOBILE_SYNC_SECRET` | ✓ | ✗ | ✗ | ✓ (verify) |
 | `MOBILE_API_URL` | ✓ | ✓ | ✓ (config) | n/a |
 | `EVENTS_SOURCE` | ✗ | `api` | ✗ | ✗ |
-| `CLOUDFLARE_PAGES_DEPLOY_HOOK_URL` | ✓ | ✗ | ✗ | ✗ |
+| `CLOUDFLARE_DEPLOY_HOOK` | ✓ | ✗ | ✗ | ✗ |
 
 Local development:
 
@@ -333,7 +333,7 @@ Local development:
 ### Phase 2 — Single Content Sync workflow
 
 1. Add `.github/workflows/content-sync.yml` (sync + Cloudflare Pages Deploy Hook).
-2. Create Deploy Hook in Cloudflare Pages settings; store URL in GitHub secret `CLOUDFLARE_PAGES_DEPLOY_HOOK_URL`.
+2. Create Deploy Hook in Cloudflare Pages settings; store URL in GitHub secret `CLOUDFLARE_DEPLOY_HOOK`.
 3. Configure remaining GitHub secrets (`NOTION_*`, `MOBILE_SYNC_SECRET`).
 4. Set Pages build env: `EVENTS_SOURCE=api`, `MOBILE_API_URL=…`.
 5. Run workflow manually; confirm API rows and a new Pages deployment (source: Deploy Hook).

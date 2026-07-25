@@ -5,7 +5,7 @@
 #   NOTION_API_KEY
 #   NOTION_DATABASE_ID
 #   MOBILE_SYNC_SECRET
-#   CLOUDFLARE_PAGES_DEPLOY_HOOK_URL
+#   CLOUDFLARE_DEPLOY_HOOK
 # Optional:
 #   MOBILE_API_URL   (defaults in scripts to production API)
 #   SITE_URL         (e.g. https://bhculturecalendar.co.uk — origin smoke check)
@@ -60,12 +60,12 @@ jobs:
 
       - name: Redeploy Cloudflare Pages
         env:
-          HOOK_URL: ${{ secrets.CLOUDFLARE_PAGES_DEPLOY_HOOK_URL }}
+          HOOK_URL: ${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}
         run: |
           if [ -z "$HOOK_URL" ]; then
-            echo "Missing secret CLOUDFLARE_PAGES_DEPLOY_HOOK_URL"
+            echo "Missing secret CLOUDFLARE_DEPLOY_HOOK"
             echo "Create a Deploy Hook in Cloudflare Pages → Settings → Deploy hooks"
-            echo "and add the URL as a GitHub Actions repository secret."
+            echo "and add the URL as a GitHub Actions repository secret named CLOUDFLARE_DEPLOY_HOOK."
             exit 1
           fi
           curl -fsS -X POST "$HOOK_URL"

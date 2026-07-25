@@ -161,7 +161,7 @@ Workflow **Content Sync** (`.github/workflows/content-sync.yml`):
 3. Cloudflare Pages Deploy Hook — only after green verify  
 
 Create the hook: **Workers & Pages** → Pages project → **Settings** → **Deploy hooks**.  
-Secret: `CLOUDFLARE_PAGES_DEPLOY_HOOK_URL` (never commit). Optional: `SITE_URL` for origin smoke check.
+Secret: `CLOUDFLARE_DEPLOY_HOOK` (never commit). Optional: `SITE_URL` for origin smoke check.
 
 `verify:content` fails the pipeline if events are missing in the API, stale rows remain, or title/date/isFree diverge from Notion — protecting both the **app** (live API) and the **site** (next static build from the same API).
 
@@ -222,7 +222,7 @@ Static export implications:
 |--------|------------|
 | `NOTION_*` | GitHub Actions sync job, local `.env.local` for sync |
 | `MOBILE_SYNC_SECRET` | Sync job, API Worker secrets (e.g. `wrangler secret`) |
-| `CLOUDFLARE_PAGES_DEPLOY_HOOK_URL` | GitHub Actions only (Pages deploy hook URL is a secret) |
+| `CLOUDFLARE_DEPLOY_HOOK` | GitHub Actions only (Pages deploy hook URL is a secret) |
 | `MOBILE_API_URL` | Site build, sync job, iOS config (public URL OK) |
 | Cloudflare API tokens | Only if using Wrangler/CI deploy; never in client code |
 
@@ -248,7 +248,7 @@ Update this section when work lands.
 | Sync script | Present (`scripts/sync-mobile-api.ts`) |
 | Verify script (Notion ↔ API) | Present (`scripts/verify-content.ts`) |
 | Single Content Sync GHA | Present — sync → verify → Deploy Hook |
-| Deploy hook after sync | Wired (set `CLOUDFLARE_PAGES_DEPLOY_HOOK_URL`) |
+| Deploy hook after sync | Wired (set `CLOUDFLARE_DEPLOY_HOOK`) |
 | Empty-commit rebuild workflows | Removed |
 | Setup walkthrough | [`docs/setup-and-verification.md`](docs/setup-and-verification.md) |
 | Production site Notion-free | Confirm Pages env on Cloudflare |
