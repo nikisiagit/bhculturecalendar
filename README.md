@@ -1,5 +1,17 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## For AI agents and contributors
+
+Project architecture (website, content sync, Mobile API, iOS boundary) is documented for humans and coding agents. **No secret values** belong in these files—only env var names and public URLs.
+
+| Doc | Purpose |
+|-----|---------|
+| [AGENTS.md](./AGENTS.md) | Primary agent/project rules |
+| [CLAUDE.md](./CLAUDE.md) | Pointer for Claude Code–style tools → AGENTS.md |
+| [docs/specs/content-sync-architecture.md](./docs/specs/content-sync-architecture.md) | Full content-sync architecture spec |
+
+Local secrets go in `.env.local` (not committed). CI secrets go in GitHub Actions / host dashboards.
+
 ## Getting Started
 
 First, run the development server:

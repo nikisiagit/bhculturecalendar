@@ -1,0 +1,64 @@
+# Content Sync: Notion → Mobile API, then rebuild Cloudflare Pages.
+# See AGENTS.md and docs/specs/content-sync-architecture.md
+#
+# Required GitHub secrets:
+#   NOTION_API_KEY
+#   NOTION_DATABASE_ID
+#   MOBILE_SYNC_SECRET
+#   CLOUDFLARE_PAGES_DEPLOY_HOOK_URL
+# Optional:
+#   MOBILE_API_URL (defaults to https://api.bhculturecalendar.co.uk)
+
+name: Content Sync
+
+on:
+  schedule:
+    # Once daily 06:00 UTC — adjust if you prefer UK morning
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: content-sync
+  cancel-in-progress: false
+
+jobs:
+  sync-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Sync Notion → Mobile API
+        env:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+          MOBILE_SYNC_SECRET: ${{ secrets.MOBILE_SYNC_SECRET }}
+          # Optional secret; script defaults to production API if unset/empty
+          MOBILE_API_URL: ${{ secrets.MOBILE_API_URL }}
+        run: npm run sync-mobile-api
+
+      - name: Redeploy Cloudflare Pages
+        env:
+          HOOK_URL: ${{ secrets.CLOUDFLARE_PAGES_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$HOOK_URL" ]; then
+            echo "Missing secret CLOUDFLARE_PAGES_DEPLOY_HOOK_URL"
+            echo "Create a Deploy Hook in Cloudflare Pages → Settings → Deploy hooks"
+            echo "and add the URL as a GitHub Actions repository secret."
+            exit 1
+          fi
+          curl -fsS -X POST "$HOOK_URL"
+          echo "Cloudflare Pages deploy hook triggered."
