@@ -6,14 +6,15 @@ import { Event } from "@/lib/notion";
 import FilterBar from "./FilterBar";
 import CalendarView from "./CalendarView";
 import FeaturedCarousel from "./FeaturedCarousel";
-
+import { useLiveEvents } from "@/hooks/useLiveEvents";
+import { getLocalityFromPostcode } from "@/lib/location";
 
 interface EventsClientProps {
     events: Event[];
     allCategories: string[];
+    /** When set, live API refreshes re-apply this location filter (whats-on/[location]). */
+    locationFilter?: string | null;
 }
-
-import { getLocalityFromPostcode } from "@/lib/location";
 function formatDateRange(start: string, end: string | null): string {
     if (!start) return "Date TBC";
 
@@ -212,9 +213,34 @@ function EventCard({ event }: { event: Event }) {
     );
 }
 
-function EventsClientContent({ events, allCategories }: EventsClientProps) {
+function filterEventsByLocation(events: Event[], locationSlug: string): Event[] {
+    const lowerLocation = locationSlug.toLowerCase();
+    return events.filter((event) => {
+        const locality = getLocalityFromPostcode(event.postcode).toLowerCase();
+        const normalizedLocality = locality.replace(/\s+/g, "-");
+        if (normalizedLocality === lowerLocation) return true;
+        const searchString = lowerLocation.replace(/-/g, " ");
+        return event.venue.some((v) => v.toLowerCase().includes(searchString));
+    });
+}
+
+function EventsClientContent({ events: initialEvents, allCategories: initialCategories, locationFilter }: EventsClientProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const { events: liveEvents } = useLiveEvents(initialEvents);
+
+    // Live list from API; re-apply location scope when on /whats-on/[location]
+    const events = useMemo(() => {
+        if (locationFilter) {
+            return filterEventsByLocation(liveEvents, locationFilter);
+        }
+        return liveEvents;
+    }, [liveEvents, locationFilter]);
+
+    const allCategories = useMemo(() => {
+        const fromLive = Array.from(new Set(events.flatMap((e) => e.category))).sort();
+        return fromLive.length > 0 ? fromLive : initialCategories;
+    }, [events, initialCategories]);
 
     // Read state from URL or fallback to null/false
     const selectedCategory = searchParams.get("category");

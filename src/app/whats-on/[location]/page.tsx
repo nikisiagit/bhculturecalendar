@@ -118,7 +118,11 @@ export default async function LocationWhatsOnPage({
           What's On in {town}
         </h1>
 
-        <EventsClient events={events} allCategories={allCategories} />
+        <EventsClient
+          events={events}
+          allCategories={allCategories}
+          locationFilter={lowerLocation}
+        />
       </main>
 
       {/* Footer */}

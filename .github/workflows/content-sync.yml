@@ -1,22 +1,24 @@
-# Content Sync: Notion → Mobile API, verify parity, then rebuild Cloudflare Pages.
-# See AGENTS.md and docs/setup-and-verification.md
+# Content Sync: Notion → Mobile API (fast path for ~1 minute freshness).
+# See docs/near-realtime.md and docs/setup-and-verification.md
 #
 # Required GitHub secrets:
 #   NOTION_API_KEY
 #   NOTION_DATABASE_ID
 #   MOBILE_SYNC_SECRET
-#   CLOUDFLARE_DEPLOY_HOOK
+#   CLOUDFLARE_DEPLOY_HOOK  (optional for user-facing freshness; still used for SEO HTML)
 # Optional:
-#   MOBILE_API_URL   (defaults in scripts to production API)
-#   SITE_URL         (e.g. https://bhculturecalendar.co.uk — origin smoke check)
+#   MOBILE_API_URL   (use *.workers.dev in CI to avoid bot challenges)
 
 name: Content Sync
 
 on:
+  # Safety net: GitHub schedules are not reliable under 5 minutes
   schedule:
-    # Once daily 06:00 UTC — adjust if you prefer UK morning
-    - cron: "0 6 * * *"
+    - cron: "*/5 * * * *"
   workflow_dispatch:
+  # Near-instant: Notion automation / Make / curl → repository_dispatch
+  repository_dispatch:
+    types: [content-sync, notion-update]
 
 concurrency:
   group: content-sync
@@ -55,19 +57,17 @@ jobs:
           NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
           MOBILE_API_URL: ${{ secrets.MOBILE_API_URL }}
-          # Do not pass SITE_URL here: public HTML is often 403 from GHA (Cloudflare bot
-          # fight). Content correctness is Notion↔API + public API health only.
         run: npm run verify:content
 
-      - name: Redeploy Cloudflare Pages
+      # Site UI polls the API live; deploy keeps static HTML/SEO closer to current data.
+      - name: Redeploy Cloudflare Pages (SEO shell)
         env:
           HOOK_URL: ${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}
         run: |
           if [ -z "$HOOK_URL" ]; then
-            echo "Missing secret CLOUDFLARE_DEPLOY_HOOK"
-            echo "Create a Deploy Hook in Cloudflare Pages → Settings → Deploy hooks"
-            echo "and add the URL as a GitHub Actions repository secret named CLOUDFLARE_DEPLOY_HOOK."
-            exit 1
+            echo "No CLOUDFLARE_DEPLOY_HOOK — skipping Pages rebuild."
+            echo "Users still see fresh events via client-side API polling."
+            exit 0
           fi
           curl -fsS -X POST "$HOOK_URL"
           echo "Cloudflare Pages deploy hook triggered."
