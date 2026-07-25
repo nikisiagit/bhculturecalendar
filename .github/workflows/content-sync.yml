@@ -55,7 +55,8 @@ jobs:
           NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
           MOBILE_API_URL: ${{ secrets.MOBILE_API_URL }}
-          SITE_URL: ${{ secrets.SITE_URL }}
+          # Do not pass SITE_URL here: public HTML is often 403 from GHA (Cloudflare bot
+          # fight). Content correctness is Notion↔API + public API health only.
         run: npm run verify:content
 
       - name: Redeploy Cloudflare Pages
