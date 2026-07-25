@@ -50,48 +50,33 @@ Ensure the app:
 
 Then app latency ≈ **time until Content Sync finishes** + **time until next app fetch**.
 
-## 3. Notion → API within ~1 minute
+## 3. Notion → API (Notion + GitHub + Cloudflare only)
 
-GitHub Actions **cannot** reliably schedule every 1 minute (minimum practical schedule is **5 minutes**). For **~1 minute**, trigger sync **when Notion changes**.
+Do **not** introduce Make/Zapier. Use the scaffolded Worker:
 
-### A. Trigger Content Sync via `repository_dispatch` (recommended)
+**[`workers/content-sync-trigger/`](../workers/content-sync-trigger/)**
 
-**GitHub secret:** create a fine-grained or classic PAT with `repo` scope → store as repo secret `CONTENT_SYNC_DISPATCH_TOKEN` only if you use a relay; for Make/Zapier, put the token in that tool’s vault (not in this repo).
+| Piece | Role |
+|-------|------|
+| CF Worker cron `*/15` | Reliable backup dispatch |
+| `POST /trigger` + secret | Notion webhook or manual |
+| GitHub Content Sync | Actual Notion → API sync + verify |
 
-**HTTP call** (from Make, Zapier, n8n, or a tiny Worker):
+### Deploy trigger Worker
 
 ```bash
-curl -X POST \
-  -H "Accept: application/vnd.github+json" \
-  -H "Authorization: Bearer YOUR_GITHUB_PAT" \
-  -H "X-GitHub-Api-Version: 2022-11-28" \
-  https://api.github.com/repos/nikisiagit/bhculturecalendar/dispatches \
-  -d '{"event_type":"notion-update"}'
+cd workers/content-sync-trigger
+npm install
+npx wrangler secret put GITHUB_TOKEN
+npx wrangler secret put TRIGGER_SECRET
+npx wrangler deploy
 ```
 
-`event_type` must be `notion-update` or `content-sync` (see workflow).
+See that folder’s `README.md` for PAT scopes and Notion webhook URL shape.
 
-**Notion side options:**
+### Optional: GitHub schedule
 
-1. **Notion Automations** (if available on your plan) → “Send webhook” to Make/Worker  
-2. **Make.com / Zapier:** Notion “Database item created/updated” → HTTP module with the curl above  
-3. Manual: Actions → Content Sync → Run workflow  
-
-Typical latency: **Notion event → dispatch → runner start → sync** often **30–90 seconds**.
-
-### B. Backup: every 5 minutes
-
-Workflow schedule:
-
-```yaml
-cron: "*/5 * * * *"
-```
-
-Catches missed webhooks. Worst case without webhook: **5 minutes**.
-
-### C. True 1-minute poll without GitHub (optional later)
-
-Cloudflare **Worker Cron** `* * * * *` that runs the same Notion→API sync logic (or calls a private sync endpoint). Move sync into the API Worker repo if you want that.
+Content Sync still has a schedule as a last-resort safety net. Prefer the **Cloudflare cron** as the reliable timer.
 
 ## 4. End-to-end budget (~1 minute)
 

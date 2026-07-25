@@ -160,7 +160,9 @@ Workflow **Content Sync** (`.github/workflows/content-sync.yml`):
 2. `npm run verify:content` — **must pass** or job fails  
 3. Cloudflare Pages Deploy Hook — SEO shell (optional if secret missing; users still get live client data)
 
-**Triggers:** `repository_dispatch` (`notion-update` / `content-sync`), `workflow_dispatch`, cron every **5 minutes** (backup).
+**Triggers:** `repository_dispatch` (`notion-update` / `content-sync`), `workflow_dispatch`, optional GH schedule.
+
+**Preferred reliable timer (CF only):** [`workers/content-sync-trigger/`](workers/content-sync-trigger/) — cron every 15 min + `POST /trigger` → GitHub dispatch. No Make/Zapier.
 
 Site live path: `useLiveEvents` + `client-api.ts` → `GET /events` every 45s.  
 Full near-realtime setup: [`docs/near-realtime.md`](docs/near-realtime.md).
