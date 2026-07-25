@@ -12,11 +12,12 @@
 name: Content Sync
 
 on:
-  # Safety net: GitHub schedules are not reliable under 5 minutes
+  # Last-resort safety net only. Prefer Cloudflare Worker cron/trigger:
+  # workers/content-sync-trigger (*/15 + POST /trigger → repository_dispatch).
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "0 * * * *"
   workflow_dispatch:
-  # Near-instant: Notion automation / Make / curl → repository_dispatch
+  # Fired by CF Worker (or manual API): near-realtime + 15‑min backup
   repository_dispatch:
     types: [content-sync, notion-update]
 

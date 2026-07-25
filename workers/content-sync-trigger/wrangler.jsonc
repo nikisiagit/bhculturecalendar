@@ -1,0 +1,19 @@
+{
+  "name": "bh-content-sync-trigger",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-01",
+  "workers_dev": true,
+  "observability": {
+    "enabled": true
+  },
+  // Non-secret defaults (override in dashboard if needed)
+  "vars": {
+    "GITHUB_OWNER": "nikisiagit",
+    "GITHUB_REPO": "bhculturecalendar",
+    "DISPATCH_EVENT_TYPE": "notion-update"
+  },
+  // Backup poller — every 15 minutes UTC (reliable on CF free tier)
+  "triggers": {
+    "crons": ["*/15 * * * *"]
+  }
+}

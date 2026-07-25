@@ -1,0 +1,3 @@
+# Copy to .dev.vars for local wrangler dev (never commit .dev.vars)
+GITHUB_TOKEN=ghp_your_pat_here
+TRIGGER_SECRET=generate_a_long_random_string

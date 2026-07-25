@@ -10,7 +10,8 @@ Project architecture (website, content sync, Mobile API, iOS boundary) is docume
 | [CLAUDE.md](./CLAUDE.md) | Pointer for Claude Code–style tools → AGENTS.md |
 | [docs/specs/content-sync-architecture.md](./docs/specs/content-sync-architecture.md) | Full content-sync architecture spec |
 | [docs/setup-and-verification.md](./docs/setup-and-verification.md) | Setup walkthrough + automated verify steps |
-| [docs/near-realtime.md](./docs/near-realtime.md) | Notion → app/site within ~1 minute |
+| [docs/near-realtime.md](./docs/near-realtime.md) | Notion → app/site near real-time |
+| [workers/content-sync-trigger/](./workers/content-sync-trigger/) | CF Worker: cron + HTTP → GitHub Content Sync |
 
 Local secrets go in `.env.local` (not committed). CI secrets go in GitHub Actions / Cloudflare dashboards.
 
