@@ -89,7 +89,7 @@ Notion cannot call GitHub directly; it can call **this Worker**.
 
 3. On each Notion publish, Worker dispatches GitHub → Content Sync runs.
 
-If webhooks are awkward on free Notion, rely on the **15‑minute cron** only (still only CF + GitHub + Notion).
+If webhooks are awkward on free Notion, rely on the **12‑hour cron** only (still only CF + GitHub + Notion).
 
 ## Config vars (`wrangler.jsonc`)
 
