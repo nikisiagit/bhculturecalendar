@@ -58,7 +58,7 @@ Do **not** introduce Make/Zapier. Use the scaffolded Worker:
 
 | Piece | Role |
 |-------|------|
-| CF Worker cron `*/15` | Reliable backup dispatch |
+| CF Worker cron every 12 hours | Reliable scheduled dispatch |
 | `POST /trigger` + secret | Notion webhook or manual |
 | GitHub Content Sync | Actual Notion → API sync + verify |
 

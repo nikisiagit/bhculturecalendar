@@ -12,12 +12,12 @@
 name: Content Sync
 
 on:
-  # Last-resort safety net only. Prefer Cloudflare Worker cron/trigger:
-  # workers/content-sync-trigger (*/15 + POST /trigger → repository_dispatch).
+  # Prefer Cloudflare Worker cron/trigger (workers/content-sync-trigger).
+  # This GH schedule is a backup (same cadence: every 12 hours UTC).
   schedule:
-    - cron: "0 * * * *"
+    - cron: "0 */12 * * *"
   workflow_dispatch:
-  # Fired by CF Worker (or manual API): near-realtime + 15‑min backup
+  # Fired by CF Worker (or manual API): POST /trigger → repository_dispatch
   repository_dispatch:
     types: [content-sync, notion-update]
 

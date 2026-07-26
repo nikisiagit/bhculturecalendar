@@ -3,7 +3,7 @@
  *
  * Stack: Notion + GitHub + Cloudflare only (no Make/Zapier).
  *
- * - Cron (every 15 min): repository_dispatch → GitHub Actions "Content Sync"
+ * - Cron (every 12 hours): repository_dispatch → GitHub Actions "Content Sync"
  * - POST /trigger with x-trigger-secret: same (for Notion webhooks or manual curl)
  * - GET /health: public liveness (no secrets)
  *
@@ -119,7 +119,7 @@ export default {
           health: "GET /health",
           trigger: "POST /trigger (header x-trigger-secret)",
         },
-        cron: "every 15 min * * * * (UTC)",
+        cron: "0 */12 * * * (UTC, every 12 hours)",
         dispatchEvent: env.DISPATCH_EVENT_TYPE || "notion-update",
       });
     }
