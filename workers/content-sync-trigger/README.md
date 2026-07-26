@@ -10,7 +10,7 @@ Cloudflare cron (and optional HTTP) fires GitHub `repository_dispatch`, which st
 
 | Trigger | Path |
 |---------|------|
-| Cron `*/15 * * * *` (UTC) | `scheduled` handler → GitHub dispatch |
+| Cron `0 */12 * * *` (UTC, every 12 hours) | `scheduled` handler → GitHub dispatch |
 | `POST /trigger` + secret | Manual or Notion webhook → same dispatch |
 | `GET /health` | Liveness (no secrets) |
 
@@ -28,15 +28,24 @@ Dispatch event type (default): **`notion-update`**
 
 ## Deploy
 
+**Important:** deploy from this folder only (`workers/content-sync-trigger`), not the Next.js repo root. Running `wrangler deploy` at the site root makes Wrangler auto-detect Next.js / OpenNext — do not do that.
+
 ```bash
+# 1) Update git so this folder exists (on main/develop)
+git fetch origin
+git checkout main
+git pull origin main
+
+# 2) Enter the Worker project (not the monorepo root)
 cd workers/content-sync-trigger
 npm install
 npx wrangler login
 
-# Secrets (interactive — do not put values in git)
+# 3) Secrets (interactive — do not put values in git)
 npx wrangler secret put GITHUB_TOKEN      # paste PAT
 npx wrangler secret put TRIGGER_SECRET    # long random string
 
+# 4) Deploy THIS worker only
 npx wrangler deploy
 ```
 

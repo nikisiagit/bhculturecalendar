@@ -162,7 +162,7 @@ Workflow **Content Sync** (`.github/workflows/content-sync.yml`):
 
 **Triggers:** `repository_dispatch` (`notion-update` / `content-sync`), `workflow_dispatch`, optional GH schedule.
 
-**Preferred reliable timer (CF only):** [`workers/content-sync-trigger/`](workers/content-sync-trigger/) — cron every 15 min + `POST /trigger` → GitHub dispatch. No Make/Zapier.
+**Preferred reliable timer (CF only):** [`workers/content-sync-trigger/`](workers/content-sync-trigger/) — cron every 12 hours + `POST /trigger` → GitHub dispatch. No Make/Zapier.
 
 Site live path: `useLiveEvents` + `client-api.ts` → `GET /events` every 45s.  
 Full near-realtime setup: [`docs/near-realtime.md`](docs/near-realtime.md).
