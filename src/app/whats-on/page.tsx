@@ -3,13 +3,8 @@ import EventsClient from "@/components/EventsClient";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
-import Link from "next/link";
 import { Metadata } from "next";
-import {
-  SITE_URL,
-  buildItemListJsonLd,
-  categoryPath,
-} from "@/lib/seo";
+import { SITE_URL, buildItemListJsonLd } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   const canonicalUrl = `${SITE_URL}/whats-on`;
@@ -63,32 +58,9 @@ export default async function WhatsOnPage() {
       <Header events={events} />
 
       <main className="main">
-        <header className="seo-page-header">
-          <h1 className="page-title seo-h1">
-            What&apos;s on in Bournemouth, Poole &amp; Christchurch
-          </h1>
-          <p className="seo-lead">
-            Your guide to culture in the BH postcode area — theatre, art, comedy,
-            festivals and free events across Bournemouth, Christchurch, Poole and
-            nearby towns.
-          </p>
-          {allCategories.length > 0 && (
-            <nav className="seo-category-nav" aria-label="Event categories">
-              {allCategories.map((cat) => (
-                <Link key={cat} href={categoryPath(cat)} className="seo-chip">
-                  {cat}
-                </Link>
-              ))}
-            </nav>
-          )}
-          <nav className="seo-town-nav" aria-label="Towns">
-            <Link href="/whats-on/bournemouth">Bournemouth</Link>
-            <Link href="/whats-on/poole">Poole</Link>
-            <Link href="/whats-on/christchurch">Christchurch</Link>
-            <Link href="/venues">Venues</Link>
-          </nav>
-        </header>
-
+        <h1 className="visually-hidden">
+          What&apos;s on in Bournemouth, Poole and Christchurch
+        </h1>
         <EventsClient events={events} allCategories={allCategories} />
       </main>
 

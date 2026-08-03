@@ -4,10 +4,9 @@ import { getLocalityFromPostcode } from "@/lib/location";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
-import Link from "next/link";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { SITE_URL, buildItemListJsonLd, categoryPath } from "@/lib/seo";
+import { SITE_URL, buildItemListJsonLd } from "@/lib/seo";
 
 const VALID_LOCATIONS = [
   "bournemouth", "christchurch", "poole",
@@ -117,32 +116,7 @@ export default async function LocationWhatsOnPage({
       <Header events={allEvents} />
 
       <main className="main">
-        <header className="seo-page-header">
-          <h1 className="page-title seo-h1">What&apos;s on in {town}</h1>
-          <p className="seo-lead">
-            Theatre, art, comedy and cultural events in {town} and the surrounding BH
-            postcode area. {events.length} listing{events.length === 1 ? "" : "s"} on
-            BH Culture Calendar.
-          </p>
-          {allCategories.length > 0 && (
-            <nav className="seo-category-nav" aria-label="Categories in this town">
-              {allCategories.map((cat) => (
-                <Link key={cat} href={categoryPath(cat)} className="seo-chip">
-                  {cat}
-                </Link>
-              ))}
-            </nav>
-          )}
-          <p className="seo-body">
-            Also see{" "}
-            <Link href="/whats-on">all what&apos;s on</Link>,{" "}
-            <Link href="/venues">venues</Link>, and nearby{" "}
-            <Link href="/whats-on/bournemouth">Bournemouth</Link>,{" "}
-            <Link href="/whats-on/poole">Poole</Link>,{" "}
-            <Link href="/whats-on/christchurch">Christchurch</Link>.
-          </p>
-        </header>
-
+        <h1 className="visually-hidden">What&apos;s on in {town}</h1>
         <EventsClient
           events={events}
           allCategories={allCategories}
