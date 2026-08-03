@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { venuePath } from "@/lib/seo";
 
 
 // Group venues by first letter
@@ -41,7 +42,9 @@ export default async function VenuesPage() {
                 <h1 className="page-title">VENUES & SITES</h1>
 
                 <p className="venues-intro">
-                    Discover cultural venues, galleries, theatres, and event spaces across the BH postcode area.
+                    Discover cultural venues, galleries, theatres, and event spaces across
+                    Bournemouth, Christchurch, Poole and the BH postcode area. Open a venue
+                    for what&apos;s on next.
                 </p>
 
                 {/* Quick Stats */}
@@ -74,9 +77,17 @@ export default async function VenuesPage() {
                                 {groupedVenues[letter].map(venue => (
                                     <div key={venue.id} className="venue-card">
                                         <h3 className="venue-name">
+                                            <Link href={venuePath(venue.name)}>
+                                                {venue.name}
+                                            </Link>
                                             {venue.link ? (
-                                                <a href={venue.link} target="_blank" rel="noopener noreferrer">
-                                                    {venue.name}
+                                                <a
+                                                    href={venue.link}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="venue-external"
+                                                    aria-label={`${venue.name} official website`}
+                                                >
                                                     <svg
                                                         className="external-icon"
                                                         width="1em"
@@ -92,9 +103,7 @@ export default async function VenuesPage() {
                                                         <polyline points="7 7 17 7 17 17"></polyline>
                                                     </svg>
                                                 </a>
-                                            ) : (
-                                                venue.name
-                                            )}
+                                            ) : null}
                                         </h3>
                                         {venue.categories.length > 0 && (
                                             <div className="venue-categories">

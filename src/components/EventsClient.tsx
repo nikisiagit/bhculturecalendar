@@ -6,8 +6,10 @@ import { Event } from "@/lib/notion";
 import FilterBar from "./FilterBar";
 import CalendarView from "./CalendarView";
 import FeaturedCarousel from "./FeaturedCarousel";
+import Link from "next/link";
 import { useLiveEvents } from "@/hooks/useLiveEvents";
 import { getLocalityFromPostcode } from "@/lib/location";
+import { categoryPath, eventPath, venuePath } from "@/lib/seo";
 
 interface EventsClientProps {
     events: Event[];
@@ -146,29 +148,35 @@ function EventCard({ event }: { event: Event }) {
             <div className="event-content">
                 <div className="event-tags">
                     {event.category.map((cat) => (
-                        <span key={cat} className="tag category">
+                        <Link key={cat} href={categoryPath(cat)} className="tag category">
                             {cat}
-                        </span>
+                        </Link>
                     ))}
                     {event.isFree && <span className="tag free">Free</span>}
                 </div>
 
                 <h2 className="event-title">
-                    {event.link ? (
-                        <a href={event.link} target="_blank" rel="noopener noreferrer">
-                            {event.title}
-                        </a>
-                    ) : (
-                        event.title
-                    )}
+                    <Link href={eventPath(event)}>{event.title}</Link>
                 </h2>
 
                 <p className="event-date">{formatDateRange(event.date, event.endDate)}</p>
 
                 {event.venue.length > 0 && (
                     <p className="event-venue">
-                        {event.venue.join(", ")}
+                        {event.venue.map((v, i) => (
+                            <span key={v}>
+                                {i > 0 ? ", " : ""}
+                                <Link href={venuePath(v)}>{v}</Link>
+                            </span>
+                        ))}
                         {event.postcode.length > 0 && ` (${event.postcode.join(", ")})`}
+                    </p>
+                )}
+                {event.link && (
+                    <p className="event-official-link">
+                        <a href={event.link} target="_blank" rel="noopener noreferrer">
+                            Official page / tickets
+                        </a>
                     </p>
                 )}
 

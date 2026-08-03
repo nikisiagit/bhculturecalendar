@@ -230,6 +230,8 @@ Static export implications:
 
 Never commit `.env`, `.env.local`, or files containing secret **values**. Never log full secrets. Prefer **Cloudflare Pages Deploy Hooks** over empty commits or shared PATs for content rebuilds. Public docs may name routes and env vars; protection of write endpoints is the secret + Worker checks, not obscurity.
 
+**Rate limits / abuse:** see [`docs/security-rate-limits.md`](docs/security-rate-limits.md) (WAF expressions for API + trigger).
+
 ### Cloudflare-specific notes
 
 - **Pages** builds the static export (`next build` with `output: 'export'`). Build env: `EVENTS_SOURCE=api`, `MOBILE_API_URL=…`.
