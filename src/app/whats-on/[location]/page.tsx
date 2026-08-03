@@ -4,8 +4,10 @@ import { getLocalityFromPostcode } from "@/lib/location";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
+import Link from "next/link";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { SITE_URL, buildItemListJsonLd, categoryPath } from "@/lib/seo";
 
 const VALID_LOCATIONS = [
   "bournemouth", "christchurch", "poole",
@@ -32,33 +34,30 @@ export async function generateMetadata(
   }
   
   const town = getTownName(location.toLowerCase());
-  
-  let titlePrefix = "What's On";
-  let descPrefix = "Find out what's on";
-  let timeContext = "today";
-  let canonicalUrl = `https://bhculturecalendar.co.uk/whats-on/${location.toLowerCase()}`;
+  const canonicalUrl = `${SITE_URL}/whats-on/${location.toLowerCase()}`;
 
   return {
-    title: `${titlePrefix} ${town} | 2026 Events & Culture`,
-    description: `${descPrefix} in ${town} ${timeContext}. Discover the best local events, theatre shows, art exhibitions, and comedy gigs.`,
+    title: `What's On ${town} | 2026 Events, Theatre, Art & Comedy`,
+    description: `Find what's on in ${town} — theatre shows, art exhibitions, comedy, festivals and free events. BH Culture Calendar for the BCP / BH postcode area.`,
     alternates: {
       canonical: canonicalUrl,
     },
     keywords: [
       `what's on ${town}`,
-      `whats on ${town} ${timeContext}`,
+      `whats on ${town} 2026`,
       `events in ${town}`,
       `${town} events`,
       `things to do in ${town}`,
-      `${town} shows`
+      `${town} theatre`,
+      `${town} shows`,
     ],
     openGraph: {
-      title: `${titlePrefix} in ${town} | BH Culture Calendar`,
-      description: `${descPrefix} in ${town} ${timeContext}. Plan your visit with the best art, comedy, theatre, and gigs.`,
+      title: `What's On in ${town} | BH Culture Calendar`,
+      description: `Discover art, comedy, theatre and festivals in ${town} and the BH postcode area.`,
       url: canonicalUrl,
-      siteName: 'BH Culture Calendar',
-      locale: 'en_GB',
-      type: 'website',
+      siteName: "BH Culture Calendar",
+      locale: "en_GB",
+      type: "website",
     },
   };
 }
@@ -81,42 +80,68 @@ export default async function LocationWhatsOnPage({
     notFound();
   }
 
-  const categoryStr = '';
-  const monthStr = '';
-
   const town = getTownName(lowerLocation);
   const allEvents = await fetchEvents();
-  
-  // Filter events based on location
-  const events = allEvents.filter(event => {
+
+  const events = allEvents.filter((event) => {
     const locality = getLocalityFromPostcode(event.postcode).toLowerCase();
-    const normalizedLocality = locality.replace(/\s+/g, '-');
+    const normalizedLocality = locality.replace(/\s+/g, "-");
 
     if (normalizedLocality === lowerLocation) return true;
 
-    // Check if venue matches (e.g. if venue has 'new milton' and lowerLocation is 'new-milton')
-    const searchString = lowerLocation.replace(/-/g, ' ');
-    const venueMatch = event.venue.some(v => v.toLowerCase().includes(searchString));
+    const searchString = lowerLocation.replace(/-/g, " ");
+    const venueMatch = event.venue.some((v) =>
+      v.toLowerCase().includes(searchString)
+    );
     if (venueMatch) return true;
 
     return false;
   });
 
-  // Extract unique categories
   const allCategories = Array.from(
     new Set(events.flatMap((event) => event.category))
   ).sort();
 
+  const jsonLd = buildItemListJsonLd(
+    events,
+    `What's on in ${town}`,
+    `${SITE_URL}/whats-on/${lowerLocation}`
+  );
+
   return (
     <>
-      {/* Header */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Header events={allEvents} />
 
-      {/* Main Content */}
       <main className="main">
-        <h1 style={{ position: "absolute", width: "1px", height: "1px", padding: "0", margin: "-1px", overflow: "hidden", clip: "rect(0, 0, 0, 0)", whiteSpace: "nowrap", border: "0" }}>
-          What's On in {town}
-        </h1>
+        <header className="seo-page-header">
+          <h1 className="page-title seo-h1">What&apos;s on in {town}</h1>
+          <p className="seo-lead">
+            Theatre, art, comedy and cultural events in {town} and the surrounding BH
+            postcode area. {events.length} listing{events.length === 1 ? "" : "s"} on
+            BH Culture Calendar.
+          </p>
+          {allCategories.length > 0 && (
+            <nav className="seo-category-nav" aria-label="Categories in this town">
+              {allCategories.map((cat) => (
+                <Link key={cat} href={categoryPath(cat)} className="seo-chip">
+                  {cat}
+                </Link>
+              ))}
+            </nav>
+          )}
+          <p className="seo-body">
+            Also see{" "}
+            <Link href="/whats-on">all what&apos;s on</Link>,{" "}
+            <Link href="/venues">venues</Link>, and nearby{" "}
+            <Link href="/whats-on/bournemouth">Bournemouth</Link>,{" "}
+            <Link href="/whats-on/poole">Poole</Link>,{" "}
+            <Link href="/whats-on/christchurch">Christchurch</Link>.
+          </p>
+        </header>
 
         <EventsClient
           events={events}
@@ -125,7 +150,6 @@ export default async function LocationWhatsOnPage({
         />
       </main>
 
-      {/* Footer */}
       <Footer />
       <ScrollToTop />
     </>

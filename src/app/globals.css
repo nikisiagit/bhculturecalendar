@@ -1945,3 +1945,199 @@ body {
     width: 100%;
   }
 }
+/* SEO landing pages */
+.seo-page-header {
+  margin-bottom: var(--spacing-xl);
+  max-width: 52rem;
+}
+
+.seo-h1 {
+  margin-bottom: var(--spacing-md);
+  line-height: 1.15;
+}
+
+.seo-lead {
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: var(--dark-gray);
+  margin-bottom: var(--spacing-md);
+  max-width: 42rem;
+}
+
+.seo-body {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--dark-gray);
+  margin-bottom: var(--spacing-lg);
+  max-width: 40rem;
+}
+
+.seo-breadcrumb {
+  font-size: 0.9rem;
+  margin-bottom: var(--spacing-lg);
+  color: var(--dark-gray);
+}
+
+.seo-breadcrumb a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.seo-category-nav,
+.seo-town-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  margin: var(--spacing-md) 0 var(--spacing-lg);
+}
+
+.seo-chip {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--black);
+  border-radius: 999px;
+  font-size: 0.85rem;
+  text-decoration: none;
+  color: var(--black);
+  background: var(--white);
+}
+
+.seo-chip:hover {
+  background: var(--accent, #f0f0f0);
+}
+
+.seo-town-nav a {
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.seo-landing {
+  max-width: 48rem;
+}
+
+.seo-event-detail {
+  max-width: 40rem;
+}
+
+.seo-event-image {
+  width: 100%;
+  max-height: 22rem;
+  object-fit: cover;
+  border: 2px solid var(--black);
+  margin-bottom: var(--spacing-lg);
+}
+
+.seo-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: var(--spacing-lg);
+}
+
+.seo-tags a.tag {
+  text-decoration: none;
+}
+
+.seo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: var(--spacing-xl) 0;
+}
+
+.seo-primary-btn,
+.seo-secondary-btn {
+  display: inline-block;
+  padding: 0.65rem 1.1rem;
+  border: 2px solid var(--black);
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--black);
+}
+
+.seo-primary-btn {
+  background: var(--accent, #ffd400);
+}
+
+.seo-secondary-btn {
+  background: var(--white);
+}
+
+.seo-event-list {
+  list-style: none;
+  padding: 0;
+  margin: var(--spacing-xl) 0;
+  border-top: 2px solid var(--black);
+}
+
+.seo-event-list-item {
+  padding: var(--spacing-md) 0;
+  border-bottom: 1px solid var(--black);
+}
+
+.seo-event-list-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--black);
+}
+
+.seo-event-list-title:hover {
+  text-decoration: underline;
+}
+
+.seo-event-list-meta {
+  margin: 0.35rem 0 0;
+  font-size: 0.95rem;
+  color: var(--dark-gray);
+}
+
+.seo-related {
+  margin-top: var(--spacing-2xl);
+  padding-top: var(--spacing-lg);
+  border-top: 2px solid var(--black);
+}
+
+.seo-section-title {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.seo-link-list {
+  padding-left: 1.25rem;
+  line-height: 1.9;
+}
+
+.seo-link-list-inline {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+}
+
+.event-official-link {
+  margin: 0.35rem 0 0.75rem;
+  font-size: 0.9rem;
+}
+
+.event-official-link a {
+  font-weight: 600;
+}
+
+.venue-name a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.venue-name a:hover {
+  text-decoration: underline;
+}
+
+.venue-external {
+  margin-left: 0.4rem;
+  vertical-align: middle;
+}

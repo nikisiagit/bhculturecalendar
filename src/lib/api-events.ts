@@ -17,9 +17,21 @@ export async function fetchEvents(searchParams?: URLSearchParams): Promise<Event
     const res = await fetch(url);
     if (!res.ok) throw new Error(`API /events ${res.status}`);
     const data = await res.json();
-    
-    // Convert dates back to string if needed, or assume they match the Event interface.
-    return data.events as Event[];
+
+    // Preserve API fields used for SEO routes (slug, etc.)
+    return (data.events ?? []).map((e: Event & { slug?: string | null }) => ({
+        id: e.id,
+        title: e.title,
+        date: e.date,
+        endDate: e.endDate ?? null,
+        venue: e.venue ?? [],
+        category: e.category ?? [],
+        postcode: e.postcode ?? [],
+        link: e.link ?? "",
+        isFree: Boolean(e.isFree),
+        coverImage: e.coverImage ?? null,
+        slug: e.slug ?? null,
+    })) as Event[];
 }
 
 export async function fetchTodayEvents(): Promise<Event[]> {

@@ -9,6 +9,8 @@ export interface Event {
     link: string;
     isFree: boolean;
     coverImage: string | null;
+    /** Optional URL slug from Mobile API */
+    slug?: string | null;
 }
 
 export interface Venue {
