@@ -425,6 +425,52 @@ body {
   margin-bottom: var(--spacing-sm);
 }
 
+/* On-brand text links inside event cards (venues, etc.) */
+.event-venue a {
+  color: var(--dark-gray);
+  text-decoration: none;
+  border-bottom: 1.5px solid var(--accent);
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.event-venue a:hover,
+.event-venue a:focus-visible {
+  color: var(--black);
+  border-bottom-color: var(--black);
+  outline: none;
+}
+
+.event-official-link {
+  margin: 0.15rem 0 0.65rem;
+}
+
+.event-official-link a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--black);
+  text-decoration: none;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--black);
+  background: var(--white);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.event-official-link a::after {
+  content: "↗";
+  font-size: 0.75rem;
+  line-height: 1;
+  opacity: 0.75;
+}
+
+.event-official-link a:hover,
+.event-official-link a:focus-visible {
+  background-color: var(--accent);
+  outline: none;
+}
+
 .calendar-wrapper {
   position: relative;
   display: inline-block;
@@ -2117,15 +2163,6 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem 1.25rem;
-}
-
-.event-official-link {
-  margin: 0.35rem 0 0.75rem;
-  font-size: 0.9rem;
-}
-
-.event-official-link a {
-  font-weight: 600;
 }
 
 .venue-name a {
