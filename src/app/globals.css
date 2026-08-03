@@ -372,6 +372,27 @@ body {
   border: 1px solid var(--black);
   background: var(--white);
   text-transform: capitalize;
+  color: var(--black);
+  text-decoration: none;
+}
+
+/* Category tags as <Link> — never browser blue/purple */
+a.tag,
+a.tag.category {
+  color: var(--black);
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.15s ease;
+}
+
+a.tag:hover,
+a.tag:focus-visible,
+a.tag.category:hover,
+a.tag.category:focus-visible {
+  background-color: var(--accent);
+  color: var(--black);
+  text-decoration: none;
+  outline: none;
 }
 
 .tag.free {
@@ -381,6 +402,7 @@ body {
 
 .tag.category {
   background-color: var(--white);
+  color: var(--black);
 }
 
 .tag.itinerary {
@@ -2082,7 +2104,12 @@ body {
 }
 
 .seo-tags a.tag {
+  color: var(--black);
   text-decoration: none;
+}
+
+.seo-tags a.tag:hover {
+  background-color: var(--accent);
 }
 
 .seo-actions {
