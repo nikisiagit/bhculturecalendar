@@ -7,7 +7,6 @@ import { Metadata } from "next";
 import {
   SITE_URL,
   buildItemListJsonLd,
-  categoryPath,
   eventPath,
   findEventsByVenue,
   formatEventDateRange,
@@ -136,9 +135,9 @@ export default async function VenuePage({
         {categories.length > 0 && (
           <div className="seo-tags">
             {categories.map((cat) => (
-              <Link key={cat} href={categoryPath(cat)} className="tag category">
+              <span key={cat} className="tag category">
                 {cat}
-              </Link>
+              </span>
             ))}
           </div>
         )}

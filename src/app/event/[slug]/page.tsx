@@ -138,9 +138,9 @@ export default async function EventPage({
 
           <div className="seo-tags">
             {event.category.map((cat) => (
-              <Link key={cat} href={categoryPath(cat)} className="tag category">
+              <span key={cat} className="tag category">
                 {cat}
-              </Link>
+              </span>
             ))}
             {event.isFree && <span className="tag free">Free</span>}
           </div>
