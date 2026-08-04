@@ -252,7 +252,9 @@ function EventsClientContent({ events: initialEvents, allCategories: initialCate
 
     // Read state from URL or fallback to null/false
     const selectedCategory = searchParams.get("category");
-    const showToday = searchParams.get("today") === "true";
+    // "tonight" preferred; accept legacy ?today=true links
+    const showTonight =
+        searchParams.get("tonight") === "true" || searchParams.get("today") === "true";
     const showTomorrow = searchParams.get("tomorrow") === "true";
     const showWeekend = searchParams.get("weekend") === "true";
     const showFreeOnly = searchParams.get("free") === "true";
@@ -317,58 +319,69 @@ function EventsClientContent({ events: initialEvents, allCategories: initialCate
             filtered = filtered.filter((event) => event.isFree);
         }
 
-        if (showToday || showTomorrow || showWeekend) {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
+        if (showTonight || showTomorrow || showWeekend) {
+            const dayStart = new Date();
+            dayStart.setHours(0, 0, 0, 0);
 
-            const tomorrow = new Date(today);
+            const tomorrow = new Date(dayStart);
             tomorrow.setDate(tomorrow.getDate() + 1);
 
             const dayAfterTomorrow = new Date(tomorrow);
             dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 1);
 
-            // Weekend Calculation (Friday 5pm UTC - Sunday Midnight)
-            const currentDay = today.getDay(); // 0=Sun, 6=Sat
-            let weekendStart = new Date(today);
-            let weekendEnd = new Date(today);
+            // Tonight = today from 18:00 local through end of calendar day
+            const tonightStart = new Date(dayStart);
+            tonightStart.setHours(18, 0, 0, 0);
 
-            // Calculate offset to Friday of the current weekend block
-            // Sun(0) -> -2, Sat(6) -> -1, Fri(5) -> 0, Mon(1) -> +4
+            // Weekend Calculation (Friday midnight - Sunday end)
+            const currentDay = dayStart.getDay(); // 0=Sun, 6=Sat
+            let weekendStart = new Date(dayStart);
+            let weekendEnd = new Date(dayStart);
+
             let offsetToFri = 0;
             if (currentDay === 0) offsetToFri = -2;
             else if (currentDay === 6) offsetToFri = -1;
             else offsetToFri = 5 - currentDay;
 
-            weekendStart.setDate(today.getDate() + offsetToFri);
-            weekendStart.setHours(0, 0, 0, 0); // Start Friday midnight local time
+            weekendStart.setDate(dayStart.getDate() + offsetToFri);
+            weekendStart.setHours(0, 0, 0, 0);
 
             weekendEnd = new Date(weekendStart);
-            weekendEnd.setDate(weekendStart.getDate() + 2); // Friday + 2 days = Sunday
+            weekendEnd.setDate(weekendStart.getDate() + 2);
             weekendEnd.setHours(23, 59, 59, 999);
 
             filtered = filtered.filter((event) => {
                 if (!event.date) return false;
                 const eventStart = new Date(event.date);
-                // Treat events without end date as single day events 
-                const eventEnd = event.endDate ? new Date(event.endDate) : new Date(eventStart);
-                // Set end of day for comparison
-                eventEnd.setHours(23, 59, 59, 999);
+                const hasEnd = Boolean(event.endDate);
+                let eventEnd = hasEnd ? new Date(event.endDate!) : new Date(eventStart);
+                // Date-only end (no time): treat as end of that calendar day
+                if (hasEnd && event.endDate && !event.endDate.includes("T")) {
+                    eventEnd = new Date(eventEnd);
+                    eventEnd.setHours(23, 59, 59, 999);
+                }
 
-                const overlapsToday = showToday && (
-                    (eventStart >= today && eventStart < tomorrow) || // Starts today
-                    (eventStart < today && eventEnd >= today) // Started before, ends today or later
-                );
+                // Tonight = overlaps local [today 18:00, tomorrow 00:00)
+                // - Timed start at/after 18:00 today
+                // - Or range still running at/after 18:00 today
+                const isTonight =
+                    showTonight &&
+                    (hasEnd
+                        ? eventStart < tomorrow && eventEnd >= tonightStart
+                        : eventStart >= tonightStart && eventStart < tomorrow);
 
-                const overlapsTomorrow = showTomorrow && (
-                    (eventStart >= tomorrow && eventStart < dayAfterTomorrow) || // Starts tomorrow
-                    (eventStart < tomorrow && eventEnd >= tomorrow) // Started before tomorrow, ends tomorrow or later
-                );
+                const overlapsTomorrow =
+                    showTomorrow &&
+                    ((eventStart >= tomorrow && eventStart < dayAfterTomorrow) ||
+                        (hasEnd && eventStart < tomorrow && eventEnd >= tomorrow));
 
-                const overlapsWeekend = showWeekend && (
-                    (eventStart < weekendEnd && eventEnd >= weekendStart)
-                );
+                const rangeEndWeekend = hasEnd ? eventEnd : eventStart;
+                const overlapsWeekend =
+                    showWeekend &&
+                    eventStart < weekendEnd &&
+                    rangeEndWeekend >= weekendStart;
 
-                return overlapsToday || overlapsTomorrow || overlapsWeekend;
+                return isTonight || overlapsTomorrow || overlapsWeekend;
             });
         }
 
@@ -391,7 +404,7 @@ function EventsClientContent({ events: initialEvents, allCategories: initialCate
         });
 
         return sortedFiltered;
-    }, [events, selectedCategory, showToday, showTomorrow, showWeekend, showFreeOnly, searchQuery]);
+    }, [events, selectedCategory, showTonight, showTomorrow, showWeekend, showFreeOnly, searchQuery]);
 
     return (
         <>
@@ -445,8 +458,18 @@ function EventsClientContent({ events: initialEvents, allCategories: initialCate
                 onLocationChange={handleLocationChange}
                 viewMode={viewMode}
                 onViewModeChange={setViewMode}
-                showToday={showToday}
-                onShowTodayChange={(val) => updateFilter("today", String(val))}
+                showTonight={showTonight}
+                onShowTonightChange={(val) => {
+                    // Prefer ?tonight=; drop legacy ?today=
+                    const params = new URLSearchParams(searchParams.toString());
+                    params.delete("today");
+                    if (!val) {
+                        params.delete("tonight");
+                    } else {
+                        params.set("tonight", "true");
+                    }
+                    router.push(`?${params.toString()}`, { scroll: false });
+                }}
                 showTomorrow={showTomorrow}
                 onShowTomorrowChange={(val) => updateFilter("tomorrow", String(val))}
                 showWeekend={showWeekend}
