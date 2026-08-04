@@ -9,7 +9,7 @@ import FeaturedCarousel from "./FeaturedCarousel";
 import Link from "next/link";
 import { useLiveEvents } from "@/hooks/useLiveEvents";
 import { getLocalityFromPostcode } from "@/lib/location";
-import { categoryPath, eventPath, venuePath } from "@/lib/seo";
+import { eventPath, venuePath } from "@/lib/seo";
 
 interface EventsClientProps {
     events: Event[];
@@ -148,9 +148,9 @@ function EventCard({ event }: { event: Event }) {
             <div className="event-content">
                 <div className="event-tags">
                     {event.category.map((cat) => (
-                        <Link key={cat} href={categoryPath(cat)} className="tag category">
+                        <span key={cat} className="tag category">
                             {cat}
-                        </Link>
+                        </span>
                     ))}
                     {event.isFree && <span className="tag free">Free</span>}
                 </div>
