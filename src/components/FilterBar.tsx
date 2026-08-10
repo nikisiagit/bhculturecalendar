@@ -9,8 +9,8 @@ interface FilterBarProps {
     onLocationChange: (location: string | null) => void;
     viewMode: "grid" | "calendar";
     onViewModeChange: (mode: "grid" | "calendar") => void;
-    showTonight: boolean;
-    onShowTonightChange: (value: boolean) => void;
+    showToday: boolean;
+    onShowTodayChange: (value: boolean) => void;
     showTomorrow: boolean;
     onShowTomorrowChange: (value: boolean) => void;
     showWeekend: boolean;
@@ -30,8 +30,8 @@ export default function FilterBar({
     onLocationChange,
     viewMode,
     onViewModeChange,
-    showTonight,
-    onShowTonightChange,
+    showToday,
+    onShowTodayChange,
     showTomorrow,
     onShowTomorrowChange,
     showWeekend,
@@ -105,14 +105,14 @@ export default function FilterBar({
             <div className="filter-section">
                 <span className="filter-label">WHEN:</span>
                 <div className="filter-buttons">
-                    <label className={`filter-btn checkbox-btn ${showTonight ? "active" : ""}`}>
+                    <label className={`filter-btn checkbox-btn ${showToday ? "active" : ""}`}>
                         <input
                             type="checkbox"
-                            checked={showTonight}
-                            onChange={(e) => onShowTonightChange(e.target.checked)}
+                            checked={showToday}
+                            onChange={(e) => onShowTodayChange(e.target.checked)}
                             className="hidden-checkbox"
                         />
-                        Tonight
+                        Today
                     </label>
                     <label className={`filter-btn checkbox-btn ${showTomorrow ? "active" : ""}`}>
                         <input

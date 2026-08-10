@@ -252,9 +252,9 @@ function EventsClientContent({ events: initialEvents, allCategories: initialCate
 
     // Read state from URL or fallback to null/false
     const selectedCategory = searchParams.get("category");
-    // "tonight" preferred; accept legacy ?today=true links
-    const showTonight =
-        searchParams.get("tonight") === "true" || searchParams.get("today") === "true";
+    // Prefer ?today=; accept legacy ?tonight=true
+    const showToday =
+        searchParams.get("today") === "true" || searchParams.get("tonight") === "true";
     const showTomorrow = searchParams.get("tomorrow") === "true";
     const showWeekend = searchParams.get("weekend") === "true";
     const showFreeOnly = searchParams.get("free") === "true";
@@ -319,7 +319,7 @@ function EventsClientContent({ events: initialEvents, allCategories: initialCate
             filtered = filtered.filter((event) => event.isFree);
         }
 
-        if (showTonight || showTomorrow || showWeekend) {
+        if (showToday || showTomorrow || showWeekend) {
             const dayStart = new Date();
             dayStart.setHours(0, 0, 0, 0);
 
@@ -329,14 +329,9 @@ function EventsClientContent({ events: initialEvents, allCategories: initialCate
             const dayAfterTomorrow = new Date(tomorrow);
             dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 1);
 
-            // Tonight = today from 18:00 local through end of calendar day
-            const tonightStart = new Date(dayStart);
-            tonightStart.setHours(18, 0, 0, 0);
-
             // Weekend Calculation (Friday midnight - Sunday end)
             const currentDay = dayStart.getDay(); // 0=Sun, 6=Sat
             let weekendStart = new Date(dayStart);
-            let weekendEnd = new Date(dayStart);
 
             let offsetToFri = 0;
             if (currentDay === 0) offsetToFri = -2;
@@ -346,7 +341,7 @@ function EventsClientContent({ events: initialEvents, allCategories: initialCate
             weekendStart.setDate(dayStart.getDate() + offsetToFri);
             weekendStart.setHours(0, 0, 0, 0);
 
-            weekendEnd = new Date(weekendStart);
+            const weekendEnd = new Date(weekendStart);
             weekendEnd.setDate(weekendStart.getDate() + 2);
             weekendEnd.setHours(23, 59, 59, 999);
 
@@ -359,52 +354,86 @@ function EventsClientContent({ events: initialEvents, allCategories: initialCate
                 if (hasEnd && event.endDate && !event.endDate.includes("T")) {
                     eventEnd = new Date(eventEnd);
                     eventEnd.setHours(23, 59, 59, 999);
+                } else if (!hasEnd) {
+                    // Single-day / point event: cover full start calendar day for "today" range
+                    eventEnd = new Date(eventStart);
+                    eventEnd.setHours(23, 59, 59, 999);
                 }
 
-                // Tonight = overlaps local [today 18:00, tomorrow 00:00)
-                // - Timed start at/after 18:00 today
-                // - Or range still running at/after 18:00 today
-                const isTonight =
-                    showTonight &&
-                    (hasEnd
-                        ? eventStart < tomorrow && eventEnd >= tonightStart
-                        : eventStart >= tonightStart && eventStart < tomorrow);
+                // Today = starts today OR range overlaps local [dayStart, tomorrow)
+                const overlapsToday =
+                    showToday &&
+                    ((eventStart >= dayStart && eventStart < tomorrow) ||
+                        (eventStart < dayStart && eventEnd >= dayStart));
 
                 const overlapsTomorrow =
                     showTomorrow &&
                     ((eventStart >= tomorrow && eventStart < dayAfterTomorrow) ||
                         (hasEnd && eventStart < tomorrow && eventEnd >= tomorrow));
 
-                const rangeEndWeekend = hasEnd ? eventEnd : eventStart;
+                const rangeEndWeekend = hasEnd ? eventEnd : (() => {
+                    const e = new Date(eventStart);
+                    e.setHours(23, 59, 59, 999);
+                    return e;
+                })();
                 const overlapsWeekend =
                     showWeekend &&
                     eventStart < weekendEnd &&
                     rangeEndWeekend >= weekendStart;
 
-                return isTonight || overlapsTomorrow || overlapsWeekend;
+                return overlapsToday || overlapsTomorrow || overlapsWeekend;
             });
         }
 
-        // Sort the filtered events so that events starting today or later appear before ongoing past events
-        const todayForSort = new Date();
-        todayForSort.setHours(0, 0, 0, 0);
+        // Sort: when "Today" is on, prioritise events that *start* today, then multi-day ranges that include today
+        const dayStartForSort = new Date();
+        dayStartForSort.setHours(0, 0, 0, 0);
+        const tomorrowForSort = new Date(dayStartForSort);
+        tomorrowForSort.setDate(tomorrowForSort.getDate() + 1);
+
+        const startsToday = (event: Event) => {
+            if (!event.date) return false;
+            const start = new Date(event.date);
+            return start >= dayStartForSort && start < tomorrowForSort;
+        };
+
+        const isOngoingRangeIncludingToday = (event: Event) => {
+            if (!event.date || !event.endDate) return false;
+            const start = new Date(event.date);
+            let end = new Date(event.endDate);
+            if (!event.endDate.includes("T")) {
+                end.setHours(23, 59, 59, 999);
+            }
+            return start < dayStartForSort && end >= dayStartForSort;
+        };
 
         const sortedFiltered = [...filtered].sort((a, b) => {
-            const aStart = new Date(a.date);
-            const bStart = new Date(b.date);
-            
-            const aIsOngoing = aStart < todayForSort && a.endDate && new Date(a.endDate) >= todayForSort;
-            const bIsOngoing = bStart < todayForSort && b.endDate && new Date(b.endDate) >= todayForSort;
+            if (showToday) {
+                const aStartsToday = startsToday(a);
+                const bStartsToday = startsToday(b);
+                if (aStartsToday && !bStartsToday) return -1;
+                if (!aStartsToday && bStartsToday) return 1;
 
-            if (aIsOngoing && !bIsOngoing) return 1; // b comes first
-            if (!aIsOngoing && bIsOngoing) return -1; // a comes first
-            
-            // Otherwise sort by start date ascending
-            return aStart.getTime() - bStart.getTime();
+                // Both start today, or both are range-only: keep start-today before pure ongoing
+                const aOngoing = isOngoingRangeIncludingToday(a);
+                const bOngoing = isOngoingRangeIncludingToday(b);
+                if (!aStartsToday && !bStartsToday) {
+                    if (aOngoing && !bOngoing) return -1;
+                    if (!aOngoing && bOngoing) return 1;
+                }
+            } else {
+                // Default: push multi-day already-started ranges below future/upcoming starts
+                const aOngoing = isOngoingRangeIncludingToday(a);
+                const bOngoing = isOngoingRangeIncludingToday(b);
+                if (aOngoing && !bOngoing) return 1;
+                if (!aOngoing && bOngoing) return -1;
+            }
+
+            return new Date(a.date).getTime() - new Date(b.date).getTime();
         });
 
         return sortedFiltered;
-    }, [events, selectedCategory, showTonight, showTomorrow, showWeekend, showFreeOnly, searchQuery]);
+    }, [events, selectedCategory, showToday, showTomorrow, showWeekend, showFreeOnly, searchQuery]);
 
     return (
         <>
@@ -458,15 +487,15 @@ function EventsClientContent({ events: initialEvents, allCategories: initialCate
                 onLocationChange={handleLocationChange}
                 viewMode={viewMode}
                 onViewModeChange={setViewMode}
-                showTonight={showTonight}
-                onShowTonightChange={(val) => {
-                    // Prefer ?tonight=; drop legacy ?today=
+                showToday={showToday}
+                onShowTodayChange={(val) => {
+                    // Prefer ?today=; drop legacy ?tonight=
                     const params = new URLSearchParams(searchParams.toString());
-                    params.delete("today");
+                    params.delete("tonight");
                     if (!val) {
-                        params.delete("tonight");
+                        params.delete("today");
                     } else {
-                        params.set("tonight", "true");
+                        params.set("today", "true");
                     }
                     router.push(`?${params.toString()}`, { scroll: false });
                 }}
