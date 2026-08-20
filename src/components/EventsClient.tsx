@@ -147,6 +147,9 @@ function EventCard({ event }: { event: Event }) {
 
             <div className="event-content">
                 <div className="event-tags">
+                    {event.isSpotlight && (
+                        <span className="tag spotlight">Spotlight Event</span>
+                    )}
                     {event.category.map((cat) => (
                         <span key={cat} className="tag category">
                             {cat}

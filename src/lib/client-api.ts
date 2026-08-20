@@ -1,4 +1,4 @@
-import type { Event } from "@/lib/types";
+import { normalizeEvent, type Event } from "@/lib/types";
 
 /** Public API base for browser fetches (must allow CORS — production Worker sends *). */
 export const PUBLIC_MOBILE_API_URL = (
@@ -20,6 +20,6 @@ export async function fetchEventsClient(): Promise<Event[]> {
   if (!res.ok) {
     throw new Error(`API /events ${res.status}`);
   }
-  const data = (await res.json()) as { events?: Event[] };
-  return data.events ?? [];
+  const data = (await res.json()) as { events?: Partial<Event>[] };
+  return (data.events ?? []).map(normalizeEvent);
 }

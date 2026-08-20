@@ -400,6 +400,13 @@ a.tag.category:focus-visible {
   border-color: var(--accent);
 }
 
+.tag.spotlight {
+  background-color: var(--black);
+  border-color: var(--black);
+  color: var(--white);
+  text-transform: none;
+}
+
 .tag.category {
   background-color: var(--white);
   color: var(--black);
@@ -970,6 +977,11 @@ a.tag.category:focus-visible {
   padding: 2px 6px;
   background: var(--white);
   border: 1px solid var(--black);
+}
+
+.day-event-spotlight {
+  background: var(--black);
+  color: var(--white);
 }
 
 /* Page Title */
@@ -1763,6 +1775,19 @@ a.tag.category:focus-visible {
   /* Reduced padding for mobile */
   text-align: center;
   z-index: 10;
+}
+
+.carousel-spotlight {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  background: var(--accent);
+  color: var(--black);
+  border: 1px solid var(--black);
+  padding: 4px 10px;
+  margin-bottom: var(--spacing-sm);
 }
 
 .carousel-title {

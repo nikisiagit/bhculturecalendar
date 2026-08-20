@@ -222,8 +222,13 @@ export default function CalendarView({ events }: CalendarViewProps) {
                                     {event.venue.length > 0 && (
                                         <div className="day-event-venue">{event.venue.join(", ")}</div>
                                     )}
-                                    {event.category.length > 0 && (
+                                    {(event.isSpotlight || event.category.length > 0) && (
                                         <div className="day-event-categories">
+                                            {event.isSpotlight && (
+                                                <span className="day-event-category day-event-spotlight">
+                                                    Spotlight Event
+                                                </span>
+                                            )}
                                             {event.category.map(cat => (
                                                 <span key={cat} className="day-event-category">{cat}</span>
                                             ))}

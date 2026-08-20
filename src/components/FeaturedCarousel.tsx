@@ -135,6 +135,9 @@ export default function FeaturedCarousel({ events }: { events: Event[] }) {
                             )}
 
                             <div className="carousel-overlay">
+                                {event.isSpotlight && (
+                                    <span className="carousel-spotlight">Spotlight Event</span>
+                                )}
                                 <h3 className="carousel-title">{event.title}</h3>
                                 <div className="carousel-meta">
                                     <span className="carousel-venue">{event.venue.join(', ')}</span>

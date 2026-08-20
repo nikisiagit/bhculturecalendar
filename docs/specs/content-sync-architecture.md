@@ -183,6 +183,7 @@ Rebuild is a **step after sync**, not a separate product workflow.
   latitude: number | null
   longitude: number | null
   isFree: boolean
+  isSpotlight: boolean
   coverImage: string | null
   link: string | null
   slug: string | null

@@ -1,4 +1,4 @@
-import { Event, Venue } from "./types";
+import { Event, Venue, normalizeEvent } from "./types";
 import { getEvents as getNotionEvents, getVenues as getNotionVenues } from "./notion";
 
 const API = process.env.MOBILE_API_URL || "https://api.bhculturecalendar.co.uk";
@@ -19,19 +19,7 @@ export async function fetchEvents(searchParams?: URLSearchParams): Promise<Event
     const data = await res.json();
 
     // Preserve API fields used for SEO routes (slug, etc.)
-    return (data.events ?? []).map((e: Event & { slug?: string | null }) => ({
-        id: e.id,
-        title: e.title,
-        date: e.date,
-        endDate: e.endDate ?? null,
-        venue: e.venue ?? [],
-        category: e.category ?? [],
-        postcode: e.postcode ?? [],
-        link: e.link ?? "",
-        isFree: Boolean(e.isFree),
-        coverImage: e.coverImage ?? null,
-        slug: e.slug ?? null,
-    })) as Event[];
+    return ((data.events ?? []) as Partial<Event>[]).map(normalizeEvent);
 }
 
 export async function fetchTodayEvents(): Promise<Event[]> {
@@ -50,7 +38,7 @@ export async function fetchTodayEvents(): Promise<Event[]> {
     const res = await fetch(url);
     if (!res.ok) throw new Error(`API /events/today ${res.status}`);
     const data = await res.json();
-    return data.events as Event[];
+    return ((data.events ?? []) as Partial<Event>[]).map(normalizeEvent);
 }
 
 export async function fetchVenues(): Promise<Venue[]> {

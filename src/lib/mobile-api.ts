@@ -13,6 +13,7 @@ export interface MobileEventDTO {
     latitude: number;
     longitude: number;
     isFree: boolean;
+    isSpotlight: boolean;
     coverImage: string | null;
     link: string | null;
     slug: string;
@@ -42,7 +43,8 @@ export function toMobileEvent(event: Event): MobileEventDTO {
         location,
         latitude: coordinates.latitude,
         longitude: coordinates.longitude,
-        isFree: event.isFree,
+        isFree: Boolean(event.isFree),
+        isSpotlight: Boolean(event.isSpotlight),
         coverImage: event.coverImage,
         link: event.link || null,
         slug: event.id.replace(/-/g, ""),

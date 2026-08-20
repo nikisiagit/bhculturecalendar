@@ -11,6 +11,25 @@ function getNotionClient(): Client {
     return new Client({ auth });
 }
 
+/**
+ * Notion API v5 queries data sources, not databases.
+ * NOTION_DATABASE_ID may be either a database id or a data_source id.
+ */
+async function resolveEventsDataSourceId(rawId: string): Promise<string> {
+    const notion = getNotionClient();
+    try {
+        const database = await notion.databases.retrieve({ database_id: rawId });
+        const sources = (
+            database as { data_sources?: Array<{ id: string }> }
+        ).data_sources;
+        if (sources?.[0]?.id) return sources[0].id;
+    } catch {
+        // rawId may already be a data source id
+    }
+    const dataSource = await notion.dataSources.retrieve({ data_source_id: rawId });
+    return dataSource.id;
+}
+
 const imageMap = imageMapData as Record<string, string>;
 
 let cachedEvents: Event[] | null = null;
@@ -21,14 +40,15 @@ export const getEvents = async (): Promise<Event[]> => {
     if (eventsFetchPromise) return eventsFetchPromise;
 
     eventsFetchPromise = (async () => {
-        const dataSourceId = process.env.NOTION_DATABASE_ID;
+        const rawId = process.env.NOTION_DATABASE_ID;
 
-    if (!dataSourceId) {
+    if (!rawId) {
         console.warn("NOTION_DATABASE_ID is not defined.");
         return [];
     }
 
     try {
+        const dataSourceId = await resolveEventsDataSourceId(rawId);
         let allResults: any[] = [];
         let hasMore = true;
         let startCursor: string | undefined = undefined;
@@ -94,6 +114,12 @@ export const getEvents = async (): Promise<Event[]> => {
             // Free (checkbox)
             const isFree = props["Free"]?.checkbox || false;
 
+            // Spotlight event (checkbox) — Notion column name is "Spotlight event"
+            const isSpotlight =
+                props["Spotlight event"]?.checkbox ||
+                props["Spotlight Event"]?.checkbox ||
+                false;
+
             // Cover image from page
             let coverImage: string | null = null;
             if (page.cover) {
@@ -116,6 +142,7 @@ export const getEvents = async (): Promise<Event[]> => {
                 postcode,
                 link,
                 isFree,
+                isSpotlight,
                 coverImage,
             };
         }).filter(event => {

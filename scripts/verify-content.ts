@@ -38,6 +38,7 @@ type ApiEvent = {
   date?: string;
   endDate?: string | null;
   isFree?: boolean;
+  isSpotlight?: boolean;
   venue?: string[];
   category?: string[];
   link?: string | null;
@@ -224,6 +225,9 @@ async function checkNotionVsApi(): Promise<CheckResult> {
     if (typeof act.isFree === "boolean" && act.isFree !== exp.isFree) {
       fieldErrors.push(`isFree expected=${exp.isFree} actual=${act.isFree}`);
     }
+    if (typeof act.isSpotlight === "boolean" && act.isSpotlight !== exp.isSpotlight) {
+      fieldErrors.push(`isSpotlight expected=${exp.isSpotlight} actual=${act.isSpotlight}`);
+    }
     // link: API may null vs ""; treat empty as equal
     const expLink = (exp.link ?? "").trim();
     const actLink = (act.link ?? "").trim();
@@ -245,7 +249,7 @@ async function checkNotionVsApi(): Promise<CheckResult> {
     name: "Notion ↔ API parity",
     ok,
     detail: ok
-      ? `All ${expected.length} Notion events match API (ids + title/date/isFree)`
+      ? `All ${expected.length} Notion events match API (ids + title/date/isFree/isSpotlight)`
       : `${errors.length} problem(s): ${expected.length} Notion vs ${actual.length} API${more}`,
     errors: shown,
   };
