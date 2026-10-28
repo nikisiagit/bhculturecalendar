@@ -434,6 +434,15 @@ function EventsClientContent({ events: initialEvents, allCategories: initialCate
         return sortedFiltered;
     }, [events, selectedCategory, showToday, showTomorrow, showWeekend, showFreeOnly, searchQuery]);
 
+    const spotlightEvents = useMemo(
+        () => filteredEvents.filter((event) => event.isSpotlight),
+        [filteredEvents]
+    );
+    const otherEvents = useMemo(
+        () => filteredEvents.filter((event) => !event.isSpotlight),
+        [filteredEvents]
+    );
+
     return (
         <>
             <script
@@ -522,11 +531,38 @@ function EventsClientContent({ events: initialEvents, allCategories: initialCate
                             </p>
                         </div>
                     ) : (
-                        <div className="events-grid">
-                            {filteredEvents.map((event) => (
-                                <EventCard key={event.id} event={event} />
-                            ))}
-                        </div>
+                        <>
+                            {spotlightEvents.length > 0 && (
+                                <section className="spotlight-section" aria-labelledby="spotlight-heading">
+                                    <h2 id="spotlight-heading" className="spotlight-section-heading">
+                                        Spotlight
+                                    </h2>
+                                    <div className="events-grid">
+                                        {spotlightEvents.map((event) => (
+                                            <EventCard key={event.id} event={event} />
+                                        ))}
+                                    </div>
+                                </section>
+                            )}
+
+                            {otherEvents.length > 0 && (
+                                <section
+                                    className={spotlightEvents.length > 0 ? "events-section" : undefined}
+                                    aria-labelledby={spotlightEvents.length > 0 ? "all-events-heading" : undefined}
+                                >
+                                    {spotlightEvents.length > 0 && (
+                                        <h2 id="all-events-heading" className="events-section-heading">
+                                            All events
+                                        </h2>
+                                    )}
+                                    <div className="events-grid">
+                                        {otherEvents.map((event) => (
+                                            <EventCard key={event.id} event={event} />
+                                        ))}
+                                    </div>
+                                </section>
+                            )}
+                        </>
                     )}
                 </>
             )}
