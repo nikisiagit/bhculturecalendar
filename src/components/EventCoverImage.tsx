@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { getDefaultThumbnail, resolveEventImageSrc } from "@/lib/default-thumbnails";
+import { getDefaultThumbnail } from "@/lib/default-thumbnails";
 
 interface EventCoverImageProps {
   coverImage: string | null | undefined;
@@ -23,45 +22,23 @@ export default function EventCoverImage({
   loading = "lazy",
 }: EventCoverImageProps) {
   const fallback = getDefaultThumbnail(categories);
-  const preferred = resolveEventImageSrc(coverImage, categories);
-
-  // Remount when the preferred URL changes so a prior onError does not stick
-  return (
-    <CoverImg
-      key={preferred}
-      preferred={preferred}
-      fallback={fallback}
-      alt={alt}
-      className={className}
-      loading={loading}
-    />
-  );
-}
-
-function CoverImg({
-  preferred,
-  fallback,
-  alt,
-  className,
-  loading,
-}: {
-  preferred: string;
-  fallback: string;
-  alt: string;
-  className?: string;
-  loading?: "lazy" | "eager";
-}) {
-  const [src, setSrc] = useState(preferred);
+  const cover = coverImage?.trim() || null;
+  const initialSrc = cover || fallback;
 
   return (
     // eslint-disable-next-line @next/next/no-img-element -- external Notion/CDN URLs + static export
     <img
-      src={src}
+      src={initialSrc}
       alt={alt}
       className={className}
       loading={loading}
-      onError={() => {
-        if (src !== fallback) setSrc(fallback);
+      onError={(e) => {
+        const img = e.currentTarget;
+        // Direct DOM swap is more reliable than setState for img onError
+        // (avoids stale handlers / remount races with broken remote URLs).
+        if (!img.src.includes("/defaults/")) {
+          img.src = fallback;
+        }
       }}
     />
   );
