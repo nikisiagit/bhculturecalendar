@@ -15,6 +15,8 @@ import {
   getEventSlug,
   venuePath,
 } from "@/lib/seo";
+import { getDefaultThumbnailAbsoluteUrl } from "@/lib/default-thumbnails";
+import EventCoverImage from "@/components/EventCoverImage";
 
 export async function generateStaticParams() {
   try {
@@ -62,7 +64,11 @@ export async function generateMetadata({
       siteName: "BH Culture Calendar",
       locale: "en_GB",
       type: "website",
-      ...(event.coverImage ? { images: [{ url: event.coverImage }] } : {}),
+      images: [
+        {
+          url: event.coverImage || getDefaultThumbnailAbsoluteUrl(event.category),
+        },
+      ],
     },
     keywords: [
       event.title.trim(),
@@ -109,14 +115,13 @@ export default async function EventPage({
         </nav>
 
         <article className="seo-event-detail">
-          {event.coverImage && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={event.coverImage}
-              alt={`${event.title.trim()} — event in the Bournemouth area`}
-              className="seo-event-image"
-            />
-          )}
+          <EventCoverImage
+            coverImage={event.coverImage}
+            categories={event.category}
+            alt={`${event.title.trim()} — event in the Bournemouth area`}
+            className="seo-event-image"
+            loading="eager"
+          />
 
           <h1 className="page-title seo-h1">{event.title.trim()}</h1>
 

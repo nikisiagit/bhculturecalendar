@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Event } from "@/lib/notion";
+import EventCoverImage from "./EventCoverImage";
 
 // Helper to check if event starts strictly today
 function isEventToday(event: Event): boolean {
@@ -14,7 +15,6 @@ function isEventToday(event: Event): boolean {
 export default function FeaturedCarousel({ events }: { events: Event[] }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
-    const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
     const [progress, setProgress] = useState(0);
     const DURATION = 5000; // 5 seconds
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -123,16 +123,12 @@ export default function FeaturedCarousel({ events }: { events: Event[] }) {
                         }}
                     >
                         <div className="carousel-slide">
-                            {event.coverImage && !failedImages.has(event.id) ? (
-                                <img
-                                    src={event.coverImage}
-                                    alt={event.title}
-                                    className="carousel-image"
-                                    onError={() => setFailedImages(prev => new Set(prev).add(event.id))}
-                                />
-                            ) : (
-                                <div className="carousel-placeholder">{event.title[0]}</div>
-                            )}
+                            <EventCoverImage
+                                coverImage={event.coverImage}
+                                categories={event.category}
+                                alt={event.title}
+                                className="carousel-image"
+                            />
 
                             <div className="carousel-overlay">
                                 {event.isSpotlight && (
