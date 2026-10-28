@@ -27,17 +27,40 @@ export default function EventCoverImage({
 }: EventCoverImageProps) {
   const fallback = getDefaultThumbnail(categories);
   const cover = coverImage?.trim() || null;
+
+  // Remount when the preferred URL changes so prior failure state cannot stick
+  return (
+    <CoverImage
+      key={`${cover ?? ""}|${fallback}`}
+      cover={cover}
+      fallback={fallback}
+      alt={alt}
+      className={className}
+      loading={loading}
+    />
+  );
+}
+
+function CoverImage({
+  cover,
+  fallback,
+  alt,
+  className,
+  loading,
+}: {
+  cover: string | null;
+  fallback: string;
+  alt: string;
+  className?: string;
+  loading?: "lazy" | "eager";
+}) {
   const [src, setSrc] = useState(cover || fallback);
 
   useEffect(() => {
-    if (!cover) {
-      setSrc(fallback);
-      return;
-    }
+    if (!cover) return;
 
     let cancelled = false;
     let settled = false;
-    setSrc(cover);
 
     const finish = (next: string) => {
       if (cancelled || settled) return;
