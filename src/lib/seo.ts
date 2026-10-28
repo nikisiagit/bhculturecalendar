@@ -1,4 +1,5 @@
 import type { Event } from "@/lib/types";
+import { getDefaultThumbnailAbsoluteUrl } from "@/lib/default-thumbnails";
 
 export const SITE_URL = "https://bhculturecalendar.co.uk";
 
@@ -95,7 +96,7 @@ export function buildEventJsonLd(event: Event) {
         ...(event.postcode[0] ? { postalCode: event.postcode[0] } : {}),
       },
     },
-    ...(event.coverImage ? { image: [event.coverImage] } : {}),
+    image: [event.coverImage || getDefaultThumbnailAbsoluteUrl(event.category)],
     ...(event.link
       ? {
           offers: {

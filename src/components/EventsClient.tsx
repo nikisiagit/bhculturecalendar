@@ -9,7 +9,9 @@ import FeaturedCarousel from "./FeaturedCarousel";
 import Link from "next/link";
 import { useLiveEvents } from "@/hooks/useLiveEvents";
 import { getLocalityFromPostcode } from "@/lib/location";
+import { getDefaultThumbnailAbsoluteUrl } from "@/lib/default-thumbnails";
 import { eventPath, venuePath } from "@/lib/seo";
+import EventCoverImage from "./EventCoverImage";
 
 interface EventsClientProps {
     events: Event[];
@@ -127,22 +129,16 @@ function generateOutlookUrl(event: Event): string {
 
 function EventCard({ event }: { event: Event }) {
     const [showCalendarOptions, setShowCalendarOptions] = useState(false);
-    const [imageError, setImageError] = useState(false);
 
     return (
         <article className={`event-card ${showCalendarOptions ? 'z-active' : ''}`}>
             <div className="event-image-wrapper">
-                {event.coverImage && !imageError ? (
-                    <img
-                        src={event.coverImage}
-                        alt={event.title}
-                        className="event-image"
-                        loading="lazy"
-                        onError={() => setImageError(true)}
-                    />
-                ) : (
-                    <div className="event-image-placeholder">🎭</div>
-                )}
+                <EventCoverImage
+                    coverImage={event.coverImage}
+                    categories={event.category}
+                    alt={event.title}
+                    className="event-image"
+                />
             </div>
 
             <div className="event-content">
@@ -466,7 +462,7 @@ function EventsClientContent({ events: initialEvents, allCategories: initialCate
                                         "addressCountry": "UK"
                                     }
                                 },
-                                "image": [event.coverImage || "https://bhculturecalendar.co.uk/logo.png"],
+                                "image": [event.coverImage || getDefaultThumbnailAbsoluteUrl(event.category)],
                                 "description": `Category: ${event.category.join(', ')}.`,
                                 "offers": {
                                     "@type": "Offer",
