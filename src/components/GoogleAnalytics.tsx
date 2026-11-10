@@ -2,8 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
-import Script from "next/script";
-import { GA_MEASUREMENT_ID, CONSENT_STORAGE_KEY } from "@/lib/analytics";
+import { CONSENT_STORAGE_KEY } from "@/lib/analytics";
 
 declare global {
   interface Window {
@@ -47,8 +46,8 @@ export function updateAnalyticsConsent(granted: boolean) {
 }
 
 /**
- * Loads GA4 on every route (Consent Mode v2 defaults to denied).
- * Sends page_view on first load and on App Router client navigations.
+ * SPA page_view tracker. gtag.js + Consent Mode defaults are server-rendered
+ * in the root layout so they appear in the initial HTML.
  */
 export default function GoogleAnalytics() {
   const pathname = usePathname();
@@ -66,43 +65,5 @@ export default function GoogleAnalytics() {
     });
   }, [pathname, searchParams]);
 
-  return (
-    <>
-      <Script
-        id="ga-consent-default"
-        strategy="beforeInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            window.gtag = gtag;
-            gtag('consent', 'default', {
-              analytics_storage: 'denied',
-              ad_storage: 'denied',
-              ad_user_data: 'denied',
-              ad_personalization: 'denied',
-              wait_for_update: 500
-            });
-          `,
-        }}
-      />
-      <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-        strategy="afterInteractive"
-      />
-      <Script
-        id="ga-config"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            window.gtag = window.gtag || gtag;
-            gtag('js', new Date());
-            gtag('config', '${GA_MEASUREMENT_ID}', { send_page_view: false });
-          `,
-        }}
-      />
-    </>
-  );
+  return null;
 }

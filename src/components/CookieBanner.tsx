@@ -40,7 +40,7 @@ export default function CookieBanner() {
 
   return (
     <>
-      {/* GA always loads; Consent Mode v2 defaults to denied (cookieless pings). */}
+      {/* SPA page_views; gtag.js itself is server-rendered in root layout. */}
       <Suspense fallback={null}>
         <GoogleAnalytics />
       </Suspense>

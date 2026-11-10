@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Archivo, Archivo_Black } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import "./cookie-styles.css";
 import CookieBanner from "@/components/CookieBanner";
+import { GA_MEASUREMENT_ID } from "@/lib/analytics";
 
 const archivo = Archivo({
   subsets: ["latin"],
@@ -67,9 +69,43 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-
       <body className={`${archivo.variable} ${archivoBlack.variable}`}>
-
+        {/* Consent Mode v2 defaults + GA4 in the document (beforeInteractive is hoisted). */}
+        <Script
+          id="ga-consent-default"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              window.gtag = gtag;
+              gtag('consent', 'default', {
+                analytics_storage: 'denied',
+                ad_storage: 'denied',
+                ad_user_data: 'denied',
+                ad_personalization: 'denied',
+                wait_for_update: 500
+              });
+            `,
+          }}
+        />
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script
+          id="ga-config"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              window.gtag = window.gtag || gtag;
+              gtag('js', new Date());
+              gtag('config', '${GA_MEASUREMENT_ID}', { send_page_view: false });
+            `,
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
