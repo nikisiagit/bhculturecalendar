@@ -106,6 +106,13 @@ if (orphans.length) {
   lines.push("");
 }
 
+// Alias for a short /venues/bic path (archive seed originally used this slug)
+lines.push("# Venue aliases");
+lines.push(
+  "/venues/bic    /venues/bournemouth-international-centre-bic    301"
+);
+lines.push("");
+
 fs.writeFileSync(REDIRECTS_PATH, lines.join("\n") + "\n", "utf8");
 console.log(
   `Wrote ${REDIRECTS_PATH} (${orphans.length} event redirect${orphans.length === 1 ? "" : "s"} + homepage 308)`
