@@ -1,11 +1,11 @@
 /**
  * Cloudflare Pages Function: missing /event/<id> → venue (if archived) or /whats-on.
  *
- * Static HTML for live events wins over this Function. Exact lines in public/_redirects
- * still handle known orphans with venue targets. This covers every other unknown id
- * so Google never keeps a soft-404 on a former event URL.
+ * Important: a matching Function can run before Pages' clean-URL static lookup, so
+ * we always try env.ASSETS first and only redirect on a real 404. That keeps live
+ * event HTML (200) intact while fixing deleted-event soft-404s.
  *
- * Archive snapshot is written by scripts/write-redirects.mjs → _archive.json
+ * Archive snapshot is written by scripts/write-redirects.mjs → _archive.js
  */
 import archive from "./_archive.js";
 
@@ -46,6 +46,12 @@ function redirectTarget(entry) {
 }
 
 export async function onRequest(context) {
+  // Prefer the static export when the event page was built.
+  const asset = await context.env.ASSETS.fetch(context.request);
+  if (asset.status !== 404) {
+    return asset;
+  }
+
   const raw = context.params?.slug;
   const slug = Array.isArray(raw) ? raw.join("/") : raw;
   const entry = findEntry(slug);
