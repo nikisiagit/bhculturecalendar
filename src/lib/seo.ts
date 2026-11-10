@@ -1,5 +1,6 @@
 import type { Event } from "@/lib/types";
 import { getDefaultThumbnailAbsoluteUrl } from "@/lib/default-thumbnails";
+import { isEventPast } from "@/lib/event-time";
 
 export const SITE_URL = "https://bhculturecalendar.co.uk";
 
@@ -76,6 +77,7 @@ export function buildEventJsonLd(event: Event) {
   const venueName = event.venue[0] || "BH postcode area";
   const startDate = toSchemaDate(event.date);
   const endDate = toSchemaDate(event.endDate) || startDate;
+  const past = isEventPast(event);
 
   return {
     "@context": "https://schema.org",
@@ -83,6 +85,7 @@ export function buildEventJsonLd(event: Event) {
     name: event.title.trim(),
     startDate,
     endDate,
+    // Past listings stay EventScheduled with historical dates (not cancelled).
     eventStatus: "https://schema.org/EventScheduled",
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
     location: {
@@ -97,7 +100,7 @@ export function buildEventJsonLd(event: Event) {
       },
     },
     image: [event.coverImage || getDefaultThumbnailAbsoluteUrl(event.category)],
-    ...(event.link
+    ...(event.link && !past
       ? {
           offers: {
             "@type": "Offer",

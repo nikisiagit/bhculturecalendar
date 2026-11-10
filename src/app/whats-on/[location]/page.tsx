@@ -7,6 +7,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { SITE_URL, buildItemListJsonLd } from "@/lib/seo";
+import { filterUpcomingEvents } from "@/lib/event-time";
 
 const VALID_LOCATIONS = [
   "bournemouth", "christchurch", "poole",
@@ -82,7 +83,7 @@ export default async function LocationWhatsOnPage({
   const town = getTownName(lowerLocation);
   const allEvents = await fetchEvents();
 
-  const events = allEvents.filter((event) => {
+  const events = filterUpcomingEvents(allEvents).filter((event) => {
     const locality = getLocalityFromPostcode(event.postcode).toLowerCase();
     const normalizedLocality = locality.replace(/\s+/g, "-");
 

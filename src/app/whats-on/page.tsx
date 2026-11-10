@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import { Metadata } from "next";
 import { SITE_URL, buildItemListJsonLd } from "@/lib/seo";
+import { filterUpcomingEvents } from "@/lib/event-time";
 
 export async function generateMetadata(): Promise<Metadata> {
   const canonicalUrl = `${SITE_URL}/whats-on`;
@@ -37,7 +38,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function WhatsOnPage() {
-  const events = await fetchEvents();
+  const allEvents = await fetchEvents();
+  const events = filterUpcomingEvents(allEvents);
 
   const allCategories = Array.from(
     new Set(events.flatMap((event) => event.category))

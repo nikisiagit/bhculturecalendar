@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/write-redirects.mjs",
     "build": "rm -rf .next && next build",
     "start": "next start",
     "lint": "eslint",
+    "write-redirects": "node scripts/write-redirects.mjs",
     "sync-mobile-api": "tsx scripts/sync-mobile-api.ts",
     "sync:mobile": "tsx scripts/sync-mobile-api.ts",
     "export:mobile": "tsx scripts/export-mobile-events.ts",

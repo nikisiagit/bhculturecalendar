@@ -8,6 +8,7 @@ import {
   getVenueSlug,
   venuePath,
 } from "@/lib/seo";
+import { filterUpcomingEvents } from "@/lib/event-time";
 
 export const dynamic = "force-static";
 
@@ -43,7 +44,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  const categories = Array.from(new Set(events.flatMap((e) => e.category)));
+  const upcoming = filterUpcomingEvents(events);
+
+  const categories = Array.from(new Set(upcoming.flatMap((e) => e.category)));
   const categoryRoutes = categories.map((cat) => ({
     url: `${baseUrl}${categoryPath(cat)}`,
     lastModified: now,
@@ -59,7 +62,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  const eventRoutes = events.map((event) => ({
+  // Upcoming only — past/archived event pages stay live (200) but are omitted from the sitemap.
+  const eventRoutes = upcoming.map((event) => ({
     url: `${baseUrl}${eventPath(event)}`,
     lastModified: now,
     changeFrequency: "daily" as const,

@@ -145,20 +145,10 @@ export const getEvents = async (): Promise<Event[]> => {
                 isSpotlight,
                 coverImage,
             };
-        }).filter(event => {
-            if (!event.date) {
-                return false;
-            }
-
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-
-            const eventDate = new Date(event.date);
-            // If there's an end date, use that for the check, otherwise use the start date
-            const relevantDate = event.endDate ? new Date(event.endDate) : eventDate;
-            const isFuture = relevantDate >= today;
-
-            return isFuture;
+        }).filter((event) => {
+            // Keep past events so event URLs can stay live as archived pages.
+            // Listing UIs filter to upcoming via filterUpcomingEvents().
+            return Boolean(event.date);
         }).sort((a, b) => {
             // Helper to determine if event is multi-day (range)
             // User requested to prioritize specific dates over long ranges (exhibitions)

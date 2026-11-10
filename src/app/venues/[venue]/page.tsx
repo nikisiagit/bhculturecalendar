@@ -14,6 +14,7 @@ import {
   resolveVenueLabel,
   venuePath,
 } from "@/lib/seo";
+import { filterUpcomingEvents } from "@/lib/event-time";
 
 export async function generateStaticParams() {
   try {
@@ -90,8 +91,9 @@ export default async function VenuePage({
 }) {
   const { venue: venueSlug } = await params;
   const [allEvents, venues] = await Promise.all([fetchEvents(), fetchVenues()]);
+  const upcoming = filterUpcomingEvents(allEvents);
   const label = resolveVenueName(allEvents, venues, venueSlug);
-  const events = findEventsByVenue(allEvents, venueSlug).sort(
+  const events = findEventsByVenue(upcoming, venueSlug).sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   );
 
@@ -107,7 +109,7 @@ export default async function VenuePage({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
-      <Header events={allEvents} />
+      <Header events={upcoming} />
       <main className="main seo-landing">
         <nav className="seo-breadcrumb" aria-label="Breadcrumb">
           <Link href="/venues">Venues</Link>
