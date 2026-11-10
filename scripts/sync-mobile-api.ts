@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import fs from "fs";
 import path from "path";
 
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local"), quiet: true });
@@ -27,6 +28,19 @@ async function main() {
     const syncSecret = env.MOBILE_SYNC_SECRET;
 
     const events = await getEvents();
+
+    // Persist id→venue mapping so deleted Notion rows can 301 via public/_redirects
+    const { mergeEventsIntoArchive, loadEventArchive } = await import("../src/lib/event-archive");
+    const archivePath = path.resolve(process.cwd(), "src/data/event-archive.json");
+    const merged = mergeEventsIntoArchive(loadEventArchive(), events);
+    // Deduplicate to one entry per id (slug keys may alias the same object)
+    const byId: Record<string, (typeof merged)[string]> = {};
+    for (const entry of Object.values(merged)) {
+        if (entry?.id) byId[entry.id] = entry;
+    }
+    fs.writeFileSync(archivePath, JSON.stringify(byId, null, 2) + "\n", "utf8");
+    console.log(`Updated event archive (${Object.keys(byId).length} events) at ${archivePath}`);
+
     const mobileEvents = toMobileEvents(events);
     const allIds = mobileEvents.map((event) => event.id);
     const batchSize = 100;

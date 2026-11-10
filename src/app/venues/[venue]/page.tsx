@@ -14,6 +14,7 @@ import {
   resolveVenueLabel,
   venuePath,
 } from "@/lib/seo";
+import { filterUpcomingEvents } from "@/lib/event-time";
 
 export async function generateStaticParams() {
   try {
@@ -54,16 +55,17 @@ export async function generateMetadata({
   const [events, venues] = await Promise.all([fetchEvents(), fetchVenues()]);
   const label = resolveVenueName(events, venues, venueSlug);
   const matching = findEventsByVenue(events, venueSlug);
-  const title = `What's On at ${label} | Events in the Bournemouth Area 2026`;
+  // "<Venue> What's On 2026 – Events & Tickets" (~60 chars)
+  const title = `${label} What's On 2026 – Events & Tickets`.slice(0, 60);
   const description =
     matching.length > 0
-      ? `Upcoming events at ${label}. ${matching.length} listing${matching.length === 1 ? "" : "s"} on BH Culture Calendar — Bournemouth, Christchurch & Poole culture.`
-      : `${label} on BH Culture Calendar — venues and culture in Bournemouth, Christchurch, Poole and the BH postcode area.`;
+      ? `What's on at ${label}: ${matching.length} upcoming event${matching.length === 1 ? "" : "s"} in the Bournemouth, Christchurch & Poole area. Dates and tickets.`
+      : `What's on at ${label}. Venue listings for culture in Bournemouth, Christchurch, Poole and the BH postcode area.`;
   const url = `${SITE_URL}${venuePath(label)}`;
 
   return {
-    title,
-    description,
+    title: { absolute: title },
+    description: description.slice(0, 155),
     alternates: { canonical: url },
     keywords: [
       `${label} events`,
@@ -90,8 +92,9 @@ export default async function VenuePage({
 }) {
   const { venue: venueSlug } = await params;
   const [allEvents, venues] = await Promise.all([fetchEvents(), fetchVenues()]);
+  const upcoming = filterUpcomingEvents(allEvents);
   const label = resolveVenueName(allEvents, venues, venueSlug);
-  const events = findEventsByVenue(allEvents, venueSlug).sort(
+  const events = findEventsByVenue(upcoming, venueSlug).sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   );
 
@@ -107,7 +110,7 @@ export default async function VenuePage({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
-      <Header events={allEvents} />
+      <Header events={upcoming} />
       <main className="main seo-landing">
         <nav className="seo-breadcrumb" aria-label="Breadcrumb">
           <Link href="/venues">Venues</Link>

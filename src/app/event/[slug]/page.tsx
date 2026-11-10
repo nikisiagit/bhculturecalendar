@@ -11,11 +11,19 @@ import {
   categoryPath,
   eventPath,
   findEventBySlug,
+  buildEventPageTitle,
   formatEventDateRange,
   getEventSlug,
+  getVenueSlug,
   venuePath,
 } from "@/lib/seo";
 import { getDefaultThumbnailAbsoluteUrl } from "@/lib/default-thumbnails";
+import { isEventPast, filterUpcomingEvents } from "@/lib/event-time";
+import {
+  archiveRedirectTarget,
+  findArchiveEntry,
+  loadEventArchive,
+} from "@/lib/event-archive";
 import EventCoverImage from "@/components/EventCoverImage";
 
 export async function generateStaticParams() {
@@ -35,26 +43,39 @@ export async function generateMetadata({
   const { slug } = await params;
   const events = await fetchEvents();
   const event = findEventBySlug(events, slug);
-  if (!event) return { title: "Event not found" };
 
-  const townHint = event.postcode[0] ? ` (${event.postcode[0]})` : "";
-  const venue = event.venue[0] ? ` at ${event.venue[0]}` : "";
-  const title = `${event.title.trim()}${venue} | What's On Bournemouth area`;
+  if (!event) {
+    const archived = findArchiveEntry(loadEventArchive(), slug);
+    if (archived) {
+      const target = archiveRedirectTarget(archived);
+      return {
+        title: archived.title || "Event moved",
+        robots: { index: false, follow: true },
+        alternates: { canonical: `${SITE_URL}${target}` },
+      };
+    }
+    return { title: "Event not found" };
+  }
+
+  const past = isEventPast(event);
+  const title = buildEventPageTitle(event, { finished: past });
+
   const description = [
+    past ? "This event has finished." : null,
     event.title.trim(),
     formatEventDateRange(event.date, event.endDate),
     event.venue.join(", "),
     event.category.join(", "),
-    "BH Culture Calendar — Bournemouth, Christchurch & Poole events.",
+    "What's on in Bournemouth, Christchurch & Poole.",
   ]
     .filter(Boolean)
     .join(" · ")
-    .slice(0, 160);
+    .slice(0, 155);
 
   const url = `${SITE_URL}${eventPath(event)}`;
 
   return {
-    title,
+    title: { absolute: title },
     description,
     alternates: { canonical: url },
     openGraph: {
@@ -76,7 +97,6 @@ export async function generateMetadata({
       ...event.venue,
       "what's on bournemouth",
       "bcp events",
-      townHint.trim(),
     ].filter(Boolean) as string[],
   };
 }
@@ -89,10 +109,68 @@ export default async function EventPage({
   const { slug } = await params;
   const events = await fetchEvents();
   const event = findEventBySlug(events, slug);
-  if (!event) notFound();
 
+  // Truly missing from the API: build-time _redirects should 301 these.
+  // If we still land here (e.g. local preview), send users onward without a soft 404.
+  if (!event) {
+    const archived = findArchiveEntry(loadEventArchive(), slug);
+    if (archived) {
+      const target = archiveRedirectTarget(archived);
+      return (
+        <>
+          <Header events={filterUpcomingEvents(events)} />
+          <main className="main seo-landing">
+            <article className="seo-event-detail">
+              <h1 className="page-title seo-h1">
+                {archived.title.trim() || "This event is no longer listed"}
+              </h1>
+              <p className="seo-lead">
+                This listing has been removed from our calendar. You&apos;ll be better served on
+                the venue or what&apos;s-on page.
+              </p>
+              <div className="seo-actions">
+                <Link href={target} className="seo-primary-btn">
+                  {archived.venue[0] ? `What's on at ${archived.venue[0]}` : "Browse what's on"}
+                </Link>
+                <Link href="/whats-on" className="seo-secondary-btn">
+                  All events
+                </Link>
+              </div>
+              <p className="seo-body">
+                Production serves a Cloudflare 301 from this URL to{" "}
+                <Link href={target}>{target}</Link>.
+              </p>
+            </article>
+          </main>
+          <Footer />
+          <ScrollToTop />
+        </>
+      );
+    }
+    notFound();
+  }
+
+  const past = isEventPast(event);
+  const upcoming = filterUpcomingEvents(events);
   const jsonLd = buildEventJsonLd(event);
   const dateLabel = formatEventDateRange(event.date, event.endDate);
+
+  const relatedVenue = upcoming
+    .filter(
+      (e) =>
+        e.id !== event.id &&
+        e.venue.some((v) => event.venue.some((ev) => getVenueSlug(ev) === getVenueSlug(v)))
+    )
+    .slice(0, 4);
+
+  const relatedCategory = upcoming
+    .filter(
+      (e) =>
+        e.id !== event.id &&
+        !relatedVenue.some((r) => r.id === e.id) &&
+        e.category.some((c) => event.category.includes(c))
+    )
+    .slice(0, 4);
 
   return (
     <>
@@ -100,7 +178,7 @@ export default async function EventPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Header events={events} />
+      <Header events={upcoming} />
       <main className="main seo-landing">
         <nav className="seo-breadcrumb" aria-label="Breadcrumb">
           <Link href="/whats-on">What&apos;s On</Link>
@@ -114,7 +192,14 @@ export default async function EventPage({
           <span>{event.title.trim()}</span>
         </nav>
 
-        <article className="seo-event-detail">
+        <article className={`seo-event-detail${past ? " is-archived" : ""}`}>
+          {past && (
+            <p className="seo-finished-banner" role="status">
+              This event has finished. It is kept here as an archive listing so links and search
+              results still work.
+            </p>
+          )}
+
           <EventCoverImage
             coverImage={event.coverImage}
             categories={event.category}
@@ -148,17 +233,17 @@ export default async function EventPage({
               </span>
             ))}
             {event.isFree && <span className="tag free">Free</span>}
+            {past && <span className="tag">Finished</span>}
           </div>
 
           <p className="seo-body">
-            Listed on BH Culture Calendar — what&apos;s on in Bournemouth, Christchurch,
-            Poole and the wider BH postcode area. Categories:{" "}
-            {event.category.join(", ") || "culture"}.
-            {event.isFree ? " This listing is marked as free entry." : ""}
+            {past
+              ? "This event has finished. Browse upcoming events at the same venue or in the same category below."
+              : `Listed on BH Culture Calendar — what's on in Bournemouth, Christchurch, Poole and the wider BH postcode area. Categories: ${event.category.join(", ") || "culture"}.${event.isFree ? " This listing is marked as free entry." : ""}`}
           </p>
 
           <div className="seo-actions">
-            {event.link && (
+            {!past && event.link && (
               <a
                 href={event.link}
                 target="_blank"
@@ -172,6 +257,38 @@ export default async function EventPage({
               All events
             </Link>
           </div>
+
+          {(relatedVenue.length > 0 || relatedCategory.length > 0) && (
+            <section className="seo-related" aria-labelledby="related-upcoming-heading">
+              <h2 id="related-upcoming-heading" className="seo-section-title">
+                Upcoming nearby
+              </h2>
+              <ul className="seo-event-list">
+                {relatedVenue.map((e) => (
+                  <li key={e.id} className="seo-event-list-item">
+                    <Link href={eventPath(e)} className="seo-event-list-title">
+                      {e.title.trim()}
+                    </Link>
+                    <div className="seo-event-list-meta">
+                      {formatEventDateRange(e.date, e.endDate)}
+                      {e.venue[0] ? ` · ${e.venue[0]}` : ""}
+                    </div>
+                  </li>
+                ))}
+                {relatedCategory.map((e) => (
+                  <li key={e.id} className="seo-event-list-item">
+                    <Link href={eventPath(e)} className="seo-event-list-title">
+                      {e.title.trim()}
+                    </Link>
+                    <div className="seo-event-list-meta">
+                      {formatEventDateRange(e.date, e.endDate)}
+                      {e.category[0] ? ` · ${e.category[0]}` : ""}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           <section className="seo-related" aria-labelledby="related-heading">
             <h2 id="related-heading" className="seo-section-title">
@@ -191,13 +308,7 @@ export default async function EventPage({
                 </li>
               ))}
               <li>
-                <Link href="/whats-on/bournemouth">What&apos;s on in Bournemouth</Link>
-              </li>
-              <li>
-                <Link href="/whats-on/poole">What&apos;s on in Poole</Link>
-              </li>
-              <li>
-                <Link href="/venues">All venues</Link>
+                <Link href="/whats-on">Browse all what&apos;s on</Link>
               </li>
             </ul>
           </section>

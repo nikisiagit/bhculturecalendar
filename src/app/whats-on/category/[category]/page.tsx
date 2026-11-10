@@ -16,6 +16,7 @@ import {
   resolveCategoryLabel,
   venuePath,
 } from "@/lib/seo";
+import { filterUpcomingEvents } from "@/lib/event-time";
 
 export async function generateStaticParams() {
   try {
@@ -38,12 +39,16 @@ export async function generateMetadata({
   const matching = findEventsByCategory(events, categorySlug);
   if (matching.length === 0 && !label) return { title: "Category not found" };
 
-  const title = `${label} Events in Bournemouth, Poole & Christchurch | 2026`;
-  const description = `Find ${label.toLowerCase()} events in Bournemouth, Christchurch, Poole and the BH postcode area. ${matching.length} listings on BH Culture Calendar.`;
+  const title = `${label} Events in Bournemouth & Poole`.slice(0, 60);
+  const description =
+    `${matching.length} ${label.toLowerCase()} listing${matching.length === 1 ? "" : "s"} in Bournemouth, Christchurch and Poole. Dates, venues and tickets.`.slice(
+      0,
+      155
+    );
   const url = `${SITE_URL}${categoryPath(label)}`;
 
   return {
-    title,
+    title: { absolute: title },
     description,
     alternates: { canonical: url },
     keywords: [
@@ -71,8 +76,9 @@ export default async function CategoryPage({
 }) {
   const { category: categorySlug } = await params;
   const allEvents = await fetchEvents();
+  const upcoming = filterUpcomingEvents(allEvents);
   const label = resolveCategoryLabel(allEvents, categorySlug);
-  const events = findEventsByCategory(allEvents, categorySlug).sort(
+  const events = findEventsByCategory(upcoming, categorySlug).sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   );
 
@@ -91,7 +97,7 @@ export default async function CategoryPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Header events={allEvents} />
+      <Header events={upcoming} />
       <main className="main seo-landing">
         <nav className="seo-breadcrumb" aria-label="Breadcrumb">
           <Link href="/whats-on">What&apos;s On</Link>

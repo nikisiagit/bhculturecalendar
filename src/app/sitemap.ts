@@ -8,6 +8,7 @@ import {
   getVenueSlug,
   venuePath,
 } from "@/lib/seo";
+import { filterUpcomingEvents } from "@/lib/event-time";
 
 export const dynamic = "force-static";
 
@@ -43,7 +44,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  const categories = Array.from(new Set(events.flatMap((e) => e.category)));
+  const upcoming = filterUpcomingEvents(events);
+
+  const categories = Array.from(new Set(upcoming.flatMap((e) => e.category)));
   const categoryRoutes = categories.map((cat) => ({
     url: `${baseUrl}${categoryPath(cat)}`,
     lastModified: now,
@@ -59,7 +62,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  const eventRoutes = events.map((event) => ({
+  // Upcoming only — past/archived event pages stay live (200) but are omitted from the sitemap.
+  const eventRoutes = upcoming.map((event) => ({
     url: `${baseUrl}${eventPath(event)}`,
     lastModified: now,
     changeFrequency: "daily" as const,
@@ -68,7 +72,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     {
-      url: baseUrl,
+      // Canonical listing lives at /whats-on — "/" is a 308 redirect (see public/_redirects)
+      url: `${baseUrl}/whats-on`,
       lastModified: now,
       changeFrequency: "daily",
       priority: 1,
@@ -84,12 +89,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/whats-on`,
-      lastModified: now,
-      changeFrequency: "daily",
-      priority: 0.9,
     },
     ...locationRoutes,
     ...categoryRoutes,
