@@ -36,9 +36,16 @@ export async function generateMetadata(
   const town = getTownName(location.toLowerCase());
   const canonicalUrl = `${SITE_URL}/whats-on/${location.toLowerCase()}`;
 
+  const title = `What's On in ${town} This Week`.slice(0, 60);
+  const description =
+    `Theatre, art, comedy and festivals in ${town}. What's on today and this week across the BH postcode area.`.slice(
+      0,
+      155
+    );
+
   return {
-    title: `What's On ${town} | 2026 Events, Theatre, Art & Comedy`,
-    description: `Find what's on in ${town} — theatre shows, art exhibitions, comedy, festivals and free events. BH Culture Calendar for the BCP / BH postcode area.`,
+    title: { absolute: title },
+    description,
     alternates: {
       canonical: canonicalUrl,
     },
@@ -52,8 +59,8 @@ export async function generateMetadata(
       `${town} shows`,
     ],
     openGraph: {
-      title: `What's On in ${town} | BH Culture Calendar`,
-      description: `Discover art, comedy, theatre and festivals in ${town} and the BH postcode area.`,
+      title,
+      description,
       url: canonicalUrl,
       siteName: "BH Culture Calendar",
       locale: "en_GB",

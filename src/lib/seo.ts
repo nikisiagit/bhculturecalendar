@@ -41,6 +41,43 @@ export function venuePath(venueName: string): string {
   return `/venues/${getVenueSlug(venueName)}`;
 }
 
+/** Short date for titles, e.g. "28 Oct". */
+export function formatShortEventDate(start: string): string {
+  if (!start) return "";
+  const d = new Date(start);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+}
+
+/**
+ * Event title ~60 chars: "<Event name> – <Venue>, <D Mon>".
+ * Uses absolute titles (no layout suffix).
+ */
+export function buildEventPageTitle(
+  event: Pick<Event, "title" | "venue" | "date">,
+  opts?: { finished?: boolean }
+): string {
+  const venue = event.venue[0] || "";
+  const dateBit = formatShortEventDate(event.date);
+  const suffixParts = [venue, dateBit].filter(Boolean);
+  const suffix = suffixParts.join(", ");
+  const name = event.title.trim();
+  let title: string;
+  if (suffix) {
+    const maxName = Math.max(18, 58 - suffix.length - 3);
+    const trimmed =
+      name.length > maxName ? `${name.slice(0, maxName - 1).trimEnd()}…` : name;
+    title = `${trimmed} – ${suffix}`;
+  } else {
+    title = name.length > 60 ? `${name.slice(0, 59).trimEnd()}…` : name;
+  }
+  if (opts?.finished) {
+    const withTag = `${title} (finished)`;
+    return withTag.length > 65 ? `${title.slice(0, 54).trimEnd()}… (finished)` : withTag;
+  }
+  return title;
+}
+
 export function formatEventDateRange(start: string, end: string | null): string {
   if (!start) return "Date TBC";
   const startDate = new Date(start);

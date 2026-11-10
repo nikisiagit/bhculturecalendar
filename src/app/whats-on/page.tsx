@@ -10,9 +10,13 @@ import { filterUpcomingEvents } from "@/lib/event-time";
 export async function generateMetadata(): Promise<Metadata> {
   const canonicalUrl = `${SITE_URL}/whats-on`;
 
+  const title = "What's On in Bournemouth, Poole & Christchurch This Week";
+  const description =
+    "Theatre, art, comedy and festivals in Bournemouth, Christchurch and Poole today and this week. Free and ticketed events across the BH postcode area.";
+
   return {
-    title: `What's On Bournemouth, Poole & Christchurch | 2026 Events & Shows`,
-    description: `Find what's on in Bournemouth, Christchurch and Poole today and this week. Theatre, art exhibitions, comedy, festivals and free events in the BCP / BH postcode area.`,
+    title: { absolute: title },
+    description,
     alternates: {
       canonical: canonicalUrl,
     },
@@ -27,8 +31,8 @@ export async function generateMetadata(): Promise<Metadata> {
       "bcp events",
     ],
     openGraph: {
-      title: `What's On in Bournemouth, Christchurch & Poole | BH Culture Calendar`,
-      description: `Discover art, comedy, theatre and festivals in the BH postcode area. Plan your visit with the best local events.`,
+      title,
+      description,
       url: canonicalUrl,
       siteName: "BH Culture Calendar",
       locale: "en_GB",

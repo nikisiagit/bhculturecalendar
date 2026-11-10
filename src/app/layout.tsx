@@ -18,11 +18,12 @@ const archivoBlack = Archivo_Black({
 export const metadata: Metadata = {
   metadataBase: new URL("https://bhculturecalendar.co.uk"),
   title: {
-    default: "What's On Bournemouth, Christchurch & Poole | 2026 Art, Theatre & Comedy Events",
-    template: "%s | BH Culture Calendar",
+    default: "What's On in Bournemouth, Poole & Christchurch This Week",
+    // Pages set absolute titles; avoid appending a long brand suffix.
+    template: "%s",
   },
   description:
-    "Discover the best 2026 events in Bournemouth, Christchurch, and Poole. Your ultimate guide to theatre shows, art exhibitions, comedy, and festivals in the BCP area (BH postcode).",
+    "Find theatre, art, comedy and festivals in Bournemouth, Christchurch and Poole. Updated what's on for the BCP / BH postcode area.",
   alternates: {
     canonical: "https://bhculturecalendar.co.uk/whats-on",
   },
@@ -40,9 +41,9 @@ export const metadata: Metadata = {
     "bh postcode culture",
   ],
   openGraph: {
-    title: "What's On in Bournemouth, Christchurch & Poole | BH Culture Calendar",
+    title: "What's On in Bournemouth, Poole & Christchurch This Week",
     description:
-      "Discover art, comedy, dance, festivals, film, and theatre in the BH postcode area. Plan your 2026 with the best local events.",
+      "Theatre, art, comedy and festivals in the BH postcode area. Plan your week with BH Culture Calendar.",
     url: "https://bhculturecalendar.co.uk/whats-on",
     siteName: "BH Culture Calendar",
     locale: "en_GB",
@@ -50,8 +51,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "What's On in Bournemouth, Christchurch & Poole",
-    description: "Your guide to 2026 culture, theatre, and events in the BH postcode area.",
+    title: "What's On in Bournemouth, Poole & Christchurch This Week",
+    description: "Your guide to culture, theatre and events in the BH postcode area.",
   },
   robots: {
     index: true,

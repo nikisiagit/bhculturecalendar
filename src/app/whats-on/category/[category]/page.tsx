@@ -39,12 +39,16 @@ export async function generateMetadata({
   const matching = findEventsByCategory(events, categorySlug);
   if (matching.length === 0 && !label) return { title: "Category not found" };
 
-  const title = `${label} Events in Bournemouth, Poole & Christchurch | 2026`;
-  const description = `Find ${label.toLowerCase()} events in Bournemouth, Christchurch, Poole and the BH postcode area. ${matching.length} listings on BH Culture Calendar.`;
+  const title = `${label} Events in Bournemouth & Poole`.slice(0, 60);
+  const description =
+    `${matching.length} ${label.toLowerCase()} listing${matching.length === 1 ? "" : "s"} in Bournemouth, Christchurch and Poole. Dates, venues and tickets.`.slice(
+      0,
+      155
+    );
   const url = `${SITE_URL}${categoryPath(label)}`;
 
   return {
-    title,
+    title: { absolute: title },
     description,
     alternates: { canonical: url },
     keywords: [

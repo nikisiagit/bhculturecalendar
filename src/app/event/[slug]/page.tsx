@@ -11,6 +11,7 @@ import {
   categoryPath,
   eventPath,
   findEventBySlug,
+  buildEventPageTitle,
   formatEventDateRange,
   getEventSlug,
   getVenueSlug,
@@ -57,10 +58,7 @@ export async function generateMetadata({
   }
 
   const past = isEventPast(event);
-  const venue = event.venue[0] ? ` at ${event.venue[0]}` : "";
-  const title = past
-    ? `${event.title.trim()}${venue} (finished)`
-    : `${event.title.trim()}${venue} | What's On Bournemouth area`;
+  const title = buildEventPageTitle(event, { finished: past });
 
   const description = [
     past ? "This event has finished." : null,
@@ -68,16 +66,16 @@ export async function generateMetadata({
     formatEventDateRange(event.date, event.endDate),
     event.venue.join(", "),
     event.category.join(", "),
-    "BH Culture Calendar — Bournemouth, Christchurch & Poole events.",
+    "What's on in Bournemouth, Christchurch & Poole.",
   ]
     .filter(Boolean)
     .join(" · ")
-    .slice(0, 160);
+    .slice(0, 155);
 
   const url = `${SITE_URL}${eventPath(event)}`;
 
   return {
-    title,
+    title: { absolute: title },
     description,
     alternates: { canonical: url },
     openGraph: {
