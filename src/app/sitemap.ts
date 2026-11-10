@@ -68,7 +68,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     {
-      url: baseUrl,
+      // Canonical listing lives at /whats-on — "/" is a 308 redirect (see public/_redirects)
+      url: `${baseUrl}/whats-on`,
       lastModified: now,
       changeFrequency: "daily",
       priority: 1,
@@ -84,12 +85,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/whats-on`,
-      lastModified: now,
-      changeFrequency: "daily",
-      priority: 0.9,
     },
     ...locationRoutes,
     ...categoryRoutes,

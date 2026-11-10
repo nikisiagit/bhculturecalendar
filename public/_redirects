@@ -1,0 +1,3 @@
+# Cloudflare Pages — permanent homepage redirect (must not use Next.js redirect()
+# during render with output:'export'; that produces the __next_error__ shell).
+/    /whats-on    308
