@@ -6,6 +6,8 @@
 
 # Removed events → venue (or /whats-on) so rankings are not soft-404s
 /event/3e8f9c4288ed80579426d57f665c2fe5    /venues/bournemouth-international-centre-bic    301
+/event/3edf9c4288ed80a1a0d3d1c7ecec1351    /whats-on    301
+/event/3e9f9c4288ed8000968df025e455c134    /whats-on    301
 
 # Venue aliases
 /venues/bic    /venues/bournemouth-international-centre-bic    301

@@ -9,5 +9,27 @@
     "date": "2025-01-01",
     "endDate": null,
     "updatedAt": "2026-11-10T23:00:00.000Z"
+  },
+  "3edf9c4288ed80a1a0d3d1c7ecec1351": {
+    "id": "3edf9c4288ed80a1a0d3d1c7ecec1351",
+    "slug": "3edf9c4288ed80a1a0d3d1c7ecec1351",
+    "title": "Removed event",
+    "venue": [],
+    "venueSlug": null,
+    "category": [],
+    "date": "2025-01-01",
+    "endDate": null,
+    "updatedAt": "2026-11-10T23:25:00.000Z"
+  },
+  "3e9f9c4288ed8000968df025e455c134": {
+    "id": "3e9f9c4288ed8000968df025e455c134",
+    "slug": "3e9f9c4288ed8000968df025e455c134",
+    "title": "Removed event",
+    "venue": [],
+    "venueSlug": null,
+    "category": [],
+    "date": "2025-01-01",
+    "endDate": null,
+    "updatedAt": "2026-11-10T23:25:00.000Z"
   }
 }

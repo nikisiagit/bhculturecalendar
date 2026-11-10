@@ -88,10 +88,21 @@ const lines = [
   "",
 ];
 
+// When the API is reachable, redirect only ids that are no longer live.
+// When it isn't, still emit seed/deleted archive rows (never the full live
+// archive — sync merges every current event into the same file).
+const SEED_DELETED_IDS = new Set([
+  "3e8f9c4288ed80579426d57f665c2fe5",
+  "3edf9c4288ed80a1a0d3d1c7ecec1351",
+  "3e9f9c4288ed8000968df025e455c134",
+]);
+
 let orphans = apiOk
   ? uniqueArchiveEntries(archive).filter((entry) => !isLive(entry, liveKeys))
   : uniqueArchiveEntries(archive).filter(
-      (entry) => entry.id === "3e8f9c4288ed80579426d57f665c2fe5"
+      (entry) =>
+        SEED_DELETED_IDS.has(entry.id) ||
+        (!entry.venue?.length && !entry.venueSlug)
     );
 
 if (orphans.length) {
