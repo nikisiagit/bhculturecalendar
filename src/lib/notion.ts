@@ -1,5 +1,6 @@
 import { Client } from "@notionhq/client";
 import imageMapData from "@/data/image-map.json";
+import { isEventPast } from "./event-time";
 import { Event, Venue } from "./types";
 export type { Event, Venue };
 
@@ -17,17 +18,22 @@ function getNotionClient(): Client {
  */
 async function resolveEventsDataSourceId(rawId: string): Promise<string> {
     const notion = getNotionClient();
+    // Prefer data_source lookup first — NOTION_DATABASE_ID is often already a
+    // data_source id; databases.retrieve then only logs a noisy object_not_found.
     try {
-        const database = await notion.databases.retrieve({ database_id: rawId });
-        const sources = (
-            database as { data_sources?: Array<{ id: string }> }
-        ).data_sources;
-        if (sources?.[0]?.id) return sources[0].id;
+        const dataSource = await notion.dataSources.retrieve({ data_source_id: rawId });
+        return dataSource.id;
     } catch {
-        // rawId may already be a data source id
+        // Fall through: rawId may be a database id
     }
-    const dataSource = await notion.dataSources.retrieve({ data_source_id: rawId });
-    return dataSource.id;
+    const database = await notion.databases.retrieve({ database_id: rawId });
+    const sources = (
+        database as { data_sources?: Array<{ id: string }> }
+    ).data_sources;
+    if (sources?.[0]?.id) return sources[0].id;
+    throw new Error(
+        `Notion database ${rawId} has no data_sources — share it with the integration or set NOTION_DATABASE_ID to the data source id.`
+    );
 }
 
 const imageMap = imageMapData as Record<string, string>;
@@ -146,9 +152,10 @@ export const getEvents = async (): Promise<Event[]> => {
                 coverImage,
             };
         }).filter((event) => {
-            // Keep past events so event URLs can stay live as archived pages.
-            // Listing UIs filter to upcoming via filterUpcomingEvents().
-            return Boolean(event.date);
+            // Sync + API + site catalogue: today and future only.
+            // Finished / deleted URLs are handled by archive 301s (_redirects / Pages Function).
+            if (!event.date) return false;
+            return !isEventPast(event);
         }).sort((a, b) => {
             // Helper to determine if event is multi-day (range)
             // User requested to prioritize specific dates over long ranges (exhibitions)
