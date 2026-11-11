@@ -1,6 +1,6 @@
 import { Client } from "@notionhq/client";
 import imageMapData from "@/data/image-map.json";
-import { isEventPast } from "./event-time";
+import { isEventStillActive } from "./event-time";
 import { Event, Venue } from "./types";
 export type { Event, Venue };
 
@@ -152,10 +152,9 @@ export const getEvents = async (): Promise<Event[]> => {
                 coverImage,
             };
         }).filter((event) => {
-            // Sync + API + site catalogue: today and future only.
-            // Finished / deleted URLs are handled by archive 301s (_redirects / Pages Function).
-            if (!event.date) return false;
-            return !isEventPast(event);
+            // Today + future only — same rule as API GET /events (isEventStillActive).
+            // Finished / deleted URLs use archive 301s (_redirects / Pages Function).
+            return isEventStillActive(event);
         }).sort((a, b) => {
             // Helper to determine if event is multi-day (range)
             // User requested to prioritize specific dates over long ranges (exhibitions)

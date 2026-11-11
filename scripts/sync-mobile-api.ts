@@ -28,11 +28,19 @@ async function main() {
     const syncSecret = env.MOBILE_SYNC_SECRET;
 
     const events = await getEvents();
+    const { isEventStillActive } = await import("../src/lib/event-time");
+    const upcoming = events.filter((event) => isEventStillActive(event));
+    if (upcoming.length !== events.length) {
+        console.log(
+            `Filtered ${events.length - upcoming.length} past Notion events (API/site are today+future only)`,
+        );
+    }
 
     // Persist id→venue mapping so deleted Notion rows can 301 via public/_redirects
     const { mergeEventsIntoArchive, loadEventArchive } = await import("../src/lib/event-archive");
     const archivePath = path.resolve(process.cwd(), "src/data/event-archive.json");
-    const merged = mergeEventsIntoArchive(loadEventArchive(), events);
+    // Archive upcoming rows so venue redirects survive once they drop out of sync.
+    const merged = mergeEventsIntoArchive(loadEventArchive(), upcoming);
     // Deduplicate to one entry per id (slug keys may alias the same object)
     const byId: Record<string, (typeof merged)[string]> = {};
     for (const entry of Object.values(merged)) {
@@ -41,7 +49,7 @@ async function main() {
     fs.writeFileSync(archivePath, JSON.stringify(byId, null, 2) + "\n", "utf8");
     console.log(`Updated event archive (${Object.keys(byId).length} events) at ${archivePath}`);
 
-    const mobileEvents = toMobileEvents(events);
+    const mobileEvents = toMobileEvents(upcoming);
     const allIds = mobileEvents.map((event) => event.id);
     const batchSize = 100;
     let totalInserted = 0;

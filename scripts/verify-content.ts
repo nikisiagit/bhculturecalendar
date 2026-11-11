@@ -171,10 +171,12 @@ async function checkNotionVsApi(): Promise<CheckResult> {
 
   console.error("Fetching events from Notion…");
   const notionEvents = await getEvents();
+  // getEvents is already today+future (aligned with API isEventStillActive).
   const expected = toMobileEvents(notionEvents);
-  console.error(`Notion: ${expected.length} events (mapped)`);
+  console.error(`Notion: ${expected.length} active events (mapped, today+future)`);
 
   console.error("Fetching events from Mobile API…");
+  // Default GET /events excludes past — same catalogue the site and iOS use.
   const { status, data, ms } = await fetchJson(`${API_URL}/events`);
   if (status !== 200) {
     return {
