@@ -2134,6 +2134,25 @@ a.tag.category:focus-visible {
   max-width: 48rem;
 }
 
+.privacy-page .privacy-article {
+  max-width: 40rem;
+}
+
+.privacy-page .seo-section-title {
+  margin-top: var(--spacing-xl);
+}
+
+.privacy-page .privacy-list {
+  margin: 0 0 var(--spacing-lg);
+  padding-left: 1.25rem;
+  max-width: 40rem;
+  line-height: 1.7;
+}
+
+.privacy-page .privacy-list li {
+  margin-bottom: 0.5rem;
+}
+
 .seo-event-detail {
   max-width: 40rem;
 }
