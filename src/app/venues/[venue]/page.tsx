@@ -15,6 +15,7 @@ import {
   venuePath,
 } from "@/lib/seo";
 import { filterUpcomingEvents } from "@/lib/event-time";
+import { loadEventArchive } from "@/lib/event-archive";
 
 export async function generateStaticParams() {
   try {
@@ -23,6 +24,14 @@ export async function generateStaticParams() {
       ...events.flatMap((e) => e.venue),
       ...venues.map((v) => v.name),
     ]);
+    // Include archive venues so finished-event 301s land on a real 200 page
+    // (e.g. Lulworth Castle) instead of a soft-404 venue URL.
+    for (const entry of Object.values(loadEventArchive())) {
+      if (!entry) continue;
+      for (const name of entry.venue ?? []) {
+        if (name.trim()) names.add(name);
+      }
+    }
     return Array.from(names).map((venue) => ({ venue: getVenueSlug(venue) }));
   } catch {
     return [];
@@ -42,6 +51,13 @@ function resolveVenueName(
   }
   for (const v of venues) {
     if (getVenueSlug(v.name) === decoded) return v.name;
+  }
+  for (const entry of Object.values(loadEventArchive())) {
+    if (!entry) continue;
+    if (entry.venueSlug === decoded) return entry.venue[0] || resolveVenueLabel(events, venueSlug);
+    for (const v of entry.venue ?? []) {
+      if (getVenueSlug(v) === decoded) return v;
+    }
   }
   return resolveVenueLabel(events, venueSlug);
 }

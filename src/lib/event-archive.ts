@@ -74,6 +74,8 @@ export function findArchiveEntry(
  * Prefer a specific landing page over /whats-on — mass redirects to one
  * general URL can be treated as soft-404s in Search Console.
  * Order: venue → category → /whats-on.
+ * Venue pages are statically generated for archive venues too, so these
+ * landings stay 200 even when the venue has no upcoming events.
  */
 export function archiveRedirectTarget(entry: ArchivedEventMeta): string {
   if (entry.venue[0]) return venuePath(entry.venue[0]);

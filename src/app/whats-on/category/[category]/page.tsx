@@ -21,8 +21,15 @@ import { filterUpcomingEvents } from "@/lib/event-time";
 export async function generateStaticParams() {
   try {
     const events = await fetchEvents();
-    const cats = Array.from(new Set(events.flatMap((e) => e.category)));
-    return cats.map((category) => ({ category: getCategorySlug(category) }));
+    const cats = new Set(events.flatMap((e) => e.category));
+    // Keep category landings for finished-event redirects that fall back here.
+    const { loadEventArchive } = await import("@/lib/event-archive");
+    for (const entry of Object.values(loadEventArchive())) {
+      for (const cat of entry?.category ?? []) {
+        if (cat.trim()) cats.add(cat);
+      }
+    }
+    return Array.from(cats).map((category) => ({ category: getCategorySlug(category) }));
   } catch {
     return [];
   }

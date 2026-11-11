@@ -39,16 +39,36 @@ function categoryPath(name) {
   return `/whats-on/category/${slugify(name)}`;
 }
 
-/** Venue → category → null (Function handles /whats-on fallback). */
-function archiveRedirectTarget(entry) {
-  if (entry.venue?.[0]) return venuePath(entry.venue[0]);
-  if (entry.venueSlug) return `/venues/${entry.venueSlug}`;
+/**
+ * Venue pages are generated for archive + live venues, so archive venue
+ * slugs are valid landing pages (even with zero upcoming events).
+ * Order: venue → category → null (Function handles /whats-on).
+ */
+function archiveRedirectTarget(entry, knownVenueSlugs) {
+  const venueSlug = entry.venue?.[0]
+    ? slugify(entry.venue[0])
+    : entry.venueSlug || null;
+  if (venueSlug && (!knownVenueSlugs || knownVenueSlugs.has(venueSlug))) {
+    return `/venues/${venueSlug}`;
+  }
   if (entry.category?.[0]) return categoryPath(entry.category[0]);
   return null;
 }
 
-function hasSpecificTarget(entry) {
-  return Boolean(entry.venue?.[0] || entry.venueSlug || entry.category?.[0]);
+function hasSpecificTarget(entry, knownVenueSlugs) {
+  return Boolean(archiveRedirectTarget(entry, knownVenueSlugs));
+}
+
+function collectArchiveVenueSlugs(archive) {
+  const slugs = new Set();
+  for (const entry of Object.values(archive)) {
+    if (!entry) continue;
+    if (entry.venueSlug) slugs.add(entry.venueSlug);
+    for (const name of entry.venue ?? []) {
+      if (name) slugs.add(slugify(name));
+    }
+  }
+  return slugs;
 }
 
 async function fetchLiveEventKeys() {
@@ -99,6 +119,7 @@ function eventPathSlug(entry) {
 }
 
 const archive = JSON.parse(fs.readFileSync(ARCHIVE_PATH, "utf8"));
+const knownVenueSlugs = collectArchiveVenueSlugs(archive);
 const { keys: liveKeys, ok: apiOk } = await fetchLiveEventKeys();
 
 const lines = [
@@ -119,12 +140,13 @@ const SEED_DELETED_IDS = new Set([
 let orphans = apiOk
   ? uniqueArchiveEntries(archive).filter((entry) => !isLive(entry, liveKeys))
   : uniqueArchiveEntries(archive).filter(
-      (entry) => SEED_DELETED_IDS.has(entry.id) || hasSpecificTarget(entry)
+      (entry) =>
+        SEED_DELETED_IDS.has(entry.id) || hasSpecificTarget(entry, knownVenueSlugs)
     );
 
 // Prefer specific landings (venue/category). Generic /whats-on is Function-only.
 const specificOrphans = orphans
-  .map((entry) => ({ entry, target: archiveRedirectTarget(entry) }))
+  .map((entry) => ({ entry, target: archiveRedirectTarget(entry, knownVenueSlugs) }))
   .filter((row) => row.target);
 
 // Venue targets first (strongest signal), then category
