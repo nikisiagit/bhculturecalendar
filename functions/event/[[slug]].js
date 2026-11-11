@@ -1,10 +1,11 @@
 /**
- * Cloudflare Pages Function: missing /event/<id> → venue (if archived) or /whats-on.
+ * Cloudflare Pages Function: missing /event/<id> → venue → category → /whats-on.
  *
  * Important: a matching Function can run before Pages' clean-URL static lookup, so
  * we always try env.ASSETS first and only redirect on a real 404. That keeps live
  * event HTML (200) intact while fixing deleted-event soft-404s.
  *
+ * Prefer specific landings — mass redirects to /whats-on look like soft-404s to Google.
  * Archive snapshot is written by scripts/write-redirects.mjs → _archive.js
  */
 import archive from "./_archive.js";
@@ -40,13 +41,13 @@ function findEntry(slugOrId) {
 
 function redirectTarget(entry) {
   if (!entry) return "/whats-on";
-  if (entry.venueSlug) return `/venues/${entry.venueSlug}`;
   if (entry.venue?.[0]) return `/venues/${slugify(entry.venue[0])}`;
+  if (entry.venueSlug) return `/venues/${entry.venueSlug}`;
+  if (entry.category?.[0]) return `/whats-on/category/${slugify(entry.category[0])}`;
   return "/whats-on";
 }
 
 export async function onRequest(context) {
-  // Prefer the static export when the event page was built.
   const asset = await context.env.ASSETS.fetch(context.request);
   if (asset.status !== 404) {
     return asset;

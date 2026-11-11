@@ -1,5 +1,5 @@
 import type { Event } from "@/lib/types";
-import { getEventSlug, getVenueSlug, venuePath } from "@/lib/seo";
+import { categoryPath, getEventSlug, getVenueSlug, venuePath } from "@/lib/seo";
 import archiveData from "@/data/event-archive.json";
 
 export interface ArchivedEventMeta {
@@ -70,8 +70,18 @@ export function findArchiveEntry(
   );
 }
 
+/**
+ * Prefer a specific landing page over /whats-on — mass redirects to one
+ * general URL can be treated as soft-404s in Search Console.
+ * Order: venue → category → /whats-on.
+ */
 export function archiveRedirectTarget(entry: ArchivedEventMeta): string {
-  if (entry.venueSlug) return venuePath(entry.venue[0] || entry.venueSlug);
   if (entry.venue[0]) return venuePath(entry.venue[0]);
+  if (entry.venueSlug) return `/venues/${entry.venueSlug}`;
+  if (entry.category[0]) return categoryPath(entry.category[0]);
   return "/whats-on";
+}
+
+export function archiveHasSpecificTarget(entry: ArchivedEventMeta): boolean {
+  return Boolean(entry.venue[0] || entry.venueSlug || entry.category[0]);
 }

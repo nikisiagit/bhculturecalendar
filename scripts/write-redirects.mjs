@@ -1,6 +1,10 @@
 /**
  * Writes public/_redirects for Cloudflare Pages.
  * Plain Node ESM so it runs without tsx IPC (sandbox-friendly).
+ *
+ * Cloudflare limit: 2,000 static redirects. Prefer venue/category targets;
+ * generic /whats-on fallbacks are handled by functions/event/[[slug]].js so we
+ * do not burn the quota on soft-404-prone mass redirects.
  */
 import fs from "fs";
 import path from "path";
@@ -11,6 +15,9 @@ const ROOT = path.resolve(__dirname, "..");
 const REDIRECTS_PATH = path.join(ROOT, "public", "_redirects");
 const ARCHIVE_PATH = path.join(ROOT, "src", "data", "event-archive.json");
 const FUNCTIONS_ARCHIVE_PATH = path.join(ROOT, "functions", "event", "_archive.js");
+
+/** Leave headroom under Cloudflare's 2,000 static redirect cap. */
+const MAX_EVENT_REDIRECT_LINES = 1900;
 
 function slugify(value) {
   return (
@@ -28,10 +35,20 @@ function venuePath(name) {
   return `/venues/${slugify(name)}`;
 }
 
+function categoryPath(name) {
+  return `/whats-on/category/${slugify(name)}`;
+}
+
+/** Venue → category → null (Function handles /whats-on fallback). */
 function archiveRedirectTarget(entry) {
   if (entry.venue?.[0]) return venuePath(entry.venue[0]);
   if (entry.venueSlug) return `/venues/${entry.venueSlug}`;
-  return "/whats-on";
+  if (entry.category?.[0]) return categoryPath(entry.category[0]);
+  return null;
+}
+
+function hasSpecificTarget(entry) {
+  return Boolean(entry.venue?.[0] || entry.venueSlug || entry.category?.[0]);
 }
 
 async function fetchLiveEventKeys() {
@@ -76,6 +93,11 @@ function isLive(entry, liveKeys) {
   return liveKeys.has(id) || liveKeys.has(compact) || liveKeys.has(slug);
 }
 
+/** Public ranking URLs use the compact (no-hyphen) Notion id as the path segment. */
+function eventPathSlug(entry) {
+  return entry.slug || entry.id.replace(/-/g, "");
+}
+
 const archive = JSON.parse(fs.readFileSync(ARCHIVE_PATH, "utf8"));
 const { keys: liveKeys, ok: apiOk } = await fetchLiveEventKeys();
 
@@ -88,9 +110,6 @@ const lines = [
   "",
 ];
 
-// When the API is reachable, redirect only ids that are no longer live.
-// When it isn't, still emit seed/deleted archive rows (never the full live
-// archive — sync merges every current event into the same file).
 const SEED_DELETED_IDS = new Set([
   "3e8f9c4288ed80579426d57f665c2fe5",
   "3edf9c4288ed80a1a0d3d1c7ecec1351",
@@ -100,36 +119,47 @@ const SEED_DELETED_IDS = new Set([
 let orphans = apiOk
   ? uniqueArchiveEntries(archive).filter((entry) => !isLive(entry, liveKeys))
   : uniqueArchiveEntries(archive).filter(
-      (entry) =>
-        SEED_DELETED_IDS.has(entry.id) ||
-        (!entry.venue?.length && !entry.venueSlug)
+      (entry) => SEED_DELETED_IDS.has(entry.id) || hasSpecificTarget(entry)
     );
 
-if (orphans.length) {
-  lines.push("# Removed events → venue (or /whats-on) so rankings are not soft-404s");
-  for (const entry of orphans) {
-    const target = archiveRedirectTarget(entry);
-    const slug = entry.slug || entry.id.replace(/-/g, "");
-    lines.push(`/event/${slug}    ${target}    301`);
-    if (entry.id.includes("-") && entry.id !== slug) {
-      lines.push(`/event/${entry.id}    ${target}    301`);
-    }
-  }
+// Prefer specific landings (venue/category). Generic /whats-on is Function-only.
+const specificOrphans = orphans
+  .map((entry) => ({ entry, target: archiveRedirectTarget(entry) }))
+  .filter((row) => row.target);
+
+// Venue targets first (strongest signal), then category
+specificOrphans.sort((a, b) => {
+  const score = (t) => (t.startsWith("/venues/") ? 0 : 1);
+  return score(a.target) - score(b.target);
+});
+
+let eventRedirectLines = 0;
+const redirectRows = [];
+for (const { entry, target } of specificOrphans) {
+  if (eventRedirectLines >= MAX_EVENT_REDIRECT_LINES) break;
+  const slug = eventPathSlug(entry);
+  redirectRows.push(`/event/${slug}    ${target}    301`);
+  eventRedirectLines += 1;
+}
+
+if (redirectRows.length) {
+  lines.push(
+    "# Finished / removed events → venue or category (avoid mass /whats-on soft-404s)"
+  );
+  lines.push(...redirectRows);
   lines.push("");
 }
 
-// Alias for a short /venues/bic path (archive seed originally used this slug)
+const skippedGeneric = orphans.length - specificOrphans.length;
+const truncated = specificOrphans.length - redirectRows.length;
+
 lines.push("# Venue aliases");
-lines.push(
-  "/venues/bic    /venues/bournemouth-international-centre-bic    301"
-);
+lines.push("/venues/bic    /venues/bournemouth-international-centre-bic    301");
 lines.push("");
 
 fs.writeFileSync(REDIRECTS_PATH, lines.join("\n") + "\n", "utf8");
 
-// Snapshot for Pages Function fallback (missing /event/* → venue or /whats-on).
-// Do not use a splat in _redirects — Cloudflare applies redirects even when a
-// static event HTML file exists, which would 301 every live event page.
+// Full archive for Pages Function (covers overflow + unknown ids → venue/category/whats-on).
 fs.mkdirSync(path.dirname(FUNCTIONS_ARCHIVE_PATH), { recursive: true });
 fs.writeFileSync(
   FUNCTIONS_ARCHIVE_PATH,
@@ -138,5 +168,8 @@ fs.writeFileSync(
 );
 
 console.log(
-  `Wrote ${REDIRECTS_PATH} (${orphans.length} event redirect${orphans.length === 1 ? "" : "s"} + homepage 308); synced ${FUNCTIONS_ARCHIVE_PATH}`
+  `Wrote ${REDIRECTS_PATH} (${redirectRows.length} specific event 301s + homepage 308); ` +
+    `Function archive ${Object.keys(archive).length} entries` +
+    (skippedGeneric ? `; ${skippedGeneric} generic→Function` : "") +
+    (truncated ? `; ${truncated} truncated (CF cap)` : "")
 );

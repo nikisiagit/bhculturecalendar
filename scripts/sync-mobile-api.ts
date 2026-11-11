@@ -27,20 +27,18 @@ async function main() {
     const apiUrl = (process.env.MOBILE_API_URL || "https://api.bhculturecalendar.co.uk").trim();
     const syncSecret = env.MOBILE_SYNC_SECRET;
 
-    const events = await getEvents();
+    // Full Notion history → SEO redirect archive; today+future only → API.
+    const allDated = await getEvents({ includePast: true });
     const { isEventStillActive } = await import("../src/lib/event-time");
-    const upcoming = events.filter((event) => isEventStillActive(event));
-    if (upcoming.length !== events.length) {
-        console.log(
-            `Filtered ${events.length - upcoming.length} past Notion events (API/site are today+future only)`,
-        );
-    }
+    const upcoming = allDated.filter((event) => isEventStillActive(event));
+    console.log(
+        `Notion: ${allDated.length} dated (${upcoming.length} active, ${allDated.length - upcoming.length} past for redirects)`,
+    );
 
-    // Persist id→venue mapping so deleted Notion rows can 301 via public/_redirects
+    // Persist id→venue/category so finished URLs 301 to a specific page, not /whats-on.
     const { mergeEventsIntoArchive, loadEventArchive } = await import("../src/lib/event-archive");
     const archivePath = path.resolve(process.cwd(), "src/data/event-archive.json");
-    // Archive upcoming rows so venue redirects survive once they drop out of sync.
-    const merged = mergeEventsIntoArchive(loadEventArchive(), upcoming);
+    const merged = mergeEventsIntoArchive(loadEventArchive(), allDated);
     // Deduplicate to one entry per id (slug keys may alias the same object)
     const byId: Record<string, (typeof merged)[string]> = {};
     for (const entry of Object.values(merged)) {

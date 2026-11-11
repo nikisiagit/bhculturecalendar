@@ -38,164 +38,163 @@ async function resolveEventsDataSourceId(rawId: string): Promise<string> {
 
 const imageMap = imageMapData as Record<string, string>;
 
-let cachedEvents: Event[] | null = null;
-let eventsFetchPromise: Promise<Event[]> | null = null;
+let cachedAllDatedEvents: Event[] | null = null;
+let allDatedEventsPromise: Promise<Event[]> | null = null;
 
-export const getEvents = async (): Promise<Event[]> => {
-    if (cachedEvents) return cachedEvents;
-    if (eventsFetchPromise) return eventsFetchPromise;
+function sortEventsForListing(events: Event[]): Event[] {
+    return [...events].sort((a, b) => {
+        // Prefer specific dates over long ranges (exhibitions)
+        const isRange = (ev: Event) => {
+            if (!ev.endDate) return false;
+            const start = new Date(ev.date);
+            const end = new Date(ev.endDate);
+            return start.toDateString() !== end.toDateString();
+        };
 
-    eventsFetchPromise = (async () => {
-        const rawId = process.env.NOTION_DATABASE_ID;
-
-    if (!rawId) {
-        console.warn("NOTION_DATABASE_ID is not defined.");
-        return [];
-    }
-
-    try {
-        const dataSourceId = await resolveEventsDataSourceId(rawId);
-        let allResults: any[] = [];
-        let hasMore = true;
-        let startCursor: string | undefined = undefined;
-
-        // Paginate through all results
-        while (hasMore) {
-            const response: any = await getNotionClient().dataSources.query({
-                data_source_id: dataSourceId,
-                page_size: 100,
-                start_cursor: startCursor,
-                sorts: [
-                    {
-                        property: "Date(s) and time",
-                        direction: "descending"
-                    }
-                ]
-            });
-
-            allResults = allResults.concat(response.results);
-            hasMore = response.has_more;
-            startCursor = response.next_cursor;
+        const rangeA = isRange(a);
+        const rangeB = isRange(b);
+        if (rangeA !== rangeB) {
+            return (rangeA ? 1 : 0) - (rangeB ? 1 : 0);
         }
 
-        console.error(`Fetched ${allResults.length} events from Notion`);
+        const dateA = new Date(a.date).getTime();
+        const dateB = new Date(b.date).getTime();
+        if (dateA !== dateB) {
+            return dateA - dateB;
+        }
 
-        const finalEvents = allResults.map((page: any) => {
-            const props = page.properties;
+        return a.title.localeCompare(b.title);
+    });
+}
 
-            // Event Name (title)
-            const title = props["Event Name"]?.title?.map((t: any) => t.plain_text).join("") || "Untitled Event";
+/** All Notion rows with a date (includes finished events — for SEO archive redirects). */
+export const getAllDatedEvents = async (): Promise<Event[]> => {
+    if (cachedAllDatedEvents) return cachedAllDatedEvents;
+    if (allDatedEventsPromise) return allDatedEventsPromise;
 
-            // Date(s) and time
-            const dateObj = props["Date(s) and time"]?.date;
-            const date = dateObj?.start || "";
-            const endDate = dateObj?.end || null;
+    allDatedEventsPromise = (async () => {
+        const rawId = process.env.NOTION_DATABASE_ID;
 
-            // Venue (multi_select)
-            const venue = props["Venue"]?.multi_select?.map((v: any) => v.name) || [];
+        if (!rawId) {
+            console.warn("NOTION_DATABASE_ID is not defined.");
+            return [];
+        }
 
-            // Category (multi_select)
-            const category = props["Category"]?.multi_select?.map((c: any) => c.name) || [];
+        try {
+            const dataSourceId = await resolveEventsDataSourceId(rawId);
+            let allResults: any[] = [];
+            let hasMore = true;
+            let startCursor: string | undefined = undefined;
 
-            // Postcode area (multi_select)
-            const postcode = props["Postcode area"]?.multi_select?.map((p: any) => p.name) || [];
+            while (hasMore) {
+                const response: any = await getNotionClient().dataSources.query({
+                    data_source_id: dataSourceId,
+                    page_size: 100,
+                    start_cursor: startCursor,
+                    sorts: [
+                        {
+                            property: "Date(s) and time",
+                            direction: "descending",
+                        },
+                    ],
+                });
 
-            // Link
-            let link = props["Link"]?.url || "";
-            if (link) {
-                try {
-                    const urlObj = new URL(link);
-                    if (!urlObj.searchParams.has('utm_source')) {
-                        urlObj.searchParams.set('utm_source', 'bhculturecalendar');
+                allResults = allResults.concat(response.results);
+                hasMore = response.has_more;
+                startCursor = response.next_cursor;
+            }
+
+            console.error(`Fetched ${allResults.length} events from Notion`);
+
+            const dated = allResults
+                .map((page: any) => {
+                    const props = page.properties;
+
+                    const title =
+                        props["Event Name"]?.title?.map((t: any) => t.plain_text).join("") ||
+                        "Untitled Event";
+
+                    const dateObj = props["Date(s) and time"]?.date;
+                    const date = dateObj?.start || "";
+                    const endDate = dateObj?.end || null;
+
+                    const venue = props["Venue"]?.multi_select?.map((v: any) => v.name) || [];
+                    const category =
+                        props["Category"]?.multi_select?.map((c: any) => c.name) || [];
+                    const postcode =
+                        props["Postcode area"]?.multi_select?.map((p: any) => p.name) || [];
+
+                    let link = props["Link"]?.url || "";
+                    if (link) {
+                        try {
+                            const urlObj = new URL(link);
+                            if (!urlObj.searchParams.has("utm_source")) {
+                                urlObj.searchParams.set("utm_source", "bhculturecalendar");
+                            }
+                            if (!urlObj.searchParams.has("utm_medium")) {
+                                urlObj.searchParams.set("utm_medium", "referral");
+                            }
+                            link = urlObj.toString();
+                        } catch {
+                            // Ignore invalid URLs
+                        }
                     }
-                    if (!urlObj.searchParams.has('utm_medium')) {
-                        urlObj.searchParams.set('utm_medium', 'referral');
+
+                    const isFree = props["Free"]?.checkbox || false;
+                    const isSpotlight =
+                        props["Spotlight event"]?.checkbox ||
+                        props["Spotlight Event"]?.checkbox ||
+                        false;
+
+                    let coverImage: string | null = null;
+                    if (page.cover) {
+                        if (imageMap[page.id]) {
+                            coverImage = imageMap[page.id];
+                        } else if (page.cover.type === "external") {
+                            coverImage = page.cover.external.url;
+                        } else if (page.cover.type === "file") {
+                            coverImage = page.cover.file.url;
+                        }
                     }
-                    link = urlObj.toString();
-                } catch (e) {
-                    // Ignore invalid URLs
-                }
-            }
 
-            // Free (checkbox)
-            const isFree = props["Free"]?.checkbox || false;
+                    return {
+                        id: page.id,
+                        title,
+                        date,
+                        endDate,
+                        venue,
+                        category,
+                        postcode,
+                        link,
+                        isFree,
+                        isSpotlight,
+                        coverImage,
+                    };
+                })
+                .filter((event: Event) => Boolean(event.date));
 
-            // Spotlight event (checkbox) — Notion column name is "Spotlight event"
-            const isSpotlight =
-                props["Spotlight event"]?.checkbox ||
-                props["Spotlight Event"]?.checkbox ||
-                false;
-
-            // Cover image from page
-            let coverImage: string | null = null;
-            if (page.cover) {
-                if (imageMap[page.id]) {
-                    coverImage = imageMap[page.id];
-                } else if (page.cover.type === "external") {
-                    coverImage = page.cover.external.url;
-                } else if (page.cover.type === "file") {
-                    coverImage = page.cover.file.url;
-                }
-            }
-
-            return {
-                id: page.id,
-                title,
-                date,
-                endDate,
-                venue,
-                category,
-                postcode,
-                link,
-                isFree,
-                isSpotlight,
-                coverImage,
-            };
-        }).filter((event) => {
-            // Today + future only — same rule as API GET /events (isEventStillActive).
-            // Finished / deleted URLs use archive 301s (_redirects / Pages Function).
-            return isEventStillActive(event);
-        }).sort((a, b) => {
-            // Helper to determine if event is multi-day (range)
-            // User requested to prioritize specific dates over long ranges (exhibitions)
-            const isRange = (ev: Event) => {
-                if (!ev.endDate) return false;
-                const start = new Date(ev.date);
-                const end = new Date(ev.endDate);
-                return start.toDateString() !== end.toDateString();
-            };
-
-            const rangeA = isRange(a);
-            const rangeB = isRange(b);
-
-            // 1. Group by Range (Single Day first, Range last)
-            if (rangeA !== rangeB) {
-                return (rangeA ? 1 : 0) - (rangeB ? 1 : 0);
-            }
-
-            // 2. Sort by Date Ascending
-            // Use original start date sorting since we are grouping by type
-            const dateA = new Date(a.date).getTime();
-            const dateB = new Date(b.date).getTime();
-
-            if (dateA !== dateB) {
-                return dateA - dateB;
-            }
-
-            // 3. Secondary sort by title
-            return a.title.localeCompare(b.title);
-        });
-
-        cachedEvents = finalEvents;
-        return finalEvents;
-    } catch (error) {
-        console.error("Error fetching Notion data:", error);
-        eventsFetchPromise = null;
-        throw error; // Fail the build if data fetching errors
-    }
+            cachedAllDatedEvents = sortEventsForListing(dated);
+            return cachedAllDatedEvents;
+        } catch (error) {
+            console.error("Error fetching Notion data:", error);
+            allDatedEventsPromise = null;
+            throw error;
+        }
     })();
 
-    return eventsFetchPromise;
+    return allDatedEventsPromise;
+};
+
+/**
+ * Today + future only — same rule as API GET /events (isEventStillActive).
+ * Pass `{ includePast: true }` for SEO archive / redirect mapping.
+ */
+export const getEvents = async (
+    options?: { includePast?: boolean },
+): Promise<Event[]> => {
+    const all = await getAllDatedEvents();
+    if (options?.includePast) return all;
+    return sortEventsForListing(all.filter((event) => isEventStillActive(event)));
 };
 
 // Venues data source ID
