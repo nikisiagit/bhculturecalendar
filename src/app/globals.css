@@ -216,6 +216,104 @@ body {
   font-weight: 700;
 }
 
+/* iOS App Promo Banner */
+.app-promo-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  background-color: var(--accent);
+  border-bottom: 2px solid var(--black);
+  padding: 0.6rem var(--spacing-xl);
+  position: relative;
+  z-index: 1000;
+}
+
+.app-promo-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex: 1;
+  min-width: 0;
+  text-decoration: none;
+  color: var(--black);
+}
+
+.app-promo-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  border: 1.5px solid var(--black);
+  flex-shrink: 0;
+  background: var(--white);
+}
+
+.app-promo-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.app-promo-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.app-promo-subtitle {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 400;
+  line-height: 1.25;
+  margin: 0.15rem 0 0;
+  color: var(--dark-gray);
+}
+
+.app-promo-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  padding: 0.55rem 0.9rem;
+  border: 1.5px solid var(--black);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.app-promo-link:hover .app-promo-cta {
+  background: var(--white);
+  color: var(--black);
+}
+
+.app-promo-apple {
+  flex-shrink: 0;
+}
+
+.app-promo-dismiss {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: var(--black);
+  padding: 0;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.app-promo-dismiss:hover {
+  transform: scale(1.1);
+  opacity: 0.7;
+}
+
 .live-indicator {
   color: var(--black);
   animation: live-pulse 2s infinite;
@@ -249,12 +347,50 @@ body {
     height: 40px;
   }
 
+  .app-promo-banner {
+    padding: 0.5rem var(--spacing-md);
+  }
+
+  .app-promo-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+  }
+
+  .app-promo-title {
+    font-size: 0.8rem;
+  }
+
+  .app-promo-subtitle {
+    font-size: 0.75rem;
+  }
+
+  .app-promo-cta {
+    font-size: 0.65rem;
+    padding: 0.45rem 0.65rem;
+  }
+
+  .app-promo-dismiss {
+    width: 32px;
+    height: 32px;
+  }
+
   .today-banner-bar {
     padding: var(--spacing-xs) var(--spacing-md);
   }
 
   .today-banner-content {
     font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .app-promo-subtitle {
+    display: none;
+  }
+
+  .app-promo-link {
+    gap: var(--spacing-sm);
   }
 }
 

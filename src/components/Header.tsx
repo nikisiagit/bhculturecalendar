@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Event } from "@/lib/notion";
+import AppPromoBanner from "./AppPromoBanner";
 
 interface HeaderProps {
     events: Event[];
@@ -144,6 +145,8 @@ export default function Header({ events }: HeaderProps) {
                     </Link>
                 </nav>
             </div>
+
+            <AppPromoBanner />
         </header>
     );
 }
