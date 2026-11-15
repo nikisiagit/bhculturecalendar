@@ -270,29 +270,16 @@ body {
   color: var(--dark-gray);
 }
 
-.app-promo-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
+.app-promo-badge {
   flex-shrink: 0;
-  background: var(--black);
-  color: var(--white);
-  font-family: var(--font-display);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  padding: 0.55rem 0.9rem;
-  border: 1.5px solid var(--black);
-  transition: background-color 0.2s ease, color 0.2s ease;
+  width: 120px;
+  height: auto;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
-.app-promo-link:hover .app-promo-cta {
-  background: var(--white);
-  color: var(--black);
-}
-
-.app-promo-apple {
-  flex-shrink: 0;
+.app-promo-link:hover .app-promo-badge {
+  opacity: 0.85;
+  transform: scale(1.02);
 }
 
 .app-promo-dismiss {
@@ -365,9 +352,8 @@ body {
     font-size: 0.75rem;
   }
 
-  .app-promo-cta {
-    font-size: 0.65rem;
-    padding: 0.45rem 0.65rem;
+  .app-promo-badge {
+    width: 100px;
   }
 
   .app-promo-dismiss {
