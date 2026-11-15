@@ -41,7 +41,7 @@ export default function AppPromoBanner() {
                 />
                 <div className="app-promo-copy">
                     <p className="app-promo-title">BH Calendar is on iOS</p>
-                    <p className="app-promo-subtitle">Your guide to BH Culture is now in your pocket — Download our Free iOS App</p>
+                    <p className="app-promo-subtitle">Your guide to BH Culture is now in your pocket</p>
                 </div>
                 <Image
                     src="/download-on-the-app-store.svg"
