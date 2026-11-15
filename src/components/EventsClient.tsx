@@ -171,49 +171,54 @@ function EventCard({ event }: { event: Event }) {
                         {event.postcode.length > 0 && ` (${event.postcode.join(", ")})`}
                     </p>
                 )}
-                {event.link && (
-                    <p className="event-official-link">
-                        <a href={event.link} target="_blank" rel="noopener noreferrer">
+                <div className="event-actions">
+                    {event.link && (
+                        <a
+                            href={event.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="event-action-btn event-official-btn"
+                        >
                             Official page / tickets
                         </a>
-                    </p>
-                )}
-
-                <div className="calendar-wrapper">
-                    <button
-                        className="add-calendar-btn"
-                        onClick={() => setShowCalendarOptions(!showCalendarOptions)}
-                        aria-expanded={showCalendarOptions}
-                        type="button"
-                    >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                            <line x1="16" y1="2" x2="16" y2="6"></line>
-                            <line x1="8" y1="2" x2="8" y2="6"></line>
-                            <line x1="3" y1="10" x2="21" y2="10"></line>
-                            <line x1="12" y1="14" x2="12" y2="18"></line>
-                            <line x1="10" y1="16" x2="14" y2="16"></line>
-                        </svg>
-                        Add to Calendar
-                    </button>
-
-                    {showCalendarOptions && (
-                        <div className="calendar-dropdown">
-                            <a href={generateGoogleUrl(event)} target="_blank" rel="noopener noreferrer" className="calendar-option">
-                                Google Calendar
-                            </a>
-                            <a href={generateOutlookUrl(event)} target="_blank" rel="noopener noreferrer" className="calendar-option">
-                                Outlook
-                            </a>
-                            <a
-                                href={generateIcsData(event)}
-                                download={`${event.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.ics`}
-                                className="calendar-option"
-                            >
-                                Apple Calendar
-                            </a>
-                        </div>
                     )}
+
+                    <div className="calendar-wrapper">
+                        <button
+                            className="event-action-btn add-calendar-btn"
+                            onClick={() => setShowCalendarOptions(!showCalendarOptions)}
+                            aria-expanded={showCalendarOptions}
+                            type="button"
+                        >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                                <line x1="12" y1="14" x2="12" y2="18"></line>
+                                <line x1="10" y1="16" x2="14" y2="16"></line>
+                            </svg>
+                            Add to Calendar
+                        </button>
+
+                        {showCalendarOptions && (
+                            <div className="calendar-dropdown">
+                                <a href={generateGoogleUrl(event)} target="_blank" rel="noopener noreferrer" className="calendar-option">
+                                    Google Calendar
+                                </a>
+                                <a href={generateOutlookUrl(event)} target="_blank" rel="noopener noreferrer" className="calendar-option">
+                                    Outlook
+                                </a>
+                                <a
+                                    href={generateIcsData(event)}
+                                    download={`${event.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.ics`}
+                                    className="calendar-option"
+                                >
+                                    Apple Calendar
+                                </a>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </article>

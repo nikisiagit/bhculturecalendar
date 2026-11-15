@@ -616,62 +616,49 @@ a.tag.category:focus-visible {
   outline: none;
 }
 
-.event-official-link {
-  margin: 0.15rem 0 0.65rem;
+.event-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
 }
 
-.event-official-link a {
+.event-action-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
   font-size: 0.8rem;
   font-weight: 600;
+  font-family: inherit;
+  line-height: 1.2;
   color: var(--black);
   text-decoration: none;
-  padding: 0.3rem 0.65rem;
+  padding: 0.35rem 0.7rem;
   border: 1px solid var(--black);
+  border-radius: 0;
   background: var(--white);
+  cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.event-official-link a::after {
+.event-official-btn::after {
   content: "↗";
   font-size: 0.75rem;
   line-height: 1;
   opacity: 0.75;
 }
 
-.event-official-link a:hover,
-.event-official-link a:focus-visible {
+.event-action-btn:hover,
+.event-action-btn:focus-visible {
   background-color: var(--accent);
+  color: var(--black);
   outline: none;
 }
 
 .calendar-wrapper {
   position: relative;
   display: inline-block;
-  margin-top: var(--spacing-sm);
-}
-
-.add-calendar-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
-  background-color: var(--white);
-  border: 1px solid var(--black);
-  border-radius: var(--radius-sm);
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-decoration: none;
-  color: var(--black);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.add-calendar-btn:hover {
-  background-color: var(--black);
-  color: var(--white);
 }
 
 .calendar-dropdown {
