@@ -1576,6 +1576,10 @@
 /event/3a7f9c4288ed80819617e2ffbc547a2c    /venues/verwood-hub    301
 /event/3d6f9c4288ed80f2afb4f7fd6be6d4d7    /venues/canvas    301
 /event/3c0f9c4288ed803cae25e181b685da30    /venues/bournemouth-pavilion    301
+/event/40cf9c4288ed80c5aeb1d8d110cda518    /venues/lighthouse-poole    301
+/event/410f9c4288ed80b29155e36f3aba784a    /venues/regent-centre-christchurch    301
+/event/40df9c4288ed805387eae0fa646d3905    /venues/lighthouse-poole    301
+/event/410f9c4288ed80e0bddbdafc6e007fc8    /venues/rex-cinema    301
 /event/32cf9c4288ed80969afae71fe975a743    /venues/walford-mill    301
 /event/32ef9c4288ed80cc94aac4f9d581b9df    /venues/the-gallery-upstairs-upton-country-park    301
 /event/2cdf9c4288ed80ee913af78c924fba92    /venues/pavilion-dance-south-west    301
@@ -1761,10 +1765,14 @@
 /event/3e4f9c4288ed804f9752d35f4eafccc6    /venues/pokesdown-gallery    301
 /event/3e4f9c4288ed80ccb357d0cbf159f38e    /venues/sandy-hill-arts    301
 /event/403f9c4288ed80a0b676d3cb31daddde    /venues/gather-dolphin-shopping-centre    301
+/event/3fef9c4288ed809db5e2cb90738b3ed6    /venues/walford-mill    301
 /event/401f9c4288ed809fb0c9ea07978a1717    /venues/the-gallery-upstairs-upton-country-park    301
 /event/370f9c4288ed80049379ea08ec21c36b    /venues/the-mowlem    301
 /event/404f9c4288ed80b4aa36f3014b37002c    /venues/pokesdown-gallery    301
+/event/404f9c4288ed807d915bff115a7ce0ad    /venues/pokesdown-gallery    301
 /event/415f9c4288ed8060ba04f1427d7225fc    /venues/regent-centre-christchurch    301
+/event/415f9c4288ed80ee972cccd9abd7960a    /venues/rex-cinema    301
+/event/416f9c4288ed80ef81a1f58efa6c894e    /venues/regent-centre-christchurch    301
 /event/329f9c4288ed807f84ffdf2050872429    /whats-on/category/film    301
 /event/329f9c4288ed80479a97e52e67c9131a    /whats-on/category/film    301
 /event/329f9c4288ed808797b7d7aacd03bc89    /whats-on/category/film    301
