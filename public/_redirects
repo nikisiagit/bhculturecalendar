@@ -1580,6 +1580,9 @@
 /event/410f9c4288ed80b29155e36f3aba784a    /venues/regent-centre-christchurch    301
 /event/40df9c4288ed805387eae0fa646d3905    /venues/lighthouse-poole    301
 /event/410f9c4288ed80e0bddbdafc6e007fc8    /venues/rex-cinema    301
+/event/410f9c4288ed80e6b1e8eb323e7f2819    /venues/rex-cinema    301
+/event/410f9c4288ed8037bb02c9452da622d3    /venues/rex-cinema    301
+/event/401f9c4288ed80ca92dbf898a568206a    /venues/forest-arts-centre    301
 /event/32cf9c4288ed80969afae71fe975a743    /venues/walford-mill    301
 /event/32ef9c4288ed80cc94aac4f9d581b9df    /venues/the-gallery-upstairs-upton-country-park    301
 /event/2cdf9c4288ed80ee913af78c924fba92    /venues/pavilion-dance-south-west    301
@@ -1772,7 +1775,17 @@
 /event/404f9c4288ed807d915bff115a7ce0ad    /venues/pokesdown-gallery    301
 /event/415f9c4288ed8060ba04f1427d7225fc    /venues/regent-centre-christchurch    301
 /event/415f9c4288ed80ee972cccd9abd7960a    /venues/rex-cinema    301
+/event/415f9c4288ed80979b4cc9c5a56c49cc    /venues/regent-centre-christchurch    301
+/event/415f9c4288ed80ad9499e5410d64f014    /venues/the-mowlem    301
+/event/415f9c4288ed806cb66fdc946b01e701    /venues/regent-centre-christchurch    301
+/event/415f9c4288ed80e8b33ef004a260e09e    /venues/regent-centre-christchurch    301
+/event/415f9c4288ed80c78269c04539b14c50    /venues/the-mowlem    301
 /event/416f9c4288ed80ef81a1f58efa6c894e    /venues/regent-centre-christchurch    301
+/event/416f9c4288ed80328b8afd3ac0aa04ea    /venues/regent-centre-christchurch    301
+/event/41af9c4288ed80c39095d9df9062dfa6    /venues/lighthouse-poole    301
+/event/41af9c4288ed80aab6f8e9be7b03b430    /venues/lighthouse-poole    301
+/event/41af9c4288ed80f19c3cc98f0d3612e0    /venues/lighthouse-poole    301
+/event/41af9c4288ed807fbc4ced0fa66e8604    /venues/lighthouse-poole    301
 /event/329f9c4288ed807f84ffdf2050872429    /whats-on/category/film    301
 /event/329f9c4288ed80479a97e52e67c9131a    /whats-on/category/film    301
 /event/329f9c4288ed808797b7d7aacd03bc89    /whats-on/category/film    301
