@@ -1615,6 +1615,14 @@
 /event/3e9f9c4288ed80baa029e92ab54d3e00    /venues/regent-centre-christchurch    301
 /event/404f9c4288ed80779836c653ec638c65    /venues/the-barrington-arts-and-community-centre    301
 /event/40df9c4288ed807fae0ed03cccf9c388    /venues/bournemouth-international-centre-bic    301
+/event/40df9c4288ed8071b763ca3b51b8fc84    /venues/lighthouse-poole    301
+/event/40df9c4288ed805faf8bf7f7af3a7d50    /venues/lighthouse-poole    301
+/event/407f9c4288ed80daab9defc24dda8b9b    /venues/corfe-castle-village-hall    301
+/event/407f9c4288ed8062ab78c1bce0b89f58    /venues/corfe-castle-village-hall    301
+/event/40df9c4288ed8008be98eca79b6c5e89    /venues/lighthouse-poole    301
+/event/405f9c4288ed80f1a85ec581580333c1    /venues/the-barn-ringwood    301
+/event/401f9c4288ed80a4ac67d37263f46f80    /venues/forest-arts-centre    301
+/event/404f9c4288ed801a84b2d3178e96f8a2    /venues/the-barrington-arts-and-community-centre    301
 /event/32cf9c4288ed80969afae71fe975a743    /venues/walford-mill    301
 /event/32ef9c4288ed80cc94aac4f9d581b9df    /venues/the-gallery-upstairs-upton-country-park    301
 /event/2cdf9c4288ed80ee913af78c924fba92    /venues/pavilion-dance-south-west    301
@@ -1804,6 +1812,8 @@
 /event/401f9c4288ed809fb0c9ea07978a1717    /venues/the-gallery-upstairs-upton-country-park    301
 /event/370f9c4288ed80049379ea08ec21c36b    /venues/the-mowlem    301
 /event/404f9c4288ed80b4aa36f3014b37002c    /venues/pokesdown-gallery    301
+/event/3fef9c4288ed8033b3e6c9b2599d35cb    /venues/coda-music-and-arts-trust    301
+/event/403f9c4288ed803a9133d3e09cf17412    /venues/gather-dolphin-shopping-centre    301
 /event/404f9c4288ed807d915bff115a7ce0ad    /venues/pokesdown-gallery    301
 /event/415f9c4288ed8060ba04f1427d7225fc    /venues/regent-centre-christchurch    301
 /event/415f9c4288ed80ee972cccd9abd7960a    /venues/rex-cinema    301
@@ -1824,9 +1834,12 @@
 /event/415f9c4288ed8089a211cbd6dbc566c3    /venues/regent-centre-christchurch    301
 /event/415f9c4288ed80a484f6f6ec57032ab8    /venues/regent-centre-christchurch    301
 /event/415f9c4288ed80eb8280e6fc8eb1c1d9    /venues/the-mowlem    301
+/event/415f9c4288ed8021a32cc02c384ebca2    /venues/rex-cinema    301
+/event/415f9c4288ed8064acb7c35e9d326fd0    /venues/rex-cinema    301
 /event/416f9c4288ed80ef81a1f58efa6c894e    /venues/regent-centre-christchurch    301
 /event/416f9c4288ed80328b8afd3ac0aa04ea    /venues/regent-centre-christchurch    301
 /event/416f9c4288ed80cca8a8f457de51ee79    /venues/regent-centre-christchurch    301
+/event/416f9c4288ed80b190bdca0eb0841906    /venues/the-mowlem    301
 /event/41af9c4288ed80c39095d9df9062dfa6    /venues/lighthouse-poole    301
 /event/41af9c4288ed80aab6f8e9be7b03b430    /venues/lighthouse-poole    301
 /event/41af9c4288ed80f19c3cc98f0d3612e0    /venues/lighthouse-poole    301
@@ -1834,6 +1847,7 @@
 /event/41cf9c4288ed802b9a96da17b92408ab    /venues/lighthouse-poole    301
 /event/41cf9c4288ed80ccbcffc3cf387a27f8    /venues/lighthouse-poole    301
 /event/41cf9c4288ed80c396bae44e1ba17dcf    /venues/lighthouse-poole    301
+/event/41df9c4288ed8085b241ca026f6631c2    /venues/lighthouse-poole    301
 /event/329f9c4288ed807f84ffdf2050872429    /whats-on/category/film    301
 /event/329f9c4288ed80479a97e52e67c9131a    /whats-on/category/film    301
 /event/329f9c4288ed808797b7d7aacd03bc89    /whats-on/category/film    301
