@@ -1639,6 +1639,10 @@
 /event/3a7f9c4288ed80589697c2f786fd3b4d    /venues/wimborne-royal-british-legion    301
 /event/3d6f9c4288ed80ceb833fc5817a67405    /venues/canvas    301
 /event/405f9c4288ed805599e4d20f059c3770    /venues/bournemouth-international-centre-bic    301
+/event/40df9c4288ed80e38876f23dcddf83b3    /venues/lighthouse-poole    301
+/event/40df9c4288ed80009e35f4442e585e75    /venues/lighthouse-poole    301
+/event/408f9c4288ed8072bf9ce848e9a3bb92    /venues/russell-cotes-art-gallery-museum    301
+/event/405f9c4288ed80e3ac11ef0e04c24b4e    /venues/pavilion-dance-south-west    301
 /event/32cf9c4288ed80969afae71fe975a743    /venues/walford-mill    301
 /event/32ef9c4288ed80cc94aac4f9d581b9df    /venues/the-gallery-upstairs-upton-country-park    301
 /event/2cdf9c4288ed80ee913af78c924fba92    /venues/pavilion-dance-south-west    301
@@ -1831,6 +1835,7 @@
 /event/3fef9c4288ed8033b3e6c9b2599d35cb    /venues/coda-music-and-arts-trust    301
 /event/403f9c4288ed803a9133d3e09cf17412    /venues/gather-dolphin-shopping-centre    301
 /event/404f9c4288ed807d915bff115a7ce0ad    /venues/pokesdown-gallery    301
+/event/3aff9c4288ed80679cd5e2cc515b049e    /venues/pamphill-village-hall    301
 /event/415f9c4288ed8060ba04f1427d7225fc    /venues/regent-centre-christchurch    301
 /event/415f9c4288ed80ee972cccd9abd7960a    /venues/rex-cinema    301
 /event/415f9c4288ed80979b4cc9c5a56c49cc    /venues/regent-centre-christchurch    301
@@ -1860,6 +1865,9 @@
 /event/416f9c4288ed80b190bdca0eb0841906    /venues/the-mowlem    301
 /event/416f9c4288ed805db082c773d8a785dd    /venues/regent-centre-christchurch    301
 /event/416f9c4288ed801b9134de0c839adc15    /venues/regent-centre-christchurch    301
+/event/416f9c4288ed80838fc7c1467bbd5309    /venues/regent-centre-christchurch    301
+/event/416f9c4288ed8064a1baf814dddf576f    /venues/regent-centre-christchurch    301
+/event/416f9c4288ed80f78a22c4fabefcfed3    /venues/regent-centre-christchurch    301
 /event/41af9c4288ed80c39095d9df9062dfa6    /venues/lighthouse-poole    301
 /event/41af9c4288ed80aab6f8e9be7b03b430    /venues/lighthouse-poole    301
 /event/41af9c4288ed80f19c3cc98f0d3612e0    /venues/lighthouse-poole    301
