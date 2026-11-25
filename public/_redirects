@@ -1645,6 +1645,15 @@
 /event/405f9c4288ed80e3ac11ef0e04c24b4e    /venues/pavilion-dance-south-west    301
 /event/3c0f9c4288ed806188e2e122099f7dec    /venues/forest-arts-centre    301
 /event/40df9c4288ed807c8dace5b032bff32b    /venues/lighthouse-poole    301
+/event/40df9c4288ed805a9358d1264a9004af    /venues/lighthouse-poole    301
+/event/408f9c4288ed8077ba04d37a567a3b4b    /venues/russell-cotes-art-gallery-museum    301
+/event/408f9c4288ed805eb3d6dde173eb45ab    /venues/russell-cotes-art-gallery-museum    301
+/event/40df9c4288ed8073b013f9b896899ab3    /venues/lighthouse-poole    301
+/event/40df9c4288ed80a9b432cca98af04efe    /venues/lighthouse-poole    301
+/event/3d6f9c4288ed8028a482e801fa15f50f    /venues/patch-bournemouth    301
+/event/3fef9c4288ed80c6b4a0ff5abd0b55c5    /venues/the-tivoli-theatre-wimborne    301
+/event/40df9c4288ed8077becec36f15f47a83    /venues/lighthouse-poole    301
+/event/40df9c4288ed80a6ae14eb4ea407b796    /venues/lighthouse-poole    301
 /event/32cf9c4288ed80969afae71fe975a743    /venues/walford-mill    301
 /event/32ef9c4288ed80cc94aac4f9d581b9df    /venues/the-gallery-upstairs-upton-country-park    301
 /event/2cdf9c4288ed80ee913af78c924fba92    /venues/pavilion-dance-south-west    301
@@ -1830,6 +1839,7 @@
 /event/3e4f9c4288ed804f9752d35f4eafccc6    /venues/pokesdown-gallery    301
 /event/3e4f9c4288ed80ccb357d0cbf159f38e    /venues/sandy-hill-arts    301
 /event/403f9c4288ed80a0b676d3cb31daddde    /venues/gather-dolphin-shopping-centre    301
+/event/404f9c4288ed80b1a65dd980c1b10ef5    /venues/hatch-gallery    301
 /event/3fef9c4288ed809db5e2cb90738b3ed6    /venues/walford-mill    301
 /event/401f9c4288ed809fb0c9ea07978a1717    /venues/the-gallery-upstairs-upton-country-park    301
 /event/370f9c4288ed80049379ea08ec21c36b    /venues/the-mowlem    301
@@ -1865,6 +1875,9 @@
 /event/415f9c4288ed80c0881bf4be3d8fd43a    /venues/regent-centre-christchurch    301
 /event/415f9c4288ed80fd9cf6eb49228d303f    /venues/rex-cinema    301
 /event/415f9c4288ed80a2a5e4e9d7369384b6    /venues/rex-cinema    301
+/event/415f9c4288ed80c8a7e5fb22cb46081b    /venues/regent-centre-christchurch    301
+/event/415f9c4288ed80bca210d09fe89dd4b6    /venues/rex-cinema    301
+/event/415f9c4288ed8069ac62d9c0d4aac869    /venues/rex-cinema    301
 /event/416f9c4288ed80ef81a1f58efa6c894e    /venues/regent-centre-christchurch    301
 /event/416f9c4288ed80328b8afd3ac0aa04ea    /venues/regent-centre-christchurch    301
 /event/416f9c4288ed80cca8a8f457de51ee79    /venues/regent-centre-christchurch    301
@@ -1878,6 +1891,9 @@
 /event/416f9c4288ed80f1a6f3c49ba388c86a    /venues/the-mowlem    301
 /event/416f9c4288ed800eb358d5c6b2179b65    /venues/the-mowlem    301
 /event/416f9c4288ed8049ba41d128cedeeec5    /venues/regent-centre-christchurch    301
+/event/416f9c4288ed80eaa50ede77e94bd3a4    /venues/regent-centre-christchurch    301
+/event/416f9c4288ed8084914bfb043aec4a22    /venues/the-mowlem    301
+/event/416f9c4288ed805790f7e099a5cc3be6    /venues/regent-centre-christchurch    301
 /event/41af9c4288ed80c39095d9df9062dfa6    /venues/lighthouse-poole    301
 /event/41af9c4288ed80aab6f8e9be7b03b430    /venues/lighthouse-poole    301
 /event/41af9c4288ed80f19c3cc98f0d3612e0    /venues/lighthouse-poole    301
@@ -1889,7 +1905,6 @@
 /event/329f9c4288ed807f84ffdf2050872429    /whats-on/category/film    301
 /event/329f9c4288ed80479a97e52e67c9131a    /whats-on/category/film    301
 /event/329f9c4288ed808797b7d7aacd03bc89    /whats-on/category/film    301
-/event/329f9c4288ed80dd9a4ad758110660c0    /whats-on/category/comedy    301
 
 # Venue aliases
 /venues/bic    /venues/bournemouth-international-centre-bic    301
